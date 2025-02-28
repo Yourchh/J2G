@@ -30,7 +30,8 @@ public class J2GRegexValidator {
             System.out.println("18. Validar Estructura while"); // listo
             System.out.println("19. Validar Estructura do-while"); // listo
             System.out.println("20. Validar Condición Lógica"); // listo
-            System.out.println("21. Validar Función Print"); // listo
+            System.out.println("21. Validar Función Print"); // listo1
+            
             System.out.println("22. Validar Función Input"); // listo
             System.out.println("23. Validar Función Input con conversión"); // listo
             System.out.println("24. Salir"); // listo
