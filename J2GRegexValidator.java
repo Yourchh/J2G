@@ -10,30 +10,30 @@ public class J2GRegexValidator {
     public static void main(String[] args) {
         while (true) {
             System.out.println("Seleccione una opción para validar una expresión regular:");
-            System.out.println("1. Validar Identificador");
-            System.out.println("2. Validar Entero (INT)");
-            System.out.println("3. Validar Declaración de Entero (INT)");
-            System.out.println("4. Validar Decimal (FLT)");
-            System.out.println("5. Validar Declaración de Decimal (FLT)");
-            System.out.println("6. Validar Cadena (STR)");
-            System.out.println("7. Validar Declaración de Cadena (STR)");
-            System.out.println("8. Validar Booleano (BOOL)");
-            System.out.println("9. Validar Declaración de Booleano (BOOL)");
-            System.out.println("10. Validar Operador Aritmético");
-            System.out.println("11. Validar Operador de Asignación");
-            System.out.println("12. Validar Operador Relacional");
-            System.out.println("13. Validar Operador Lógico");
-            System.out.println("14. Validar Estructura if");
-            System.out.println("15. Validar Estructura if-else");
+            System.out.println("1. Validar Identificador"); // listo
+            System.out.println("2. Validar Entero (INT)"); // listo
+            System.out.println("3. Validar Declaración de Entero (INT)"); // listo
+            System.out.println("4. Validar Decimal (FLT)"); // listo
+            System.out.println("5. Validar Declaración de Decimal (FLT)"); // listo
+            System.out.println("6. Validar Cadena (STR)"); // listo
+            System.out.println("7. Validar Declaración de Cadena (STR)"); // listo
+            System.out.println("8. Validar Booleano (BOOL)"); // listo
+            System.out.println("9. Validar Declaración de Booleano (BOOL)"); // listo
+            System.out.println("10. Validar Operador Aritmético"); // listo
+            System.out.println("11. Validar Operador de Asignación"); // listo
+            System.out.println("12. Validar Operador Relacional"); // listo
+            System.out.println("13. Validar Operador Lógico"); // listo
+            System.out.println("14. Validar Estructura if"); // listo
+            System.out.println("15. Validar Estructura if-else"); // listo
             System.out.println("16. Validar Estructura sw (switch)");
-            System.out.println("17. Validar Estructura for");
-            System.out.println("18. Validar Estructura while");
-            System.out.println("19. Validar Estructura do-while");
-            System.out.println("20. Validar Condición Lógica");
-            System.out.println("21. Validar Función Print");
-            System.out.println("22. Validar Función Input");
-            System.out.println("23. Validar Función Input con conversión");
-            System.out.println("24. Salir");
+            System.out.println("17. Validar Estructura for"); // listo
+            System.out.println("18. Validar Estructura while"); // listo
+            System.out.println("19. Validar Estructura do-while"); // listo
+            System.out.println("20. Validar Condición Lógica"); // listo
+            System.out.println("21. Validar Función Print"); // listo
+            System.out.println("22. Validar Función Input"); // listo
+            System.out.println("23. Validar Función Input con conversión"); // listo
+            System.out.println("24. Salir"); // listo
 
             int choice = 0;
             boolean validChoice = false;
@@ -67,7 +67,7 @@ public class J2GRegexValidator {
 
                 switch (choice) {
                     case 1:
-                        isValid = validate(input, "^[a-z]([a-zA-Z0-9_]*[a-zA-Z0-9])?$"); // Identificador
+                        isValid = validate(input, "^[a-z]([a-zA-Z0-9_]*[a-zA-Z0-9])n?$"); // Identificador
                         break;
                     case 2:
                         isValid = validate(input, "^-?[0-9]+$"); // Entero
@@ -115,50 +115,53 @@ public class J2GRegexValidator {
                         isValid = validate(input, "&&|\\|\\||!"); // Operador Lógico
                         break;
                     case 14:
-                        isValid = validate(input, "^if\\s*\\(\\s*(?:(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*(?:\\s*(?:&&|\\|\\|)\\s*(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*)*)\\s*\\)\\s*\\{\\s*(?:[^{}]|\\{[^{}]*\\})*\\s*\\}$"); // Estructura
-                                                                                                                                                                                                                                                                                                                                                                                                                                                // if
+                        isValid = validate(input,
+                                "^if\\s*\\(\\s*(?:(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*(?:\\s*(?:&&|\\|\\|)\\s*(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*)*)\\s*\\)\\s*\\{\\s*(?:[^{}]|\\{[^{}]*\\})*\\s*\\}$"); // Estructura
+                        // if
                         break;
                     case 15:
-                        isValid = validate(input, "^if\\s*\\(\\s*(?:(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*(?:\\s*(?:&&|\\|\\|)\\s*(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*)*)\\s*\\)\\s*\\{\\s*(?:[^{}]|\\{[^{}]*\\})*\\s*\\}\\s*else\\s*\\{(?:[^{}]|\\{[^{}]*\\})*\\}$"); // Estructura
+                        isValid = validate(input,
+                                "^if\\s*\\(\\s*(?:(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*(?:\\s*(?:&&|\\|\\|)\\s*(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*)*)\\s*\\)\\s*\\{\\s*(?:[^{}]|\\{[^{}]*\\})*\\s*\\}\\s*else\\s*\\{(?:[^{}]|\\{[^{}]*\\})*\\}$"); // Estructura
                         // if-else
                         break;
                     case 16:
                         isValid = validate(input,
-                                "^sw\\s*\\(\\s*([^()]*)\\s*\\)\\s*\\{\\s*(?:caso\\s+(?:[0-9]+|\"[^\"]*\"):\\s*(?:[^{}detener;]*)\\s*detener;\\s*)*(?:por_defecto:\\s*(?:[^{}])*)?\\s*\\}$"); // Estructura
+                                "^sw\\s*\\(\\s*([a-z][a-zA-Z0-9]*)\\s*\\)\\s*\\{\\s*(?:caso\\s+\\d+\\s*:\\s*[^{}]*?detener;\\s*)+(?:por_defecto\\s*:\\s*[^{}]*?detener;)?\\s*\\}$"); // Estructura
                         // sw
                         // (switch)
                         break;
                     case 17:
                         isValid = validate(input,
-                                "^for\\s*\\(\\s*(INT\\s+[a-zA-Z][a-zA-Z0-9_]*(?:[a-zA-Z0-9])\\s*:=\\s*-?[0-9]+)\\s*;\\s*([^;(){}]*(?:\\([^;(){}]*\\))*)\\s*;\\s*([a-zA-Z][a-zA-Z0-9_]*(?:[a-zA-Z0-9])\\s*(\\+=|-=)\\s*[0-9]+)\\s*\\)\\s*\\{(?:[^{}]|\\{[^{}]*\\})*\\}$"); // Estructura
-                                                                                                                                                                                                                                                                          // for
+                                "^for\\s*\\(\\s*(INT\\s+([a-z]([a-zA-Z0-9_]*(?:[a-zA-Z0-9]))?)\\s*:=\\s*-?[0-9]+)\\s*;\\s*([^;(){}]*(?:\\([^;(){}]*\\))*)\\s*;\\s*(([a-z]([a-zA-Z0-9_]*(?:[a-zA-Z0-9]))?)\\s*(\\+=|-=)\\s*[0-9]+)\\s*\\)\\s*\\{(?:[^{}]|\\{[^{}]*\\})*\\}$"); // Estructura
+                        // for
                         break;
                     case 18:
                         isValid = validate(input,
-                                "^while\\s*\\(\\s*([^;(){}]*(?:\\([^;(){}]*\\))*)\\s*\\)\\s*\\{(?:[^{}]|\\{[^{}]*\\})*\\}$"); // Estructura
-                                                                                                                              // while
+                                "^while\\s*\\(\\s*(?:(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*(?:\\s*(?:&&|\\|\\|)\\s*(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*)*)\\s*\\)\\s*\\{\\s*(?:[^{}]|\\{[^{}]*\\})*\\s*\\}$"); // Estructura
+                        // while
                         break;
                     case 19:
                         isValid = validate(input,
-                                "^do\\s*\\{(?:[^{}]|\\{[^{}]*\\})*\\}\\s*while\\s*\\(\\s*([^;(){}]*(?:\\([^;(){}]*\\))*)\\s*\\)\\s*;$"); // Estructura
-                                                                                                                                         // do-while
+                                "^do\\s*\\{(?:[^{}]|\\{[^{}]*\\})*\\}\\s*while\\s*\\(\\s*(?:(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*(?:\\s*(?:&&|\\|\\|)\\s*(?:!?\\s*\\(*\\s*[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)(?:\\s*[\\+\\-\\*\\/%<>=!&|]*\\s*\\(*\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+(\\.\\d+)?)\\s*\\)*)*)*)\\s*\\)\\s*\\;$"); // Estructura
+                        // do-while
                         break;
                     case 20:
                         isValid = validate(input,
                                 "^(?:(?:(?:[a-zA-Z][a-zA-Z0-9_]*|[0-9]+(?:\\.[0-9]+)?|\"[^\"]*\"|TRUE|FALSE)\\s*(?:==|!=|>=|<=|>|<)\\s*(?:[a-zA-Z][a-zA-Z0-9_]*|[0-9]+(?:\\.[0-9]+)?|\"[^\"]*\"|TRUE|FALSE))|\\((?:[^()]*)\\)|\\!(?:[a-zA-Z][a-zA-Z0-9_]*|TRUE|FALSE)|(?:TRUE|FALSE))(?:\\s*(?:&&|\\|\\|)\\s*(?:[^()]*|\\((?:[^()]*)\\)))*$"); // Condición
-                                                                                                                                                                                                                                                                                                                                               // Lógica
+                        // Lógica
                         break;
                     case 21:
-                        isValid = validate(input, "Print\\s*\\(([\\w\\s,.:\"]*)\\)\\s*;"); // Función Print
+                        isValid = validate(input, "Print\\(([\\w\\s,.:\"]*)\\)\\s*;"); // Función Print
                         break;
                     case 22:
-                        isValid = validate(input, "Input\\s*(\\(\".*?\"\\))?\\s*;"); // Función Input
+                        isValid = validate(input, "Input\\(\\s*\\\"?\\s*.*?\\s*\\\"?\\s*\\)\\s*;"); // Función Input
                         break;
                     case 23:
-                        isValid = validate(input, "Input\\s*(\\(\".*?\"\\))?\\s*\\.(Int|Flt|Str|Bool)\\(\\)\\s*;"); // Función
-                                                                                                                    // Input
-                                                                                                                    // con
-                                                                                                                    // conversión
+                        isValid = validate(input,
+                                "Input\\(\\s*\\\"?\\s*.*?\\s*\\\"?\\s*\\).(Int|Flt|Str|Bool)\\(\\)\\s*;"); // Función
+                                                                                                           // Input
+                                                                                                           // con
+                                                                                                           // conversión
                         break;
                     default:
                         System.out.println("Opción no válida. Por favor, intente de nuevo.");
