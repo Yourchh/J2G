@@ -1,4 +1,3 @@
-// Clase principal del analizador J2G
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
@@ -143,17 +142,17 @@ public class J2GAnalyzer {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Ingrese el código fuente de J2G (finalice con una línea vacía):");
+        System.out.println("Ingrese el código fuente de J2G. Escriba 'END' en una nueva línea para finalizar:");
         StringBuilder codeBuilder = new StringBuilder();
         String line;
-        while (!(line = scanner.nextLine()).isEmpty()) {
+        while (!(line = scanner.nextLine()).equalsIgnoreCase("END")) {
             codeBuilder.append(line).append("\n");
         }
         scanner.close();
 
         // Etapa 1: Preprocesamiento
         String code = preprocess(codeBuilder.toString());
-        System.out.println("Código después del preprocesamiento:\n" + code);
+        System.out.println("\nCódigo después del preprocesamiento:\n" + code);
 
         // Validar y extraer el bloque principal
         String mainBlock;
