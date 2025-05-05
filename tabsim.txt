@@ -1,0 +1,49 @@
+VARIABLE	ID	TIPO	VALOR
+INT	INT	tipo_dato	
+STR	STR	tipo_dato	
+BOOL	BOOL	tipo_dato	
++	+	operador	+
+-	-	operador	-
+*	*	operador	*
+/	/	operador	/
+%	%	operador	%
+:=	:=	operador	:=
++=	+=	operador	+=
+-=	-=	operador	-=
+*=	*=	operador	*=
+/=	/=	operador	/=
+==	==	comparador	==
+!=	!=	comparador	!=
+>	>	comparador	>
+<	<	comparador	<
+>=	>=	comparador	>=
+<=	<=	comparador	<=
+&&	&&	lógico	&&
+||	||	lógico	||
+!	!	lógico	!
+(	(	delimitador	(
+)	)	delimitador	)
+{	{	delimitador	{
+}	}	delimitador	}
+;	;	delimitador	;
+:	:	delimitador	:
+.	.	delimitador	.
+"	"	delimitador	"
+if	if	palabra_res	
+else	else	palabra_res	
+sw	sw	palabra_res	
+caso	caso	palabra_res	
+por_defecto	por_defecto	palabra_res	
+for	for	palabra_res	
+while	while	palabra_res	
+do	do	palabra_res	
+FUNC	FUNC	palabra_res	
+J2G	J2G	palabra_res	
+Main	Main	palabra_res	
+Print	Print	función	
+Input	Input	función	
+Int	Int	tipo_convers	
+Str	Str	tipo_convers	
+Bool	Bool	tipo_convers	
+TRUE	TRUE	booleano	true
+FALSE	FALSE	booleano	false
