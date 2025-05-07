@@ -41,24 +41,24 @@ public class J2GAnalyzer {
         }
     }
 
-    // Agregar un valor constante a TABSIM
-    private static String addConstantToTABSIM(String constantValue, String type) {
-        // Verificar si la constante ya existe en TABSIM
+    // Agregar una constante o cadena a TABSIM
+    private static String addConstantToTABSIM(String value, String type) {
+        // Verificar si el valor ya existe en TABSIM
         for (Map<String, String> entry : TABSIM) {
-            if (entry.get("VALOR").equals(constantValue) && entry.get("TIPO").equals(type)) {
+            if (entry.get("VALOR").equals(value) && entry.get("TIPO").equals(type)) {
                 return entry.get("ID"); // Retornar el identificador existente
             }
         }
 
-        // Generar un nuevo identificador para la constante
+        // Generar un nuevo identificador para la constante o cadena
         String identifier = "ident" + variableCount++;
         Map<String, String> entry = new HashMap<>();
-        entry.put("VARIABLE", constantValue);
+        entry.put("VARIABLE", value);
         entry.put("ID", identifier);
         entry.put("TIPO", type.toLowerCase());
-        entry.put("VALOR", constantValue);
+        entry.put("VALOR", value);
         TABSIM.add(entry);
-        System.out.println("Constante añadida a TABSIM: " + entry);
+        System.out.println("Constante o cadena añadida a TABSIM: " + entry);
         return identifier;
     }
 
@@ -90,7 +90,7 @@ public class J2GAnalyzer {
         }
     }
 
-    // Reemplazar variables, valores y constantes por identificadores
+    // Reemplazar variables, valores, constantes y cadenas por identificadores
     private static String replaceIdentifiers(String line) {
         // Detectar cadenas literales y protegerlas
         Pattern stringLiteralPattern = Pattern.compile("\"(.*?)\"");
@@ -111,6 +111,12 @@ public class J2GAnalyzer {
             modifiedLine = modifiedLine.replaceAll("\\b" + Pattern.quote(variable) + "\\b", identifier);
         }
 
+        // Detectar cadenas literales y agregarlas a TABSIM
+        for (String literal : stringLiterals) {
+            String identifier = addConstantToTABSIM(literal, "string");
+            modifiedLine = modifiedLine.replaceFirst(Pattern.quote("__STRING_LITERAL__"), identifier);
+        }
+
         // Detectar constantes numéricas y agregarlas a TABSIM
         Pattern constantPattern = Pattern.compile("\\b\\d+\\b");
         Matcher constantMatcher = constantPattern.matcher(modifiedLine);
@@ -118,11 +124,6 @@ public class J2GAnalyzer {
             String constantValue = constantMatcher.group();
             String constantIdentifier = addConstantToTABSIM(constantValue, "int");
             modifiedLine = modifiedLine.replaceAll("\\b" + Pattern.quote(constantValue) + "\\b", constantIdentifier);
-        }
-
-        // Restaurar cadenas literales
-        for (String literal : stringLiterals) {
-            modifiedLine = modifiedLine.replaceFirst(Pattern.quote("__STRING_LITERAL__"), literal);
         }
 
         return modifiedLine;
