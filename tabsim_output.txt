@@ -28,7 +28,9 @@ VARIABLE	ID	TIPO	VALOR
 "	"	delimitador	"
 TRUE	TRUE	booleano	true
 FALSE	FALSE	booleano	false
-18	ident2	int	18
+18	ident3	int	18
 edad	ident1	int	ident2
-5	ident4	int	5
-contador	ident3	int	ident4
+5	ident6	int	5
+contador	ident4	int	ident5
+0	ident7	int	0
+1	ident8	int	1

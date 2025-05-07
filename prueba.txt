@@ -30,7 +30,8 @@ FUNC J2G Main() {
         Print(    contador   );    
 
         contador   -=  1;    
-
+contador := contador + 1
+edad := contador - edad -1
     }    
 
 

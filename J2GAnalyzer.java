@@ -41,30 +41,44 @@ public class J2GAnalyzer {
         }
     }
 
+    // Agregar un valor constante a TABSIM
+    private static String addConstantToTABSIM(String constantValue, String type) {
+        // Verificar si la constante ya existe en TABSIM
+        for (Map<String, String> entry : TABSIM) {
+            if (entry.get("VALOR").equals(constantValue) && entry.get("TIPO").equals(type)) {
+                return entry.get("ID"); // Retornar el identificador existente
+            }
+        }
+
+        // Generar un nuevo identificador para la constante
+        String identifier = "ident" + variableCount++;
+        Map<String, String> entry = new HashMap<>();
+        entry.put("VARIABLE", constantValue);
+        entry.put("ID", identifier);
+        entry.put("TIPO", type.toLowerCase());
+        entry.put("VALOR", constantValue);
+        TABSIM.add(entry);
+        System.out.println("Constante añadida a TABSIM: " + entry);
+        return identifier;
+    }
+
     // Preprocesar el código fuente
     private static String preprocess(String code) {
-        // Dividir el código en líneas para procesarlas individualmente
         String[] lines = code.split("\\n");
         StringBuilder processedCode = new StringBuilder();
 
         for (String line : lines) {
-            // Eliminar comentarios dentro de la línea (lo que sigue después de //)
-            line = line.replaceAll("//.*", "").trim();
-
-            // Eliminar múltiples espacios dentro de la línea y normalizar
-            line = line.replaceAll("\\s{2,}", " ");
-
-            // Agregar la línea procesada al resultado si no está vacía
+            line = line.replaceAll("//.*", "").trim(); // Eliminar comentarios
+            line = line.replaceAll("\\s{2,}", " "); // Normalizar espacios
             if (!line.isEmpty()) {
                 processedCode.append(line).append("\n");
             }
         }
 
-        // Devolver el código procesado manteniendo los saltos de línea
         return processedCode.toString().trim();
     }
 
-    // Verificar que el código está dentro de FUNC J2G Main () { ... }
+    // Validar que el código está dentro de FUNC J2G Main () { ... }
     private static String validateAndExtractMainBlock(String code) {
         String mainPattern = "^FUNC\\s+J2G\\s+Main\\s*\\(\\s*\\)\\s*\\{(.*)\\}\\s*$";
         Pattern pattern = Pattern.compile(mainPattern, Pattern.DOTALL);
@@ -76,34 +90,37 @@ public class J2GAnalyzer {
         }
     }
 
-    // Reemplazar variables y valores por identificadores (sin afectar cadenas literales)
+    // Reemplazar variables, valores y constantes por identificadores
     private static String replaceIdentifiers(String line) {
-        // Expresión regular para detectar cadenas literales
+        // Detectar cadenas literales y protegerlas
         Pattern stringLiteralPattern = Pattern.compile("\"(.*?)\"");
         Matcher matcher = stringLiteralPattern.matcher(line);
-
-        // Almacenar las cadenas literales encontradas
         List<String> stringLiterals = new ArrayList<>();
         while (matcher.find()) {
-            stringLiterals.add(matcher.group()); // Incluye las comillas
+            stringLiterals.add(matcher.group());
         }
-
-        // Remover temporalmente las cadenas literales de la línea
         String modifiedLine = line;
         for (String literal : stringLiterals) {
             modifiedLine = modifiedLine.replace(literal, "__STRING_LITERAL__");
         }
 
-        // Reemplazar variables y valores fuera de las cadenas literales
+        // Reemplazar variables y valores definidos en TABSIM
         for (Map<String, String> entry : TABSIM) {
             String variable = entry.get("VARIABLE");
             String identifier = entry.get("ID");
-
-            // Reemplazar solo si no está dentro de una cadena literal
             modifiedLine = modifiedLine.replaceAll("\\b" + Pattern.quote(variable) + "\\b", identifier);
         }
 
-        // Restaurar las cadenas literales a su posición original
+        // Detectar constantes numéricas y agregarlas a TABSIM
+        Pattern constantPattern = Pattern.compile("\\b\\d+\\b");
+        Matcher constantMatcher = constantPattern.matcher(modifiedLine);
+        while (constantMatcher.find()) {
+            String constantValue = constantMatcher.group();
+            String constantIdentifier = addConstantToTABSIM(constantValue, "int");
+            modifiedLine = modifiedLine.replaceAll("\\b" + Pattern.quote(constantValue) + "\\b", constantIdentifier);
+        }
+
+        // Restaurar cadenas literales
         for (String literal : stringLiterals) {
             modifiedLine = modifiedLine.replaceFirst(Pattern.quote("__STRING_LITERAL__"), literal);
         }
@@ -113,15 +130,14 @@ public class J2GAnalyzer {
 
     // Analizar una línea de código
     private static boolean analyzeLine(String line) {
-        // Expresiones regulares para diferentes elementos
         String variableDeclaration = "^(INT|STR|BOOL)\\s+([a-z][a-zA-Z0-9_]*)\\s*(?:\\:=\\s*(.+))?\\s*;$";
         String assignment = "^([a-z][a-zA-Z0-9_]*)\\s*\\:=\\s*(.+)\\s*;$";
 
         Matcher matcher = Pattern.compile(variableDeclaration).matcher(line);
         if (matcher.matches()) {
-            String type = matcher.group(1); // Tipo de la variable (INT, STR, BOOL)
-            String variable = matcher.group(2); // Nombre de la variable
-            String value = matcher.group(3) != null ? matcher.group(3).trim() : ""; // Valor inicial (si existe)
+            String type = matcher.group(1);
+            String variable = matcher.group(2);
+            String value = matcher.group(3) != null ? matcher.group(3).trim() : "";
             addVariableToTABSIM(variable, type, value);
             return true;
         }
@@ -134,42 +150,30 @@ public class J2GAnalyzer {
             return true;
         }
 
-        System.err.println("Error léxico: línea inválida -> " + line);
         return false;
     }
 
     // Agregar una nueva variable a TABSIM
     private static void addVariableToTABSIM(String variable, String type, String value) {
-        // Verificar si la variable ya existe
         for (Map<String, String> entry : TABSIM) {
             if (entry.get("VARIABLE").equals(variable)) {
-                System.err.println("Error: Variable duplicada -> " + variable);
                 return;
             }
         }
 
-        // Generar identificador único
         String identifier = "ident" + variableCount++;
         String valueIdentifier = value.isEmpty() ? "" : "ident" + variableCount++;
 
-        // Agregar el valor como una nueva entrada en TABSIM si existe
         if (!value.isEmpty()) {
-            Map<String, String> valueEntry = new HashMap<>();
-            valueEntry.put("VARIABLE", value);
-            valueEntry.put("ID", valueIdentifier);
-            valueEntry.put("TIPO", type.toLowerCase());
-            valueEntry.put("VALOR", value);
-            TABSIM.add(valueEntry);
+            addConstantToTABSIM(value, type); // Agregar el valor como constante
         }
 
-        // Agregar la variable a TABSIM
         Map<String, String> entry = new HashMap<>();
         entry.put("VARIABLE", variable);
         entry.put("ID", identifier);
         entry.put("TIPO", type.toLowerCase());
         entry.put("VALOR", valueIdentifier);
         TABSIM.add(entry);
-        System.out.println("Variable añadida a TABSIM: " + entry);
     }
 
     // Actualizar el valor de una variable existente en TABSIM
@@ -177,19 +181,15 @@ public class J2GAnalyzer {
         for (Map<String, String> entry : TABSIM) {
             if (entry.get("VARIABLE").equals(variable)) {
                 entry.put("VALOR", value);
-                System.out.println("Valor actualizado en TABSIM: " + entry);
                 return;
             }
         }
-        System.err.println("Error: Variable no encontrada en TABSIM -> " + variable);
     }
 
     public static void main(String[] args) {
-        // Cargar palabras reservadas, operadores y variables desde TABSIM inicial
         loadTABSIM(TABSIM_FILE);
 
         Scanner scanner = new Scanner(System.in);
-
         System.out.println("Ingrese el código fuente de J2G. Escriba 'END' en una nueva línea para finalizar:");
         StringBuilder codeBuilder = new StringBuilder();
         String line;
@@ -198,11 +198,9 @@ public class J2GAnalyzer {
         }
         scanner.close();
 
-        // Etapa 1: Preprocesamiento
         String code = preprocess(codeBuilder.toString());
         System.out.println("\nCódigo después del preprocesamiento:\n" + code);
 
-        // Validar y extraer el bloque principal
         String mainBlock;
         try {
             mainBlock = validateAndExtractMainBlock(code);
@@ -212,7 +210,6 @@ public class J2GAnalyzer {
             return;
         }
 
-        // Etapa 2: Análisis Léxico y reemplazo de identificadores
         System.out.println("\nIniciando análisis léxico...");
         String[] lines = mainBlock.split("\\n");
         StringBuilder transformedCode = new StringBuilder();
@@ -221,13 +218,9 @@ public class J2GAnalyzer {
             transformedCode.append(replaceIdentifiers(codeLine)).append("\n");
         }
 
-        // Mostrar el código transformado
         System.out.println("\nCódigo transformado:\n" + transformedCode);
-
-        // Guardar variables en TABSIM de salida
         saveTABSIM(TABSIM_OUTPUT_FILE);
 
-        // Mostrar TABSIM actualizado
         System.out.println("\nTABSIM actualizado guardado en " + TABSIM_OUTPUT_FILE);
         for (Map<String, String> entry : TABSIM) {
             System.out.println(entry);
