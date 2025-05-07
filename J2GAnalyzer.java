@@ -51,7 +51,7 @@ public class J2GAnalyzer {
         }
 
         // Generar un nuevo identificador para la constante o cadena
-        String identifier = "ident" + variableCount++;
+        String identifier = "id" + variableCount++;
         Map<String, String> entry = new HashMap<>();
         entry.put("VARIABLE", value);
         entry.put("ID", identifier);
@@ -162,8 +162,8 @@ public class J2GAnalyzer {
             }
         }
 
-        String identifier = "ident" + variableCount++;
-        String valueIdentifier = value.isEmpty() ? "" : "ident" + variableCount++;
+        String identifier = "id" + variableCount++;
+        String valueIdentifier = value.isEmpty() ? "" : "id" + variableCount++;
 
         if (!value.isEmpty()) {
             addConstantToTABSIM(value, type); // Agregar el valor como constante

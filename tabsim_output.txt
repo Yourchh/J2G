@@ -28,13 +28,13 @@ VARIABLE	ID	TIPO	VALOR
 "	"	delimitador	"
 TRUE	TRUE	booleano	true
 FALSE	FALSE	booleano	false
-18	ident3	int	18
-edad	ident1	int	ident2
-"Es mayor de edad"	ident4	string	"Es mayor de edad"
-"Es menor de edad"	ident5	string	"Es menor de edad"
-mensaje	ident6	str	"hola como andas"
-"hola como andas"	ident7	string	"hola como andas"
-5	ident10	int	5
-contador	ident8	int	ident9
-0	ident11	int	0
-1	ident12	int	1
+18	id3	int	18
+edad	id1	int	id2
+"Es mayor de edad"	id4	string	"Es mayor de edad"
+"Es menor de edad"	id5	string	"Es menor de edad"
+mensaje	id6	str	"hola como andas"
+"hola como andas"	id7	string	"hola como andas"
+5	id10	int	5
+contador	id8	int	id9
+0	id11	int	0
+1	id12	int	1
