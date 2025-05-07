@@ -1,0 +1,38 @@
+FUNC J2G Main() {
+
+    // Declaración de la variable edad
+    INT  edad     := 18;  
+
+
+
+    if     (edad >= 18)       {    
+
+        // Si la edad es mayor o igual a 18
+        Print(  "Es mayor de edad"   );    
+
+    }   else   {    
+
+        // Si la edad es menor a 18
+        Print  (    "Es menor de edad"    );   
+
+    }  
+
+
+
+    // Declaración de la variable contador
+    INT     contador :=    5;   
+
+
+
+    while    (contador >  0)  {    
+
+        // Imprimir el valor del contador
+        Print(    contador   );    
+
+        contador   -=  1;    
+
+    }    
+
+
+}
+END
