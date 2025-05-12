@@ -1,0 +1,38 @@
+VARIABLE	ID	TIPO	VALOR_ORIGINAL_O_EXPRESION
+edad	id1	int	25
+25	id2	int	25
+limiteEdad	id3	int	18
+18	id4	int	18
+nombreCompleto	id5	str	"Juan Perez"
+esValido	id6	bool	TRUE
+"Juan Perez"	id7	string	"Juan Perez"
+"La persona es mayor de edad."	id8	string	"La persona es mayor de edad."
+" tiene "	id9	string	" tiene "
+" años."	id10	string	" años."
+"La persona es menor de edad."	id11	string	"La persona es menor de edad."
+opcionMenu	id12	int	2
+2	id13	int	2
+1	id14	int	1
+"Opción seleccionada: 1 - Ver Perfil"	id15	string	"Opción seleccionada: 1 - Ver Perfil"
+"Opción seleccionada: 2 - Editar Configuración"	id16	string	"Opción seleccionada: 2 - Editar Configuración"
+3	id17	int	3
+"Opción seleccionada: 3 - Salir"	id18	string	"Opción seleccionada: 3 - Salir"
+"Opción no válida."	id19	string	"Opción no válida."
+"Iniciando bucle FOR:"	id20	string	"Iniciando bucle FOR:"
+i	id21	int	0
+0	id22	int	0
+"Iteración del FOR número: "	id23	string	"Iteración del FOR número: "
+contadorWhile	id24	int	contadorWhile - 1
+5	id25	int	5
+"Iniciando bucle WHILE:"	id26	string	"Iniciando bucle WHILE:"
+"Contador WHILE: "	id27	string	"Contador WHILE: "
+numeroDoWhile	id28	int	numeroDoWhile + 1
+"Iniciando bucle DO-WHILE:"	id29	string	"Iniciando bucle DO-WHILE:"
+"Dentro del DO-WHILE, numeroDoWhile = "	id30	string	"Dentro del DO-WHILE, numeroDoWhile = "
+ciudadOrigen	id31	str	"Ciudad Ejemplo"
+codigoPostal	id32	int	12345
+"Simulando entrada de datos..."	id33	string	"Simulando entrada de datos..."
+"Ciudad Ejemplo"	id34	string	"Ciudad Ejemplo"
+12345	id35	int	12345
+"Ciudad (simulada): "	id36	string	"Ciudad (simulada): "
+", Código Postal (simulado): "	id37	string	", Código Postal (simulado): "

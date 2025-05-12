@@ -2,11 +2,14 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 class ProductionRule {
-    String lhs; // Left-hand side non-terminal
-    int rhsLength; // Number of symbols on the right-hand side
-    String originalRuleString; // For display purposes, e.g., "A -> A || B"
+    String lhs; 
+    int rhsLength;
+    String originalRuleString; 
 
     public ProductionRule(String lhs, int rhsLength, String originalRuleString) {
         this.lhs = lhs;
@@ -21,16 +24,44 @@ public class LRParser {
     private static final Map<Integer, Map<String, Integer>> gotoTable = new HashMap<>();
     private static final Map<Integer, ProductionRule> grammarProductions = new HashMap<>();
 
-    // Terminals for FOLLOW sets
-    private static final List<String> FOLLOW_A = Arrays.asList("$", "||", ")");
-    private static final List<String> FOLLOW_B = Arrays.asList("$", "||", "&&", ")");
-    private static final List<String> FOLLOW_C = Arrays.asList("$", "||", "&&", "==", "!=", ">", "<", ">=", "<=", ")");
-    private static final List<String> FOLLOW_D = Arrays.asList("$", "||", "&&", "==", "!=", ">", "<", ">=", "<=", "+", "-", ")");
-    private static final List<String> FOLLOW_E_F_G = Arrays.asList("$", "||", "&&", "==", "!=", ">", "<", ">=", "<=", "+", "-", "*", "/", "%", ")");
+    // FOLLOW sets son solo para referencia de la gramática original, no se usan para poblar tablas.
+    // private static final List<String> FOLLOW_A = Arrays.asList("$", "||", ")");
+    // ... (otros FOLLOW sets)
 
+
+    private static void loadParsingTable(String filePath) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.trim().split("\\s+");
+                if (parts.length == 4) {
+                    int state = Integer.parseInt(parts[0]);
+                    String type = parts[1]; // "T" for terminal, "N" for non-terminal
+                    String symbol = parts[2];
+                    String value = parts[3];
+
+                    if ("T".equalsIgnoreCase(type)) {
+                        actionTable.computeIfAbsent(state, k -> new HashMap<>()).put(symbol, value);
+                    } else if ("N".equalsIgnoreCase(type)) {
+                        gotoTable.computeIfAbsent(state, k -> new HashMap<>()).put(symbol, Integer.parseInt(value));
+                    } else {
+                        System.err.println("Advertencia: Tipo de símbolo desconocido en " + filePath + ": " + line);
+                    }
+                } else if (!line.trim().isEmpty()){
+                    System.err.println("Advertencia: Línea malformada en " + filePath + ": " + line);
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Error de formato numérico al leer " + filePath + ": " + e.getMessage());
+            throw e; // Re-throw to indicate critical failure
+        } catch (IOException e) {
+            System.err.println("Error de E/S al leer " + filePath + ": " + e.getMessage());
+            throw e; // Re-throw to indicate critical failure
+        }
+    }
 
     static {
-        // Initialize Grammar Productions (Rule numbers match rK actions)
+        // Initialize Grammar Productions
         grammarProductions.put(1, new ProductionRule("S_prime", 1, "S' -> A"));
         grammarProductions.put(2, new ProductionRule("A", 3, "A -> A || B"));
         grammarProductions.put(3, new ProductionRule("A", 1, "A -> B"));
@@ -57,390 +88,72 @@ public class LRParser {
         grammarProductions.put(24, new ProductionRule("G", 1, "G -> TRUE"));
         grammarProductions.put(25, new ProductionRule("G", 1, "G -> FALSE"));
 
-        // ---- ACTION Table Initialization ----
-        Map<String, String> actions;
-
-        // State 0
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(0, actions);
-
-        // State 1
-        actions = new HashMap<>();
-        actions.put("||", "s13"); actions.put("$", "acc");
-        actionTable.put(1, actions);
-
-        // State 2
-        actions = new HashMap<>();
-        actions.put("&&", "s14");
-        for (String t : FOLLOW_A) actions.put(t, "r3");
-        actionTable.put(2, actions);
-
-        // State 3
-        actions = new HashMap<>();
-        actions.put("==", "s15"); actions.put("!=", "s16"); actions.put(">", "s17");
-        actions.put("<", "s18"); actions.put(">=", "s19"); actions.put("<=", "s20");
-        for (String t : FOLLOW_B) actions.put(t, "r5");
-        actionTable.put(3, actions);
-
-        // State 4
-        actions = new HashMap<>();
-        actions.put("+", "s21"); actions.put("-", "s22");
-        for (String t : FOLLOW_C) actions.put(t, "r6");
-        actionTable.put(4, actions);
-
-        // State 5
-        actions = new HashMap<>();
-        actions.put("*", "s23"); actions.put("/", "s24"); actions.put("%", "s25");
-        for (String t : FOLLOW_D) actions.put(t, "r13");
-        actionTable.put(5, actions);
-
-        // State 6
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r16"); // FOLLOW(E)
-        actionTable.put(6, actions);
-
-        // State 7
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r20"); // FOLLOW(F)
-        actionTable.put(7, actions);
-
-        // State 8
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(8, actions);
-
-        // State 9
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(9, actions);
-
-        // State 10
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r23"); // FOLLOW(G)
-        actionTable.put(10, actions);
-
-        // State 11
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r24"); // FOLLOW(G)
-        actionTable.put(11, actions);
-
-        // State 12
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r25"); // FOLLOW(G)
-        actionTable.put(12, actions);
-
-        // State 13
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(13, actions);
-
-        // State 14
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(14, actions);
-
-        // State 15
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(15, actions);
-        
-        // State 16
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(16, actions);
-
-        // State 17
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(17, actions);
-
-        // State 18
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(18, actions);
-
-        // State 19
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(19, actions);
-
-        // State 20
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(20, actions);
-
-        // State 21
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(21, actions);
-
-        // State 22
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(22, actions);
-
-        // State 23
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(23, actions);
-
-        // State 24
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(24, actions);
-
-        // State 25
-        actions = new HashMap<>();
-        actions.put("!", "s8"); actions.put("(", "s9");
-        actions.put("id", "s10"); actions.put("TRUE", "s11"); actions.put("FALSE", "s12");
-        actionTable.put(25, actions);
-
-        // State 26
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r21"); // FOLLOW(F)
-        actionTable.put(26, actions);
-
-        // State 27
-        actions = new HashMap<>();
-        actions.put("||", "s13"); actions.put(")", "s42");
-        actionTable.put(27, actions);
-
-        // State 28
-        actions = new HashMap<>();
-        actions.put("&&", "s14");
-        for (String t : FOLLOW_A) actions.put(t, "r2");
-        actionTable.put(28, actions);
-
-        // State 29 is I3 - no explicit entry, parser logic handles shared states if GOTO points to I3
-
-        // State 30
-        actions = new HashMap<>();
-        actions.put("==", "s15"); actions.put("!=", "s16"); actions.put(">", "s17");
-        actions.put("<", "s18"); actions.put(">=", "s19"); actions.put("<=", "s20");
-        for (String t : FOLLOW_B) actions.put(t, "r4");
-        actionTable.put(30, actions);
-
-        // State 31
-        actions = new HashMap<>();
-        actions.put("+", "s21"); actions.put("-", "s22");
-        for (String t : FOLLOW_C) actions.put(t, "r7");
-        actionTable.put(31, actions);
-        
-        // State 32
-        actions = new HashMap<>();
-        actions.put("+", "s21"); actions.put("-", "s22");
-        for (String t : FOLLOW_C) actions.put(t, "r8");
-        actionTable.put(32, actions);
-
-        // State 33
-        actions = new HashMap<>();
-        actions.put("+", "s21"); actions.put("-", "s22");
-        for (String t : FOLLOW_C) actions.put(t, "r9");
-        actionTable.put(33, actions);
-
-        // State 34
-        actions = new HashMap<>();
-        actions.put("+", "s21"); actions.put("-", "s22");
-        for (String t : FOLLOW_C) actions.put(t, "r10");
-        actionTable.put(34, actions);
-
-        // State 35
-        actions = new HashMap<>();
-        actions.put("+", "s21"); actions.put("-", "s22");
-        for (String t : FOLLOW_C) actions.put(t, "r11");
-        actionTable.put(35, actions);
-
-        // State 36
-        actions = new HashMap<>();
-        actions.put("+", "s21"); actions.put("-", "s22");
-        for (String t : FOLLOW_C) actions.put(t, "r12");
-        actionTable.put(36, actions);
-
-        // State 37
-        actions = new HashMap<>();
-        actions.put("*", "s23"); actions.put("/", "s24"); actions.put("%", "s25");
-        for (String t : FOLLOW_D) actions.put(t, "r14");
-        actionTable.put(37, actions);
-
-        // State 38
-        actions = new HashMap<>();
-        actions.put("*", "s23"); actions.put("/", "s24"); actions.put("%", "s25");
-        for (String t : FOLLOW_D) actions.put(t, "r15");
-        actionTable.put(38, actions);
-
-        // State 39
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r17"); // FOLLOW(E)
-        actionTable.put(39, actions);
-
-        // State 40
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r18"); // FOLLOW(E)
-        actionTable.put(40, actions);
-
-        // State 41
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r19"); // FOLLOW(E)
-        actionTable.put(41, actions);
-
-        // State 42
-        actions = new HashMap<>();
-        for (String t : FOLLOW_E_F_G) actions.put(t, "r22"); // FOLLOW(G)
-        actionTable.put(42, actions);
-
-
-        // ---- GOTO Table Initialization ----
-        Map<String, Integer> gotos;
-
-        // State 0
-        gotos = new HashMap<>(); gotos.put("A",1); gotos.put("B",2); gotos.put("C",3);
-        gotos.put("D",4); gotos.put("E",5); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(0, gotos);
-
-        // State 8
-        gotos = new HashMap<>(); gotos.put("F",26); gotos.put("G",7);
-        gotoTable.put(8, gotos);
-        
-        // State 9
-        gotos = new HashMap<>(); gotos.put("A",27); gotos.put("B",2); gotos.put("C",3);
-        gotos.put("D",4); gotos.put("E",5); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(9, gotos);
-
-        // State 13
-        gotos = new HashMap<>(); gotos.put("B",28); gotos.put("C",3); gotos.put("D",4);
-        gotos.put("E",5); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(13, gotos);
-        
-        // State 14
-        gotos = new HashMap<>(); gotos.put("C",30); gotos.put("D",4); gotos.put("E",5);
-        gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(14, gotos);
-
-        // State 15
-        gotos = new HashMap<>(); gotos.put("D",31); gotos.put("E",5); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(15, gotos);
-        
-        // State 16
-        gotos = new HashMap<>(); gotos.put("D",32); gotos.put("E",5); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(16, gotos);
-
-        // State 17
-        gotos = new HashMap<>(); gotos.put("D",33); gotos.put("E",5); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(17, gotos);
-
-        // State 18
-        gotos = new HashMap<>(); gotos.put("D",34); gotos.put("E",5); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(18, gotos);
-
-        // State 19
-        gotos = new HashMap<>(); gotos.put("D",35); gotos.put("E",5); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(19, gotos);
-
-        // State 20
-        gotos = new HashMap<>(); gotos.put("D",36); gotos.put("E",5); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(20, gotos);
-
-        // State 21
-        gotos = new HashMap<>(); gotos.put("E",37); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(21, gotos);
-
-        // State 22
-        gotos = new HashMap<>(); gotos.put("E",38); gotos.put("F",6); gotos.put("G",7);
-        gotoTable.put(22, gotos);
-
-        // State 23
-        gotos = new HashMap<>(); gotos.put("F",39); gotos.put("G",7);
-        gotoTable.put(23, gotos);
-
-        // State 24
-        gotos = new HashMap<>(); gotos.put("F",40); gotos.put("G",7);
-        gotoTable.put(24, gotos);
-
-        // State 25
-        gotos = new HashMap<>(); gotos.put("F",41); gotos.put("G",7);
-        gotoTable.put(25, gotos);
+        try {
+            // Asegúrate de que este archivo esté en el directorio desde donde ejecutas el programa,
+            // o proporciona la ruta completa.
+            loadParsingTable("matriz_parsing.txt");
+        } catch (IOException e) {
+            System.err.println("Error fatal al cargar la tabla de parsing desde el archivo: " + e.getMessage());
+            // Es crucial que la tabla se cargue, así que si falla, es mejor detenerse.
+            throw new RuntimeException("No se pudo cargar la tabla de parsing.", e);
+        }
     }
 
       public List<String> tokenize(String input) {
         List<String> tokens = new ArrayList<>();
-        // Regex to capture operators (longer first), identifiers, and parentheses
-        // CORRECTED: Added < and > to the single character operator group
         Pattern pattern = Pattern.compile("\\|\\||&&|==|!=|>=|<=|\\b(?:id|TRUE|FALSE)\\b|[()!+\\-*/%<>]");
-        Matcher matcher = pattern.matcher(input.replaceAll("\\s+", "")); // Remove all whitespace first
+        Matcher matcher = pattern.matcher(input.replaceAll("\\s+", ""));
         while (matcher.find()) {
             tokens.add(matcher.group());
         }
-        tokens.add("$"); // End of input marker
+        tokens.add("$");
         return tokens;
     }
 
-        public void parse(String inputExpression) {
+    public void parse(String inputExpression) {
         List<String> tokens = tokenize(inputExpression);
         if (tokens.size() == 1 && tokens.get(0).equals("$")) {
             System.out.println("Entrada vacía.");
             return;
         }
 
-        Stack<Object> internalStack = new Stack<>(); // This stack will hold states and symbols for logic
-        internalStack.push(0); // Initial state
+        Stack<Object> internalStack = new Stack<>();
+        internalStack.push(0);
 
         int inputPtr = 0;
         System.out.printf("%-30s | %-30s | %-15s\n", "PILA", "ENTRADA", "SALIDA");
         System.out.println(String.join("", Collections.nCopies(80, "-")));
 
-
         while (true) {
             int currentState = -1;
-            // Get current state from the top of the internal stack (if it's an Integer)
-            // The actual state for decision making is the last Integer on the internalStack
             for (int i = internalStack.size() - 1; i >= 0; i--) {
                 if (internalStack.get(i) instanceof Integer) {
                     currentState = (Integer) internalStack.get(i);
                     break;
                 }
             }
-            if(currentState == -1){ // Should not happen with proper initialization
+            if(currentState == -1){ 
                 System.out.println("Error: Pila de estados interna inválida.");
                 return;
             }
 
             String currentToken = tokens.get(inputPtr);
-
-            // ---- MODIFICACIÓN AQUÍ para la visualización de la PILA ----
             String stackStr = internalStack.stream()
-                                          .filter(item -> item instanceof Integer) // Solo mostrar estados
+                                          .filter(item -> item instanceof Integer) 
                                           .map(Object::toString)
                                           .collect(Collectors.joining(" "));
-            // ---- FIN DE LA MODIFICACIÓN ----
-
             String inputStr = tokens.subList(inputPtr, tokens.size()).stream().collect(Collectors.joining(" "));
             
             Map<String, String> stateActions = actionTable.get(currentState);
-            if (stateActions == null) {
-                 System.out.printf("%-30s | %-30s | Error: Estado %d no encontrado en la tabla de acciones.\n", stackStr, inputStr, currentState);
+            if (stateActions == null) { // Puede ser null si un estado solo tiene GOTO y no acciones para terminales
+                 System.out.printf("%-30s | %-30s | Error: Estado %d no encontrado en la tabla de acciones (o no tiene acciones para terminales).\n", stackStr, inputStr, currentState);
                 return;
             }
             String action = stateActions.get(currentToken);
 
             if (action == null) {
                 System.out.printf("%-30s | %-30s | Error: No hay acción para el estado %d y el token '%s'.\n", stackStr, inputStr, currentState, currentToken);
-                System.out.print("Tokens esperados desde el estado " + currentState + ": ");
+                System.out.print("Tokens esperados (ACTION) desde el estado " + currentState + ": ");
                 List<String> expectedTokens = new ArrayList<>(stateActions.keySet());
                 System.out.println(String.join(", ", expectedTokens));
                 return;
@@ -450,7 +163,7 @@ public class LRParser {
 
             if (action.startsWith("s")) { // Shift
                 int nextState = Integer.parseInt(action.substring(1));
-                internalStack.push(currentToken); // Aún necesitamos el símbolo en la pila interna para las reducciones
+                internalStack.push(currentToken); 
                 internalStack.push(nextState);
                 inputPtr++;
             } else if (action.startsWith("r")) { // Reduce
@@ -461,7 +174,6 @@ public class LRParser {
                     return;
                 }
 
-                // Pop 2 items for each RHS symbol (symbol & state) from the internal stack
                 for (int i = 0; i < rule.rhsLength * 2; i++) { 
                     if(!internalStack.isEmpty()) internalStack.pop();
                     else {
@@ -471,7 +183,6 @@ public class LRParser {
                 }
                 
                 int stateBeforeReduce = -1;
-                // Get the state from the top of the internal stack after popping
                  for(int i = internalStack.size() -1; i >=0; i--){
                     if(internalStack.get(i) instanceof Integer){
                         stateBeforeReduce = (Integer) internalStack.get(i);
@@ -486,11 +197,17 @@ public class LRParser {
                 Map<String, Integer> stateGotos = gotoTable.get(stateBeforeReduce);
                 if (stateGotos == null || !stateGotos.containsKey(rule.lhs)) {
                      System.out.printf("Error: No hay GOTO para el estado %d y el no terminal '%s'.\n", stateBeforeReduce, rule.lhs);
+                     System.out.print("No-terminales esperados (GOTO) desde el estado " + stateBeforeReduce + ": ");
+                     if (stateGotos != null) {
+                        System.out.println(String.join(", ", stateGotos.keySet()));
+                     } else {
+                        System.out.println("Ninguno definido.");
+                     }
                      return;
                 }
                 int nextState = stateGotos.get(rule.lhs);
-                internalStack.push(rule.lhs); // Push the non-terminal
-                internalStack.push(nextState);  // Push the new state
+                internalStack.push(rule.lhs); 
+                internalStack.push(nextState); 
             } else if (action.equals("acc")) { // Accept
                 System.out.println("Entrada aceptada.");
                 break;
@@ -511,7 +228,6 @@ public class LRParser {
         if (input.trim().isEmpty()){
             System.out.println("Entrada vacía, usando ejemplo: ( id + id * id ) / id < id || id + id * id == id");
             input = "( id + id * id ) / id < id || id + id * id == id";
-            // input = "id + id * id"; // Simpler example
         }
 
         parser.parse(input);

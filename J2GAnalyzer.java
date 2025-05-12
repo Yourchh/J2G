@@ -3,68 +3,83 @@ import java.util.*;
 import java.util.regex.*;
 //import java.util.stream.Collectors;
 
-// ProductionRule (si la usas aquí, sino puede ser de tu LRParser)
-// class ProductionRule { ... }
-
 public class J2GAnalyzer {
 
-    private static final String TABSIM_FILE = "tabsim.txt";
-    private static final String TABSIM_OUTPUT_FILE = "tabsim_output.txt";
-    private static final List<Map<String, String>> TABSIM = new ArrayList<>();
-    private static int nextIdCounter = 1; // Renombrado para claridad, usado por TABSIM
+    // TABSIM for user-defined variables and constants encountered during analysis
+    private static final List<Map<String, String>> USER_SYMBOLS_TABSIM = new ArrayList<>();
+    private static int nextUserSymbolIdCounter = 1; // Counter for generating id1, id2, ...
 
-    // --- Métodos existentes de TABSIM y preprocesamiento (loadTABSIM, saveTABSIM, preprocess, validateAndExtractMainBlock) ---
-    // Se asume que estos métodos están como los proporcionaste.
-    // Solo haré un pequeño ajuste a addConstantToTABSIM y addVariableToTABSIM para usar nextIdCounter
+    // File to persist/load user symbols (optional, can start fresh each time)
+    private static final String USER_SYMBOLS_FILE_INPUT = "user_tabsim_input.txt"; // Load previous state from here
+    private static final String USER_SYMBOLS_FILE_OUTPUT = "user_tabsim_output.txt"; // Save final state here
 
-    private static void loadTABSIM(String fileName) {
-        TABSIM.clear(); // Limpiar para cargas múltiples si es necesario
-        nextIdCounter = 1; // Reiniciar contador
+
+    private static void loadUserSymbolsTABSIM(String fileName) {
+        USER_SYMBOLS_TABSIM.clear();
+        nextUserSymbolIdCounter = 1; // Reset counter
+        File file = new File(fileName);
+        if (!file.exists()) {
+            System.out.println("Archivo de entrada de símbolos de usuario no encontrado: " + fileName + ". Iniciando con tabla vacía.");
+            return;
+        }
+
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
-            int maxId = 0;
+            int maxIdFound = 0;
             while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
                 String[] parts = line.split("\t");
                 if (parts.length >= 4) {
                     Map<String, String> entry = new HashMap<>();
                     entry.put("VARIABLE", parts[0].trim());
-                    entry.put("ID", parts[1].trim());
+                    String idFromFile = parts[1].trim();
+                    entry.put("ID", idFromFile);
                     entry.put("TIPO", parts[2].trim());
-                    entry.put("VALOR", parts[3].trim());
-                    TABSIM.add(entry);
-                    try {
-                        if (parts[1].trim().startsWith("id")) {
-                            int currentIdNum = Integer.parseInt(parts[1].trim().substring(2));
-                            if (currentIdNum > maxId) {
-                                maxId = currentIdNum;
+                    entry.put("VALOR", parts[3].trim()); // VALOR aquí es el valor literal o expresión original
+                    USER_SYMBOLS_TABSIM.add(entry);
+
+                    // Update nextUserSymbolIdCounter based on loaded IDs
+                    if (idFromFile.startsWith("id")) {
+                        try {
+                            int numPart = Integer.parseInt(idFromFile.substring(2));
+                            if (numPart > maxIdFound) {
+                                maxIdFound = numPart;
                             }
+                        } catch (NumberFormatException e) {
+                            // Ignore if 'id' is not followed by a number
                         }
-                    } catch (NumberFormatException e) { /* ignorar si el ID no es numérico */ }
+                    }
                 }
             }
-            nextIdCounter = maxId + 1; // Asegurar que los nuevos IDs sean únicos
+            nextUserSymbolIdCounter = maxIdFound + 1;
+            System.out.println("Símbolos de usuario cargados desde " + fileName + ". Próximo ID: " + nextUserSymbolIdCounter);
         } catch (IOException e) {
-            System.err.println("Error al cargar el archivo " + fileName + ": " + e.getMessage());
+            System.err.println("Error al cargar el archivo de símbolos de usuario " + fileName + ": " + e.getMessage());
         }
     }
-    
-    private static void saveTABSIM(String fileName) {
+
+    private static void saveUserSymbolsTABSIM(String fileName) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (Map<String, String> entry : TABSIM) {
-                writer.write(entry.get("VARIABLE") + "\t" + entry.get("ID") + "\t" + entry.get("TIPO") + "\t" + entry.get("VALOR"));
+            writer.write("VARIABLE\tID\tTIPO\tVALOR_ORIGINAL_O_EXPRESION\n"); // Header
+            for (Map<String, String> entry : USER_SYMBOLS_TABSIM) {
+                writer.write(entry.get("VARIABLE") + "\t" +
+                             entry.get("ID") + "\t" +
+                             entry.get("TIPO") + "\t" +
+                             entry.get("VALOR")); // VALOR es el valor/expresión original
                 writer.newLine();
             }
+            System.out.println("Tabla de símbolos de usuario guardada en " + fileName);
         } catch (IOException e) {
-            System.err.println("Error al guardar TABSIM en " + fileName + ": " + e.getMessage());
+            System.err.println("Error al guardar tabla de símbolos de usuario en " + fileName + ": " + e.getMessage());
         }
     }
-     private static String preprocess(String code) {
-        String[] lines = code.split("\\n");
-        StringBuilder processedCode = new StringBuilder();
 
+    private static String preprocess(String code) {
+        String[] lines = code.split("\\r?\\n"); // Handles Windows and Unix line endings
+        StringBuilder processedCode = new StringBuilder();
         for (String line : lines) {
             line = line.replaceAll("//.*", "").trim(); // Eliminar comentarios
-            line = line.replaceAll("\\s{2,}", " "); // Normalizar espacios
+            line = line.replaceAll("\\s{2,}", " "); // Normalizar múltiples espacios a uno solo
             if (!line.isEmpty()) {
                 processedCode.append(line).append("\n");
             }
@@ -73,10 +88,8 @@ public class J2GAnalyzer {
     }
 
     private static String validateAndExtractMainBlock(String code) {
-        // Usar Pattern.quote para las llaves si se interpretan como metacaracteres de regex.
-        // Sin embargo, aquí se usan literalmente. El DOTALL es importante.
         String mainPatternStr = "^FUNC\\s+J2G\\s+Main\\s*\\(\\s*\\)\\s*\\{(.*)\\}\\s*$";
-        Pattern pattern = Pattern.compile(mainPatternStr, Pattern.DOTALL | Pattern.CASE_INSENSITIVE); // Case insensitive para FUNC J2G Main
+        Pattern pattern = Pattern.compile(mainPatternStr, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(code);
         if (matcher.matches()) {
             return matcher.group(1).trim();
@@ -85,81 +98,62 @@ public class J2GAnalyzer {
         }
     }
 
+    private static String getOrCreateUserSymbolIDForLiteral(String literalValue, String type) {
+        String normalizedType = type.toLowerCase();
+        // TRUE/FALSE se mantienen como están, no se les asigna idN
+        if (normalizedType.equals("bool") && (literalValue.equalsIgnoreCase("TRUE") || literalValue.equalsIgnoreCase("FALSE"))) {
+            return literalValue.toUpperCase();
+        }
 
-    private static String addConstantToTABSIM(String value, String type) {
-        for (Map<String, String> entry : TABSIM) {
-            if (entry.get("TIPO").equalsIgnoreCase(type) && entry.get("VALOR").equals(value)) { // Comparar valor directamente
-                 // Y si es una "variable" que representa la constante
-                if (entry.get("VARIABLE").equals(value)) return entry.get("ID");
+        for (Map<String, String> entry : USER_SYMBOLS_TABSIM) {
+            if (entry.get("TIPO").equals(normalizedType) &&
+                entry.get("VALOR").equals(literalValue) &&
+                entry.get("VARIABLE").equals(literalValue)) { // Para literales, VARIABLE y VALOR son el mismo literal
+                return entry.get("ID");
             }
         }
-        String identifier = "id" + nextIdCounter++;
+        String identifier = "id" + nextUserSymbolIdCounter++;
         Map<String, String> entry = new HashMap<>();
-        entry.put("VARIABLE", value); // Para constantes, la "variable" es el valor mismo
+        entry.put("VARIABLE", literalValue); // El "nombre" de la variable para un literal es el literal mismo
         entry.put("ID", identifier);
-        entry.put("TIPO", type.toLowerCase());
-        entry.put("VALOR", value);
-        TABSIM.add(entry);
-        // System.out.println("Constante/Cadena añadida a TABSIM: " + entry);
+        entry.put("TIPO", normalizedType);
+        entry.put("VALOR", literalValue);    // El valor almacenado es el literal mismo
+        USER_SYMBOLS_TABSIM.add(entry);
         return identifier;
     }
 
-    private static void addVariableToTABSIM(String variableName, String type, String initialValueLiteral) {
-        for (Map<String, String> entry : TABSIM) {
+    private static void addVariableToUserSymbolsTABSIM(String variableName, String type, String initialValueLiteralOrExpr) {
+        for (Map<String, String> entry : USER_SYMBOLS_TABSIM) {
             if (entry.get("VARIABLE").equals(variableName)) {
                 System.err.println("Advertencia: Variable '" + variableName + "' ya declarada. Se ignora la redeclaración.");
                 return;
             }
         }
-        String varId = "id" + nextIdCounter++;
+
+        String varId = "id" + nextUserSymbolIdCounter++;
         Map<String, String> entry = new HashMap<>();
         entry.put("VARIABLE", variableName);
         entry.put("ID", varId);
         entry.put("TIPO", type.toLowerCase());
-
-        if (initialValueLiteral != null && !initialValueLiteral.isEmpty()) {
-            // El valor inicial es un literal que debe ser reemplazado por su ID de TABSIM (si es constante/cadena)
-            // o es una expresión que será manejada por replaceIdentifiers más tarde.
-            // Por ahora, si es un literal simple, lo añadimos como constante.
-            // Esto es una simplificación; un análisis de expresiones completo sería necesario aquí.
-            if (type.equalsIgnoreCase("STR") && initialValueLiteral.startsWith("\"") && initialValueLiteral.endsWith("\"")) {
-                entry.put("VALOR", addConstantToTABSIM(initialValueLiteral, "string"));
-            } else if ((type.equalsIgnoreCase("INT") || type.equalsIgnoreCase("BOOL")) && initialValueLiteral.matches("\\d+|TRUE|FALSE")) {
-                 entry.put("VALOR", addConstantToTABSIM(initialValueLiteral, type));
-            } else {
-                 // Es una expresión o variable, se resolverá más tarde. Guardamos el literal/expresión por ahora.
-                 // O mejor, dejamos VALOR como el ID de la variable misma si no hay un valor literal simple.
-                 // Para el reemplazo, la asignación se encargará.
-                 entry.put("VALOR", initialValueLiteral); // Se reemplazará después
-            }
-        } else {
-            entry.put("VALOR", ""); // Sin valor inicial
-        }
-        TABSIM.add(entry);
-        // System.out.println("Variable añadida a TABSIM: " + entry);
+        entry.put("VALOR", initialValueLiteralOrExpr != null ? initialValueLiteralOrExpr : ""); // Almacena la expresión/literal original
+        USER_SYMBOLS_TABSIM.add(entry);
     }
-    
-    private static void updateVariableValueInTABSIM(String variableName, String valueExpression) {
-        for (Map<String, String> entry : TABSIM) {
+
+    private static void updateVariableValueInUserSymbolsTABSIM(String variableName, String valueExpression) {
+        for (Map<String, String> entry : USER_SYMBOLS_TABSIM) {
             if (entry.get("VARIABLE").equals(variableName)) {
-                // El valueExpression será procesado por replaceIdentifiers.
-                // Aquí solo actualizamos el campo VALOR en TABSIM con la expresión (que luego será ids).
-                entry.put("VALOR", valueExpression); // Se reemplazará después
-                // System.out.println("Valor actualizado en TABSIM para " + variableName + ": " + valueExpression);
+                entry.put("VALOR", valueExpression); // Almacena la nueva expresión/literal original
                 return;
             }
         }
         System.err.println("Error: Variable '" + variableName + "' no declarada, no se puede asignar valor.");
     }
 
-    // --- Fin de métodos existentes ---
-
-    // Clase auxiliar para el resultado del parseo de estructuras
     static class ParseResult {
-        String type; // IF, SWITCH, FOR, WHILE, DO_WHILE, PRINT, INPUT_ASSIGN, DECLARATION, ASSIGNMENT, EMPTY, UNKNOWN
+        String type;
         String rawMatchedCode;
         int linesConsumed;
-        Map<String, String> parts = new HashMap<>(); // "condition", "body", "elseBody", "expression", "init", "increment", "casesRaw"
+        Map<String, String> parts = new HashMap<>();
 
         public ParseResult(String type, String rawMatchedCode, int linesConsumed) {
             this.type = type;
@@ -168,14 +162,6 @@ public class J2GAnalyzer {
         }
     }
 
-    /**
-     * Encuentra el índice de la línea que contiene la llave de cierre '}'
-     * correspondiente a la llave de apertura '{' en la línea de inicio.
-     * @param lines Array de todas las líneas del bloque.
-     * @param startLineIndex Índice de la línea donde comienza la búsqueda del bloque (debe contener '{').
-     * @param openingBraceCharIndexEnStartLine Índice del carácter '{' en la línea de inicio.
-     * @return Índice de la línea con la '}' de cierre, o -1 si hay error.
-     */
     private static int findClosingBraceLineIndex(String[] lines, int startLineIndex, int openingBraceCharIndexInStartLine) {
         int braceDepth = 0;
         for (int i = startLineIndex; i < lines.length; i++) {
@@ -187,83 +173,106 @@ public class J2GAnalyzer {
                 } else if (line.charAt(j) == '}') {
                     braceDepth--;
                     if (braceDepth == 0) {
-                        return i; // Línea donde se cierra el bloque principal
+                        return i;
                     }
                 }
             }
         }
-        return -1; // Llave de cierre no encontrada
+        return -1;
     }
 
-    /**
-     * Extrae el contenido de un bloque delimitado por llaves.
-     * @param lines El array completo de líneas.
-     * @param firstLineOfBlockContent El contenido de la primera línea DENTRO del bloque (después de '{').
-     * @param startLineIdx El índice de la línea que contiene la '{' de apertura.
-     * @param endLineIdx El índice de la línea que contiene la '}' de cierre.
-     * @param openingBracePos La posición del '{' en la startLineIdx.
-     * @param closingBracePos La posición del '}' en la endLineIdx.
-     * @return El contenido del bloque como un solo String.
-     */
     private static String extractBlockContent(String[] lines, int startLineIdx, int endLineIdx, int openingBracePos, int closingBracePos) {
         StringBuilder content = new StringBuilder();
-        if (startLineIdx == endLineIdx) { // Bloque en una sola línea: { contenido }
-            return lines[startLineIdx].substring(openingBracePos + 1, closingBracePos).trim();
+        if (startLineIdx == endLineIdx) {
+            if (openingBracePos + 1 <= closingBracePos) { // Asegurar que hay contenido
+                 return lines[startLineIdx].substring(openingBracePos + 1, closingBracePos).trim();
+            } else {
+                return ""; // Bloque vacío {}
+            }
         }
-        // Primera línea del contenido
         content.append(lines[startLineIdx].substring(openingBracePos + 1).trim());
-        if (!content.toString().isEmpty()) content.append("\n");
+        if (content.length() > 0) content.append("\n");
 
-        // Líneas intermedias
         for (int i = startLineIdx + 1; i < endLineIdx; i++) {
             content.append(lines[i].trim()).append("\n");
         }
 
-        // Última línea del contenido
         if (closingBracePos > 0) {
-             content.append(lines[endLineIdx].substring(0, closingBracePos).trim());
+            content.append(lines[endLineIdx].substring(0, closingBracePos).trim());
         }
-        return content.toString().trim();
+        // Quitar el último \n si el bloque termina vacío después de los trims
+        String result = content.toString().trim();
+        return result.isEmpty() ? "" : result + "\n"; // Añadir un \n si no está vacío para consistencia
     }
 
 
     private static ParseResult matchIfStructure(String[] lines, int currentIndex) {
         String line = lines[currentIndex].trim();
-        Pattern pattern = Pattern.compile("^if\\s*\\((.*?)\\)\\s*\\{");
+        Pattern pattern = Pattern.compile("^if\\s*\\((.*?)\\)\\s*\\{?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
             String condition = matcher.group(1).trim();
-            int openingBracePos = line.lastIndexOf('{');
-            int ifBlockEndLine = findClosingBraceLineIndex(lines, currentIndex, openingBracePos);
+            int bodyStartLineIndex = currentIndex;
+            int openingBracePosInBodyStartLine = line.lastIndexOf('{');
 
-            if (ifBlockEndLine == -1) return null; // Error: if sin cierre
-
-            String ifBody = extractBlockContent(lines, currentIndex, ifBlockEndLine, openingBracePos, lines[ifBlockEndLine].indexOf('}'));
-            
-            StringBuilder rawCode = new StringBuilder();
-            for(int k=currentIndex; k <= ifBlockEndLine; k++) rawCode.append(lines[k]).append("\n");
-            int linesConsumed = ifBlockEndLine - currentIndex + 1;
-
-            // Verificar else
-            String elseBody = null;
-            if (ifBlockEndLine + 1 < lines.length) {
-                String nextLine = lines[ifBlockEndLine + 1].trim();
-                if (nextLine.startsWith("else\\s*\\{")) { // Simplificado, puede ser `else {`
-                     Pattern elsePattern = Pattern.compile("^else\\s*\\{");
-                     Matcher elseMatcher = elsePattern.matcher(nextLine);
-                     if(elseMatcher.find()){
-                        int elseOpeningBracePos = nextLine.lastIndexOf('{');
-                        int elseBlockEndLine = findClosingBraceLineIndex(lines, ifBlockEndLine + 1, elseOpeningBracePos);
-                        if (elseBlockEndLine != -1) {
-                            elseBody = extractBlockContent(lines, ifBlockEndLine + 1, elseBlockEndLine, elseOpeningBracePos, lines[elseBlockEndLine].indexOf('}'));
-                            for(int k=ifBlockEndLine+1; k <= elseBlockEndLine; k++) rawCode.append(lines[k]).append("\n");
-                            linesConsumed += (elseBlockEndLine - (ifBlockEndLine + 1) + 1);
-                        } else return null; // Error: else sin cierre
-                     }
+            if (openingBracePosInBodyStartLine == -1) {
+                if (currentIndex + 1 < lines.length && lines[currentIndex + 1].trim().equals("{")) {
+                    bodyStartLineIndex = currentIndex + 1;
+                    openingBracePosInBodyStartLine = 0;
+                } else {
+                    System.err.println("Error sintaxis 'if': Falta '{' para el bloque if. Línea: " + (currentIndex + 1));
+                    return null;
                 }
             }
-            ParseResult result = new ParseResult("IF", rawCode.toString().trim(), linesConsumed);
+
+            int ifBlockEndLine = findClosingBraceLineIndex(lines, bodyStartLineIndex, openingBracePosInBodyStartLine);
+            if (ifBlockEndLine == -1) {
+                 System.err.println("Error sintaxis 'if': Bloque if no cerrado con '}'. Iniciado en línea: " + (bodyStartLineIndex + 1));
+                 return null;
+            }
+
+            String ifBody = extractBlockContent(lines, bodyStartLineIndex, ifBlockEndLine,
+                                                openingBracePosInBodyStartLine, lines[ifBlockEndLine].lastIndexOf('}'));
+
+            StringBuilder rawCodeBuilder = new StringBuilder();
+            for (int k = currentIndex; k <= ifBlockEndLine; k++) rawCodeBuilder.append(lines[k]).append("\n");
+            int linesConsumedTotal = ifBlockEndLine - currentIndex + 1;
+
+            String elseBody = null;
+            if (ifBlockEndLine + 1 < lines.length) {
+                String nextLineForElse = lines[ifBlockEndLine + 1].trim();
+                Pattern elsePattern = Pattern.compile("^else\\s*\\{?", Pattern.CASE_INSENSITIVE);
+                Matcher elseMatcher = elsePattern.matcher(nextLineForElse);
+
+                if (elseMatcher.find()) {
+                    int elseBodyStartLineIndex = ifBlockEndLine + 1;
+                    int elseOpeningBracePos = nextLineForElse.lastIndexOf('{');
+
+                    if (elseOpeningBracePos == -1) {
+                        if (ifBlockEndLine + 2 < lines.length && lines[ifBlockEndLine + 2].trim().equals("{")) {
+                            elseBodyStartLineIndex = ifBlockEndLine + 2;
+                            elseOpeningBracePos = 0;
+                        } else {
+                             System.err.println("Error sintaxis 'else': Falta '{' para el bloque else. Línea: " + (elseBodyStartLineIndex +1));
+                             // No consumimos el 'else' si no tiene bloque
+                        }
+                    }
+                    
+                    if (elseOpeningBracePos != -1) { // Solo si encontramos una llave para el else
+                        int elseBlockEndLine = findClosingBraceLineIndex(lines, elseBodyStartLineIndex, elseOpeningBracePos);
+                        if (elseBlockEndLine != -1) {
+                            elseBody = extractBlockContent(lines, elseBodyStartLineIndex, elseBlockEndLine,
+                                                           elseOpeningBracePos, lines[elseBlockEndLine].lastIndexOf('}'));
+                            for (int k = ifBlockEndLine + 1; k <= elseBlockEndLine; k++) rawCodeBuilder.append(lines[k]).append("\n");
+                            linesConsumedTotal += (elseBlockEndLine - (ifBlockEndLine + 1) + 1);
+                        } else {
+                             System.err.println("Error sintaxis 'else': Bloque else no cerrado con '}'. Iniciado en línea: " + (elseBodyStartLineIndex+1));
+                        }
+                    }
+                }
+            }
+            ParseResult result = new ParseResult("IF", rawCodeBuilder.toString().trim(), linesConsumedTotal);
             result.parts.put("condition", condition);
             result.parts.put("body", ifBody);
             if (elseBody != null) result.parts.put("elseBody", elseBody);
@@ -274,24 +283,32 @@ public class J2GAnalyzer {
 
     private static ParseResult matchSwitchStructure(String[] lines, int currentIndex) {
         String line = lines[currentIndex].trim();
-        Pattern pattern = Pattern.compile("^sw\\s*\\((.*?)\\)\\s*\\{");
+        Pattern pattern = Pattern.compile("^sw\\s*\\((.*?)\\)\\s*\\{?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
             String expression = matcher.group(1).trim();
-            int openingBracePos = line.lastIndexOf('{');
-            int blockEndLine = findClosingBraceLineIndex(lines, currentIndex, openingBracePos);
+            int bodyStartLineIndex = currentIndex;
+            int openingBracePosInBodyStartLine = line.lastIndexOf('{');
 
-            if (blockEndLine == -1) return null; 
+            if (openingBracePosInBodyStartLine == -1) {
+                if (currentIndex + 1 < lines.length && lines[currentIndex + 1].trim().equals("{")) {
+                    bodyStartLineIndex = currentIndex + 1;
+                    openingBracePosInBodyStartLine = 0;
+                } else { return null; }
+            }
+            
+            int blockEndLine = findClosingBraceLineIndex(lines, bodyStartLineIndex, openingBracePosInBodyStartLine);
+            if (blockEndLine == -1) return null;
 
-            String blockContent = extractBlockContent(lines, currentIndex, blockEndLine, openingBracePos, lines[blockEndLine].indexOf('}'));
+            String blockContent = extractBlockContent(lines, bodyStartLineIndex, blockEndLine, openingBracePosInBodyStartLine, lines[blockEndLine].lastIndexOf('}'));
             
             StringBuilder rawCode = new StringBuilder();
             for(int k=currentIndex; k <= blockEndLine; k++) rawCode.append(lines[k]).append("\n");
 
             ParseResult result = new ParseResult("SWITCH", rawCode.toString().trim(), blockEndLine - currentIndex + 1);
             result.parts.put("expression", expression);
-            result.parts.put("casesRaw", blockContent); // El parseo de casos es más complejo, se deja crudo por ahora
+            result.parts.put("casesRaw", blockContent);
             return result;
         }
         return null;
@@ -299,7 +316,7 @@ public class J2GAnalyzer {
     
     private static ParseResult matchForStructure(String[] lines, int currentIndex) {
         String line = lines[currentIndex].trim();
-        Pattern pattern = Pattern.compile("^for\\s*\\((.*?);(.*?);(.*?)\\)\\s*\\{");
+        Pattern pattern = Pattern.compile("^for\\s*\\((.*?);(.*?);(.*?)\\)\\s*\\{?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
@@ -307,12 +324,20 @@ public class J2GAnalyzer {
             String condition = matcher.group(2).trim();
             String increment = matcher.group(3).trim();
             
-            int openingBracePos = line.lastIndexOf('{');
-            int blockEndLine = findClosingBraceLineIndex(lines, currentIndex, openingBracePos);
+            int bodyStartLineIndex = currentIndex;
+            int openingBracePosInBodyStartLine = line.lastIndexOf('{');
 
+            if (openingBracePosInBodyStartLine == -1) {
+                if (currentIndex + 1 < lines.length && lines[currentIndex + 1].trim().equals("{")) {
+                    bodyStartLineIndex = currentIndex + 1;
+                    openingBracePosInBodyStartLine = 0;
+                } else { return null; }
+            }
+
+            int blockEndLine = findClosingBraceLineIndex(lines, bodyStartLineIndex, openingBracePosInBodyStartLine);
             if (blockEndLine == -1) return null;
 
-            String body = extractBlockContent(lines, currentIndex, blockEndLine, openingBracePos, lines[blockEndLine].indexOf('}'));
+            String body = extractBlockContent(lines, bodyStartLineIndex, blockEndLine, openingBracePosInBodyStartLine, lines[blockEndLine].lastIndexOf('}'));
             
             StringBuilder rawCode = new StringBuilder();
             for(int k=currentIndex; k <= blockEndLine; k++) rawCode.append(lines[k]).append("\n");
@@ -327,44 +352,31 @@ public class J2GAnalyzer {
         return null;
     }
 
-       private static ParseResult matchWhileStructure(String[] lines, int currentIndex) {
+    private static ParseResult matchWhileStructure(String[] lines, int currentIndex) {
         String line = lines[currentIndex].trim();
-        // Asegurarse de no confundir con do-while si "while" está al final de la línea
-        // CORRECCIÓN AQUÍ: Añadir `currentIndex > 0`
-        if (currentIndex > 0 && line.endsWith(");") && lines[currentIndex-1].trim().endsWith("}")) { 
-            // Esto parece ser la parte 'while (condicion);' de un do-while,
-            // así que no lo procesamos como un bucle while independiente aquí.
+        if (currentIndex > 0 && line.matches("^while\\s*\\(.*?\\)\\s*;") && lines[currentIndex-1].trim().endsWith("}")) { 
             return null; 
         }
 
-        Pattern pattern = Pattern.compile("^while\\s*\\((.*?)\\)\\s*\\{?", Pattern.CASE_INSENSITIVE); // Permitir '{' opcional en la misma línea
+        Pattern pattern = Pattern.compile("^while\\s*\\((.*?)\\)\\s*\\{?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
             String condition = matcher.group(1).trim();
-            int openingBracePosInCurrentLine = line.lastIndexOf('{');
             int bodyStartLineIndex = currentIndex;
-            int effectiveOpeningBracePos = openingBracePosInCurrentLine; // Posición del '{' en su línea
+            int openingBracePosInBodyStartLine = line.lastIndexOf('{');
 
-            // Comprobar si la llave está en la siguiente línea
-            if (openingBracePosInCurrentLine == -1) {
+            if (openingBracePosInBodyStartLine == -1) {
                 if (currentIndex + 1 < lines.length && lines[currentIndex + 1].trim().equals("{")) {
-                    bodyStartLineIndex = currentIndex + 1; // El cuerpo comienza en la siguiente línea
-                    effectiveOpeningBracePos = 0; // La llave está al inicio de lines[bodyStartLineIndex]
-                } else {
-                     System.err.println("Error de sintaxis: Bucle 'while' sin '{' de apertura en la misma línea o en la siguiente.");
-                    return new ParseResult("ERROR_SYNTAX_WHILE", line, 1); // Error de sintaxis
-                }
+                    bodyStartLineIndex = currentIndex + 1;
+                    openingBracePosInBodyStartLine = 0;
+                } else { return null; }
             }
             
-            int blockEndLine = findClosingBraceLineIndex(lines, bodyStartLineIndex, effectiveOpeningBracePos);
+            int blockEndLine = findClosingBraceLineIndex(lines, bodyStartLineIndex, openingBracePosInBodyStartLine);
+            if (blockEndLine == -1) return null;
 
-            if (blockEndLine == -1) {
-                System.err.println("Error de sintaxis: Bucle 'while' con '{' de apertura sin '}' de cierre correspondiente.");
-                return new ParseResult("ERROR_SYNTAX_WHILE_NO_CLOSE", line, 1); // Error de sintaxis
-            }
-
-            String body = extractBlockContent(lines, bodyStartLineIndex, blockEndLine, effectiveOpeningBracePos, lines[blockEndLine].lastIndexOf('}'));
+            String body = extractBlockContent(lines, bodyStartLineIndex, blockEndLine, openingBracePosInBodyStartLine, lines[blockEndLine].lastIndexOf('}'));
             
             StringBuilder rawCode = new StringBuilder();
             for(int k=currentIndex; k <= blockEndLine; k++) rawCode.append(lines[k]).append("\n");
@@ -379,33 +391,40 @@ public class J2GAnalyzer {
 
     private static ParseResult matchDoWhileStructure(String[] lines, int currentIndex) {
         String firstLine = lines[currentIndex].trim();
-        if (!firstLine.startsWith("do\\s*\\{")) { // Simplificado, puede ser `do {`
-             Pattern doPattern = Pattern.compile("^do\\s*\\{");
-             Matcher doMatcher = doPattern.matcher(firstLine);
-             if(!doMatcher.find()) return null;
+        Pattern doStartPattern = Pattern.compile("^do\\s*\\{?", Pattern.CASE_INSENSITIVE);
+        Matcher doStartMatcher = doStartPattern.matcher(firstLine);
+
+        if (!doStartMatcher.find()) return null;
+
+        int bodyStartLineIndex = currentIndex;
+        int openingBracePosInBodyStartLine = firstLine.lastIndexOf('{');
+
+        if (openingBracePosInBodyStartLine == -1) {
+            if (currentIndex + 1 < lines.length && lines[currentIndex + 1].trim().equals("{")) {
+                bodyStartLineIndex = currentIndex + 1;
+                openingBracePosInBodyStartLine = 0;
+            } else { return null; }
         }
 
+        int bodyEndLine = findClosingBraceLineIndex(lines, bodyStartLineIndex, openingBracePosInBodyStartLine);
+        if (bodyEndLine == -1) return null; 
 
-        int openingBracePos = firstLine.lastIndexOf('{');
-        int bodyEndLine = findClosingBraceLineIndex(lines, currentIndex, openingBracePos);
-
-        if (bodyEndLine == -1) return null; // do sin cierre de cuerpo
-
-        // La siguiente línea DEBE ser el while(condicion);
-        if (bodyEndLine + 1 >= lines.length) return null; // No hay línea para el while
+        if (bodyEndLine + 1 >= lines.length) return null; 
 
         String whileLine = lines[bodyEndLine + 1].trim();
-        Pattern whilePattern = Pattern.compile("^while\\s*\\((.*?)\\)\\s*;");
+        Pattern whilePattern = Pattern.compile("^while\\s*\\((.*?)\\)\\s*;", Pattern.CASE_INSENSITIVE);
         Matcher whileMatcher = whilePattern.matcher(whileLine);
 
         if (whileMatcher.matches()) {
             String condition = whileMatcher.group(1).trim();
-            String body = extractBlockContent(lines, currentIndex, bodyEndLine, openingBracePos, lines[bodyEndLine].indexOf('}'));
+            String body = extractBlockContent(lines, bodyStartLineIndex, bodyEndLine,
+                                            openingBracePosInBodyStartLine, lines[bodyEndLine].lastIndexOf('}'));
             
             StringBuilder rawCode = new StringBuilder();
             for(int k=currentIndex; k <= bodyEndLine + 1; k++) rawCode.append(lines[k]).append("\n");
 
-            ParseResult result = new ParseResult("DO_WHILE", rawCode.toString().trim(), (bodyEndLine + 1) - currentIndex + 1);
+            int linesConsumed = (bodyEndLine + 1) - currentIndex + 1;
+            ParseResult result = new ParseResult("DO_WHILE", rawCode.toString().trim(), linesConsumed);
             result.parts.put("condition", condition);
             result.parts.put("body", body);
             return result;
@@ -415,7 +434,7 @@ public class J2GAnalyzer {
     
     private static ParseResult matchPrintStatement(String[] lines, int currentIndex) {
         String line = lines[currentIndex].trim();
-        Pattern pattern = Pattern.compile("^Print\\s*\\((.*?)\\)\\s*;");
+        Pattern pattern = Pattern.compile("^Print\\s*\\((.*?)\\)\\s*;", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(line);
         if (matcher.matches()) {
             ParseResult result = new ParseResult("PRINT", line, 1);
@@ -425,85 +444,101 @@ public class J2GAnalyzer {
         return null;
     }
 
-    // analyzeLine original, ahora enfocado en declaración/asignación y efectos en TABSIM
-    private static boolean processSimpleLine(String line) {
+    private static ParseResult matchCaseLabel(String[] lines, int currentIndex) {
+        String line = lines[currentIndex].trim();
+        Pattern pattern = Pattern.compile("^caso\\s+(.+?)\\s*:", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.matches()) {
+            ParseResult result = new ParseResult("CASE_LABEL", line, 1);
+            result.parts.put("expression", matcher.group(1).trim());
+            return result;
+        }
+        return null;
+    }
+
+    private static ParseResult matchDefaultLabel(String[] lines, int currentIndex) {
+        String line = lines[currentIndex].trim();
+        if (line.matches("^por_defecto\\s*:")) {
+            return new ParseResult("DEFAULT_LABEL", line, 1);
+        }
+        return null;
+    }
+
+    private static ParseResult matchDetenerStatement(String[] lines, int currentIndex) {
+        String line = lines[currentIndex].trim();
+        if (line.matches("^detener\\s*;")) {
+            return new ParseResult("DETENER_STMT", line, 1);
+        }
+        return null;
+    }
+
+    private static boolean processSimpleLineForTABSIM(String line) {
         String trimmedLine = line.trim();
-        // Variable Declaration: INT var := val; o INT var;
-        Pattern declPattern = Pattern.compile("^(INT|STR|BOOL)\\s+([a-z][a-zA-Z0-9_]*)\\s*(?:\\:=\\s*(.+))?\\s*;$", Pattern.CASE_INSENSITIVE);
+        Pattern declPattern = Pattern.compile("^(INT|STR|BOOL)\\s+([a-z][a-zA-Z0-9_]*)\\s*(?:\\:=\\s*(.+?))?\\s*;$", Pattern.CASE_INSENSITIVE);
         Matcher declMatcher = declPattern.matcher(trimmedLine);
         if (declMatcher.matches()) {
             String type = declMatcher.group(1);
             String varName = declMatcher.group(2);
             String value = declMatcher.group(3) != null ? declMatcher.group(3).trim() : null;
-            addVariableToTABSIM(varName, type, value);
+            addVariableToUserSymbolsTABSIM(varName, type, value);
             return true;
         }
 
-        // Assignment: var := val;
-        Pattern assignPattern = Pattern.compile("^([a-z][a-zA-Z0-9_]*)\\s*\\:=\\s*(.+)\\s*;$");
+        Pattern assignPattern = Pattern.compile("^([a-z][a-zA-Z0-9_]*)\\s*\\:=\\s*(.+?)\\s*;$");
         Matcher assignMatcher = assignPattern.matcher(trimmedLine);
         if (assignMatcher.matches()) {
             String varName = assignMatcher.group(1);
             String value = assignMatcher.group(2).trim();
-            updateVariableValueInTABSIM(varName, value); // Actualiza TABSIM con la expresión/valor crudo
+            updateVariableValueInUserSymbolsTABSIM(varName, value);
             return true;
         }
         return false;
     }
     
-    // Reemplazar variables, valores, constantes y cadenas por identificadores
     private static String replaceIdentifiers(String lineInput) {
-        String line = lineInput; // Trabajar con una copia
+        String line = lineInput;
 
-        // 1. Proteger cadenas literales y reemplazarlas al final
         Pattern stringLiteralPattern = Pattern.compile("\"(.*?)\"");
         Matcher stringMatcher = stringLiteralPattern.matcher(line);
-        List<String> foundStrings = new ArrayList<>();
-        StringBuffer sb = new StringBuffer();
-        while(stringMatcher.find()){
-            foundStrings.add(stringMatcher.group(1)); // Guardar contenido sin comillas
-            stringMatcher.appendReplacement(sb, "__STRING_PLACEHOLDER__");
+        StringBuffer sbTemp = new StringBuffer();
+        List<String> stringLiteralsFound = new ArrayList<>();
+        int placeholderIndex = 0;
+        while (stringMatcher.find()) {
+            String literalContentWithQuotes = stringMatcher.group(0);
+            stringLiteralsFound.add(literalContentWithQuotes);
+            stringMatcher.appendReplacement(sbTemp, "__STRING_PLACEHOLDER_" + (placeholderIndex++) + "__");
         }
-        stringMatcher.appendTail(sb);
-        line = sb.toString();
+        stringMatcher.appendTail(sbTemp);
+        line = sbTemp.toString();
 
-        // 2. Reemplazar variables de TABSIM (las más largas primero para evitar reemplazos parciales)
-        List<Map<String, String>> sortedTabsim = new ArrayList<>(TABSIM);
-        sortedTabsim.sort((a,b) -> b.get("VARIABLE").length() - a.get("VARIABLE").length());
+        Pattern numPattern = Pattern.compile("\\b(\\d+)\\b");
+        Matcher numMatcher = numPattern.matcher(line);
+        sbTemp = new StringBuffer();
+        while (numMatcher.find()) {
+            String numLiteral = numMatcher.group(1);
+            String id = getOrCreateUserSymbolIDForLiteral(numLiteral, "int");
+            numMatcher.appendReplacement(sbTemp, id);
+        }
+        numMatcher.appendTail(sbTemp);
+        line = sbTemp.toString();
 
-        for (Map<String, String> entry : sortedTabsim) {
-            String varName = entry.get("VARIABLE");
-            // Solo reemplazar si NO es un literal de cadena (que ya está en TABSIM como constante)
-            // y si no es un número (que también se tratará como constante)
-            if (!varName.startsWith("\"") && !varName.matches("\\d+|TRUE|FALSE")) {
-                 // Asegurar que sea una palabra completa y no parte de otra palabra o palabra clave
-                 // Evitar reemplazar "id" si es parte de "identificador"
-                 line = line.replaceAll("\\b" + Pattern.quote(varName) + "\\b", entry.get("ID"));
+        List<Map<String, String>> sortedUserSymbols = new ArrayList<>(USER_SYMBOLS_TABSIM);
+        sortedUserSymbols.sort((a, b) -> b.get("VARIABLE").length() - a.get("VARIABLE").length());
+
+        for (Map<String, String> userSymbol : sortedUserSymbols) {
+            String varName = userSymbol.get("VARIABLE");
+            if (!varName.startsWith("\"") && !varName.matches("\\d+|TRUE|FALSE") && !varName.isEmpty() ) {
+                line = line.replaceAll("\\b" + Pattern.quote(varName) + "\\b", userSymbol.get("ID"));
             }
         }
         
-        // 3. Reemplazar constantes numéricas y booleanas por sus IDs
-        Pattern numBoolPattern = Pattern.compile("\\b(\\d+|TRUE|FALSE)\\b", Pattern.CASE_INSENSITIVE);
-        Matcher numBoolMatcher = numBoolPattern.matcher(line);
-        sb = new StringBuffer();
-        while(numBoolMatcher.find()){
-            String constant = numBoolMatcher.group(1);
-            String type = constant.matches("\\d+") ? "int" : "bool";
-            String id = addConstantToTABSIM(constant.toUpperCase(), type); // TRUE/FALSE en mayúsculas
-            numBoolMatcher.appendReplacement(sb, id);
-        }
-        numBoolMatcher.appendTail(sb);
-        line = sb.toString();
-
-        // 4. Reemplazar los placeholders de cadena con sus IDs
-        for(String strContent : foundStrings){
-            String fullStringLiteral = "\"" + strContent + "\"";
-            String id = addConstantToTABSIM(fullStringLiteral, "string");
-            line = line.replaceFirst("__STRING_PLACEHOLDER__", id);
+        for (int i = 0; i < stringLiteralsFound.size(); i++) {
+            String literalWithQuotes = stringLiteralsFound.get(i);
+            String id = getOrCreateUserSymbolIDForLiteral(literalWithQuotes, "string");
+            line = line.replace("__STRING_PLACEHOLDER_" + i + "__", id);
         }
         return line;
     }
-
 
     private static String transformCodeWithIdentifiers(ParseResult structure) {
         if (structure == null) return "";
@@ -512,52 +547,57 @@ public class J2GAnalyzer {
         switch (structure.type) {
             case "IF":
                 String cond = replaceIdentifiers(structure.parts.get("condition"));
-                String body = analyzeCodeBlock(structure.parts.get("body").split("\\n")); // Recursivo
-                transformed = "if (" + cond + ") {\n" + body + "}";
+                String body = analyzeCodeBlock(structure.parts.get("body").split("\\r?\\n"));
+                transformed = "if (" + cond + ") {\n" + body + "}"; // body ya tiene \n al final si no está vacío
                 if (structure.parts.containsKey("elseBody")) {
-                    String elseBody = analyzeCodeBlock(structure.parts.get("elseBody").split("\\n")); // Recursivo
+                    String elseBody = analyzeCodeBlock(structure.parts.get("elseBody").split("\\r?\\n"));
                     transformed += " else {\n" + elseBody + "}";
                 }
                 return transformed + "\n";
             case "SWITCH":
                 String expr = replaceIdentifiers(structure.parts.get("expression"));
-                // El parseo y transformación de casos es complejo, por ahora transformamos el bloque crudo
-                String casesTransformed = analyzeCodeBlock(structure.parts.get("casesRaw").split("\\n"));
+                String casesTransformed = analyzeCodeBlock(structure.parts.get("casesRaw").split("\\r?\\n"));
                 return "sw (" + expr + ") {\n" + casesTransformed + "}\n";
             case "FOR":
-                String init = replaceIdentifiers(structure.parts.get("init"));
-                 // La declaración en init también afecta a TABSIM
-                processSimpleLine(structure.parts.get("init") + (structure.parts.get("init").trim().endsWith(";") ? "" : ";"));
+                String init = replaceIdentifiers(structure.parts.get("init")); 
                 String forCond = replaceIdentifiers(structure.parts.get("condition"));
                 String incr = replaceIdentifiers(structure.parts.get("increment"));
-                String forBody = analyzeCodeBlock(structure.parts.get("body").split("\\n"));
+                String forBody = analyzeCodeBlock(structure.parts.get("body").split("\\r?\\n"));
                 return "for (" + init + "; " + forCond + "; " + incr + ") {\n" + forBody + "}\n";
             case "WHILE":
                 String whileCond = replaceIdentifiers(structure.parts.get("condition"));
-                String whileBody = analyzeCodeBlock(structure.parts.get("body").split("\\n"));
+                String whileBody = analyzeCodeBlock(structure.parts.get("body").split("\\r?\\n"));
                 return "while (" + whileCond + ") {\n" + whileBody + "}\n";
             case "DO_WHILE":
-                String doWhileBody = analyzeCodeBlock(structure.parts.get("body").split("\\n"));
+                String doWhileBody = analyzeCodeBlock(structure.parts.get("body").split("\\r?\\n"));
                 String doWhileCond = replaceIdentifiers(structure.parts.get("condition"));
                 return "do {\n" + doWhileBody + "} while (" + doWhileCond + ");\n";
             case "PRINT":
                 String args = replaceIdentifiers(structure.parts.get("arguments"));
                 return "Print(" + args + ");\n";
+            case "CASE_LABEL":
+                String caseExpr = replaceIdentifiers(structure.parts.get("expression"));
+                return "caso " + caseExpr + ":\n";
+            case "DEFAULT_LABEL":
+                return "por_defecto:\n";
+            case "DETENER_STMT":
+                return "detener;\n";
             case "DECLARATION":
             case "ASSIGNMENT":
-                // Estas líneas ya afectan TABSIM a través de processSimpleLine
-                // y ahora solo necesitan la transformación de identificadores.
-                return replaceIdentifiers(structure.rawMatchedCode) + "\n";
+            case "INPUT_ASSIGN":
+                return replaceIdentifiers(structure.rawMatchedCode.trim()) + "\n";
             case "EMPTY":
                 return "\n";
-            default:
-                return structure.rawMatchedCode + " // TIPO DESCONOCIDO PARA TRANSFORMACION\n";
+            case "UNMATCHED_BRACE":
+                 return structure.rawMatchedCode.trim() + " // ADVERTENCIA: LLAVE SUELTA\n";
+            default: // UNKNOWN or ERROR_SYNTAX types
+                return replaceIdentifiers(structure.rawMatchedCode.trim()) + " // TIPO DESCONOCIDO O ERROR DE SINTAXIS (" + structure.type + ")\n";
         }
     }
 
-
     private static ParseResult parseNextStructureOrLine(String[] lines, int currentIndex) {
-        String currentLineOriginal = lines[currentIndex]; // Mantener original con sus espacios para reconstruir rawMatchedCode
+        if (currentIndex >= lines.length) return null; // No more lines
+        String currentLineOriginal = lines[currentIndex]; 
         String currentLineTrimmed = currentLineOriginal.trim();
 
         if (currentLineTrimmed.isEmpty()) {
@@ -568,56 +608,75 @@ public class J2GAnalyzer {
         structureResult = matchIfStructure(lines, currentIndex); if (structureResult != null) return structureResult;
         structureResult = matchSwitchStructure(lines, currentIndex); if (structureResult != null) return structureResult;
         structureResult = matchForStructure(lines, currentIndex); if (structureResult != null) return structureResult;
-        // Importante: while ANTES de do-while para evitar falsos positivos si "while" es parte de la línea de do-while
-        structureResult = matchWhileStructure(lines, currentIndex); if (structureResult != null) return structureResult;
         structureResult = matchDoWhileStructure(lines, currentIndex); if (structureResult != null) return structureResult;
+        structureResult = matchWhileStructure(lines, currentIndex); if (structureResult != null) return structureResult;
         structureResult = matchPrintStatement(lines, currentIndex); if (structureResult != null) return structureResult;
+        structureResult = matchCaseLabel(lines, currentIndex); if (structureResult != null) return structureResult;
+        structureResult = matchDefaultLabel(lines, currentIndex); if (structureResult != null) return structureResult;
+        structureResult = matchDetenerStatement(lines, currentIndex); if (structureResult != null) return structureResult;
         
-        // Si no es una estructura de control de bloque, intentar declaración o asignación
-        Pattern declPattern = Pattern.compile("^(INT|STR|BOOL)\\s+([a-z][a-zA-Z0-9_]*)\\s*(?:\\:=\\s*(.+))?\\s*;$", Pattern.CASE_INSENSITIVE);
+        Pattern declPattern = Pattern.compile("^(INT|STR|BOOL)\\s+([a-z][a-zA-Z0-9_]*)\\s*(?:\\:=\\s*(.+?))?\\s*;$", Pattern.CASE_INSENSITIVE);
         Matcher vdMatcher = declPattern.matcher(currentLineTrimmed);
         if (vdMatcher.matches()) {
             return new ParseResult("DECLARATION", currentLineOriginal, 1);
         }
 
-        Pattern assignPattern = Pattern.compile("^([a-z][a-zA-Z0-9_]*)\\s*\\:=\\s*(.+)\\s*;$");
+        Pattern assignPattern = Pattern.compile("^([a-z][a-zA-Z0-9_]*)\\s*\\:=\\s*(.+?)\\s*;$");
         Matcher assignMatcher = assignPattern.matcher(currentLineTrimmed);
         if (assignMatcher.matches()) {
-             // Aquí podrías verificar específicamente si es una asignación de Input
-            // String rhs = assignMatcher.group(2).trim();
-            // if (rhs.startsWith("Input(")... ) return new ParseResult("INPUT_ASSIGN", ...);
+            String rhs = assignMatcher.group(2).trim();
+            if (rhs.matches("^Input\\s*\\(.*?\\)\\.(Int|Str|Bool)\\s*\\(\\s*\\)$")) {
+                 return new ParseResult("INPUT_ASSIGN", currentLineOriginal, 1);
+            }
             return new ParseResult("ASSIGNMENT", currentLineOriginal, 1);
         }
         
-        return new ParseResult("UNKNOWN", currentLineOriginal, 1); // No se pudo reconocer
+        if (currentLineTrimmed.equals("}")) {
+             System.err.println("Advertencia: Llave de cierre '}' encontrada fuera de una estructura esperada en la línea original: " + (currentIndex + 1) + " -> " + currentLineOriginal );
+             return new ParseResult("UNMATCHED_BRACE", currentLineOriginal, 1);
+        }
+        return new ParseResult("UNKNOWN", currentLineOriginal, 1);
     }
 
     private static String analyzeCodeBlock(String[] blockLines) {
         StringBuilder transformedCodeBlock = new StringBuilder();
         int i = 0;
         while (i < blockLines.length) {
+            if (blockLines[i] == null || blockLines[i].trim().isEmpty() && i == blockLines.length -1 && transformedCodeBlock.length() == 0) {
+                // Avoid processing trailing empty lines if blockLines comes from a split that might produce them
+                // Or if the block itself is empty after extraction
+                i++;
+                continue;
+            }
             ParseResult result = parseNextStructureOrLine(blockLines, i);
             if (result != null) {
-                // Primero, procesar declaraciones o asignaciones para efectos en TABSIM
-                if ("DECLARATION".equals(result.type) || "ASSIGNMENT".equals(result.type)) {
-                    processSimpleLine(result.rawMatchedCode.trim());
+                if ("DECLARATION".equals(result.type) || "ASSIGNMENT".equals(result.type) || "INPUT_ASSIGN".equals(result.type)) {
+                    processSimpleLineForTABSIM(result.rawMatchedCode.trim());
                 } else if ("FOR".equals(result.type) && result.parts.containsKey("init")) {
-                    // La inicialización del for también puede ser una declaración
-                     processSimpleLine(result.parts.get("init").trim() + (result.parts.get("init").trim().endsWith(";") ? "" : ";") );
+                    String initPart = result.parts.get("init").trim();
+                    // Asegurar que termine en ; para processSimpleLineForTABSIM
+                    if (!initPart.endsWith(";")) initPart += ";";
+                    processSimpleLineForTABSIM(initPart);
                 }
-                // Luego, transformar el código (esto puede ser recursivo para los cuerpos de los bloques)
                 transformedCodeBlock.append(transformCodeWithIdentifiers(result));
                 i += result.linesConsumed;
-            } else { // Debería ser manejado por ParseResult("UNKNOWN")
-                transformedCodeBlock.append(blockLines[i]).append(" // ERROR DE PARSEO INTERNO\n");
+            } else { 
+                // Should not happen if parseNextStructureOrLine always returns something or null at end of lines
+                if (i < blockLines.length) { // Check to prevent error on empty blockLines
+                     transformedCodeBlock.append(blockLines[i]).append(" // ERROR DE PARSEO INTERNO CRÍTICO\n");
+                }
                 i++; 
             }
         }
-        return transformedCodeBlock.toString();
+        // Remove trailing newline if the last transformed part added one and the block is otherwise empty
+        String finalBlock = transformedCodeBlock.toString();
+        if (finalBlock.endsWith("\n\n")) return finalBlock.substring(0, finalBlock.length() -1);
+        return finalBlock;
     }
 
     public static void main(String[] args) {
-        loadTABSIM(TABSIM_FILE); // Cargar tabla de símbolos inicial
+        // Cargar símbolos de usuario si existen de una ejecución previa
+        loadUserSymbolsTABSIM(USER_SYMBOLS_FILE_INPUT);
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Ingrese el código fuente de J2G. Escriba 'END' en una nueva línea para finalizar:");
@@ -643,22 +702,22 @@ public class J2GAnalyzer {
             System.out.println(mainBlockContent);
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
-            saveTABSIM(TABSIM_OUTPUT_FILE); // Guardar TABSIM incluso si hay error después de cargarla
+            saveUserSymbolsTABSIM(USER_SYMBOLS_FILE_OUTPUT);
             return;
         }
 
         System.out.println("\n--- Iniciando Análisis y Transformación ---");
-        String[] linesToAnalyze = mainBlockContent.split("\\n");
+        String[] linesToAnalyze = mainBlockContent.split("\\r?\\n"); // Split por newline
         String transformedCode = analyzeCodeBlock(linesToAnalyze);
         
         System.out.println("\n--- Código Transformado (con IDs) ---");
-        System.out.println(transformedCode);
+        System.out.println(transformedCode.trim()); // .trim() para quitar posible último salto de línea extra
 
-        saveTABSIM(TABSIM_OUTPUT_FILE);
-        System.out.println("\nTABSIM actualizado guardado en " + TABSIM_OUTPUT_FILE);
-        System.out.println("\n--- Contenido Final de TABSIM ---");
-        for (Map<String, String> entry : TABSIM) {
+        saveUserSymbolsTABSIM(USER_SYMBOLS_FILE_OUTPUT);
+        System.out.println("\n--- Contenido Final de USER_SYMBOLS_TABSIM ---");
+        for (Map<String, String> entry : USER_SYMBOLS_TABSIM) {
             System.out.println(entry.get("VARIABLE") + "\t" + entry.get("ID") + "\t" + entry.get("TIPO") + "\t" + entry.get("VALOR"));
         }
+         System.out.println("\nAnálisis completado por: Yourchh el " + "2025-05-12 14:51:33" + " UTC");
     }
 }
