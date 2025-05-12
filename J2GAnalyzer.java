@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 // ProductionRule (si la usas aquí, sino puede ser de tu LRParser)
 // class ProductionRule { ... }
