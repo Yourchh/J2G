@@ -28,13 +28,25 @@ VARIABLE	ID	TIPO	VALOR
 "	"	delimitador	"
 TRUE	TRUE	booleano	true
 FALSE	FALSE	booleano	false
-18	id3	int	18
-edad	id1	int	id2
-"Es mayor de edad"	id4	string	"Es mayor de edad"
-"Es menor de edad"	id5	string	"Es menor de edad"
-mensaje	id6	str	"hola como andas"
-"hola como andas"	id7	string	"hola como andas"
-5	id10	int	5
-contador	id8	int	id9
-0	id11	int	0
-1	id12	int	1
+25	id2	int	25
+edad	id1	int	Input("Tu edad?").Int()
+18	id4	int	18
+mayorEdad	id3	int	id4
+mensaje	id5	str	"Es mayor de edad"
+"Es mayor de edad"	id6	string	"Es mayor de edad"
+"Es menor de edad"	id7	string	"Es menor de edad"
+1	id9	int	1
+dia	id8	int	id9
+"Lunes"	id10	string	"Lunes"
+"Otro dia"	id11	string	"Otro dia"
+0	id13	int	0
+i	id12	int	id13
+3	id14	int	3
+"Iteracion FOR: "	id15	string	"Iteracion FOR: "
+count	id16	int	count + 1
+2	id17	int	2
+"Iteracion WHILE: "	id18	string	"Iteracion WHILE: "
+num	id19	int	1
+"Bucle DO-WHILE"	id20	string	"Bucle DO-WHILE"
+"Tu edad?"	id21	string	"Tu edad?"
+"Edad ingresada: "	id22	string	"Edad ingresada: "
