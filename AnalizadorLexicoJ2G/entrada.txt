@@ -23,12 +23,7 @@ if (promedio >= 6 || numero < 24) {
     
 } else {
     Print("Reprobado");
-}else {
-    Print("Reprobado");
-}else {
-    Print("Reprobado");
 }
-
 if (edad >= 18) {
     Print("Es mayor de edad");
     Print("Es mayor de edad");
@@ -47,10 +42,11 @@ if (edad >= 18) {
             detener;
     }
 }
+INT aux := 34;
+aux :=Input.Int();
 do {
     Print("Ingrese un número positivo:");
     STR entrada;
-    entrada := 34;
     entrada :=Input.Int();
     // Aquí el programador debe implementar la conversión de STR a INT
 } while (numero <= 0);
@@ -60,5 +56,8 @@ contador := 15;
 while (contador < 5 ){
     Print(contador);
     contador += 1;
+}
+for (INT i := 0: i < 5: i += 1) {
+    Print(i);
 }
 } // Fin de FUNC J2G Main() - BLOCK_END
