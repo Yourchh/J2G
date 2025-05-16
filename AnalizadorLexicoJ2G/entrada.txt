@@ -33,7 +33,7 @@ if (edad >= 18) {
             
             numero += 1;
             detener;
-        caso 14:
+        caso 56:
             Print("Casi fin de semana!");
             numero += 1;
             detener;
@@ -50,10 +50,10 @@ do {
     entrada :=Input.Int();
     // Aquí el programador debe implementar la conversión de STR a INT
 } while (numero <= 0);
-
+entrada :=Input.Bool();
 INT contador := 0;
-contador := 15;
-while (contador < 5 ){
+contador := 56;
+while (contador < 5) {
     Print(contador);
     contador += 1;
 }
