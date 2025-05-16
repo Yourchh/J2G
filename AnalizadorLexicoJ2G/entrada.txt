@@ -1,3 +1,4 @@
+FUNC J2G Main (){
 INT numero := 0;
 STR entrada;
 do {
@@ -5,3 +6,5 @@ do {
     entrada := Input().Str();
     // Aquí el programador debe implementar la conversión de STR a INT
 } while (numero <= 0);
+
+}
