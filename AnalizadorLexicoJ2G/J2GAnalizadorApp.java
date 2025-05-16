@@ -161,7 +161,7 @@ public class J2GAnalizadorApp {
 
     private static void mostrarNuevasVariablesConsola(List<SymbolTableEntry> nuevasVariables) {
         System.out.println(new String(new char[90]).replace("\0", "-"));
-        System.out.println(String.format("%-30s | %-10s | %-10s | %-30s", "VARIABLE", "ID", "TIPO", "VALOR"));
+        System.out.println(String.format("%-40s | %-10s | %-10s | %-40s", "VARIABLE", "ID", "TIPO", "VALOR"));
         System.out.println(new String(new char[90]).replace("\0", "-"));
         
         Map<String, SymbolTableEntry> displayOrderMap = new LinkedHashMap<>();

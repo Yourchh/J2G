@@ -18,6 +18,6 @@ class SymbolTableEntry {
 
     @Override
     public String toString() {
-        return String.format("%-30s | %-10s | %-10s | %-30s", variable, id, tipo, valor);
+        return String.format("%-40s | %-10s | %-10s | %-40s", variable, id, tipo, valor);
     }
 }

@@ -12,7 +12,7 @@ FUNC     J2G     Main   (   )    {  // Inicio de la función principal
     INT numero := 0;  // Variable auxiliar
 
     // Mensajes iniciales
-    Print ( "Bienvenido al sistema de evaluación J2G."  ) ;
+    Print ( "Bienvenido al sistema"  ) ;
 
     Print ( "Ingrese su edad:" ) ;
     edad :=    Input     . Int ( ) ;
