@@ -12,7 +12,7 @@ public class J2GAnalizadorApp {
     public static void main(String[] args) {
         String archivoEntrada = "/Users/jorgeandreshernandezpelayo/Documents/.yorch/Escuela/Codigos/J2G/AnalizadorLexicoJ2G/entrada.txt"; 
         String archivoTabsim = "/Users/jorgeandreshernandezpelayo/Documents/.yorch/Escuela/Codigos/J2G/AnalizadorLexicoJ2G/tabsim.txt";
-        // Ya no se necesita archivoReglasRegex
+        
 
         TablaSimbolos tablaSimbolos = new TablaSimbolos();
         AnalizadorLexicoCore analizadorLexico = new AnalizadorLexicoCore(tablaSimbolos);
@@ -73,6 +73,7 @@ public class J2GAnalizadorApp {
 
         for (int i = 0; i < tokens.size(); i++) {
             String token = tokens.get(i);
+            String prevToken = (i > 0) ? tokens.get(i-1) : ""; // Necesitamos el token previo
             String nextToken = (i + 1 < tokens.size()) ? tokens.get(i + 1) : "";
 
             if (token.equals("}")) {
@@ -82,12 +83,17 @@ public class J2GAnalizadorApp {
                 }
                 appendIndent(sb, indentLevel, indentUnit);
             } else if (atStartOfLine) {
-                if (!(token.equals("else") && i > 0 && tokens.get(i-1).equals("}"))) {
+                // No indentar 'else' si viene justo después de un '}' en la misma línea lógica
+                // (el '}' ya decrementó la indentación y añadió nueva línea)
+                if (!(token.equals("else") && prevToken.equals("}"))) { // Modificado para usar prevToken directamente
                     appendIndent(sb, indentLevel, indentUnit);
                 }
             }
+
             sb.append(token);
             atStartOfLine = false;
+
+            // Lógica para saltos de línea y indentación después de ciertos tokens
             if (token.equals("{")) {
                 sb.append("\n");
                 indentLevel++;
@@ -95,19 +101,50 @@ public class J2GAnalizadorApp {
             } else if (token.equals(";")) {
                 sb.append("\n");
                 atStartOfLine = true;
-            } else if (token.equals("}")) {
+            } else if (token.equals(":") && 
+                       (prevToken.equals("caso") || 
+                        prevToken.equals("por_defecto") ||
+                        (i > 1 && tokens.get(i-2).equals("caso") && (prevToken.matches("\"(?:\\\\.|[^\"\\\\])*\"") || prevToken.matches("[a-zA-Z_][a-zA-Z0-9_]*") || prevToken.matches("[0-9]+")))
+                       )) {
+                // Si el token es ':' Y viene después de "caso <valor>" o "por_defecto"
+                sb.append("\n");
+                atStartOfLine = true;
+                // La indentación para la siguiente línea dentro del caso/default
+                // usualmente sería la del switch + 1. 
+                // El appendIndent al inicio de la siguiente línea manejada por atStartOfLine
+                // debería indentar correctamente si el indentLevel es el del switch.
+                // Si la línea de 'caso:' o 'por_defecto:' no incrementa indentLevel,
+                // la siguiente línea se indentará al mismo nivel que 'caso'.
+                // Podríamos añadir un appendIndent(sb, indentLevel + 1, indentUnit); aquí y
+                // luego atStartOfLine = false; pero es más simple dejar que la siguiente línea lo maneje.
+                // Para que las instrucciones dentro de un caso estén más indentadas,
+                // el bloque del 'sw' debería haber incrementado el indentLevel.
+                // Esta lógica asume que la línea de 'caso:' o 'por_defecto:' no cambia el indentLevel.
+                // La indentación de las sentencias DENTRO del caso se maneja por la lógica general.
+
+            } else if (token.equals("}")) { // Este 'else if' es para el '}' que no es el primero en la línea
                 if (!nextToken.equals("else")) {
                     sb.append("\n");
                     atStartOfLine = true;
                 }
+                // Si es '}' seguido de 'else', el 'else' se manejará en la siguiente iteración
+                // y se colocará en la misma línea o indentado correctamente.
             } else {
+                // Lógica para agregar espacios entre tokens en la misma línea
                 if (!nextToken.isEmpty() &&
-                    !nextToken.equals(";") && !nextToken.equals(",") &&
-                    !nextToken.equals(")") && !nextToken.equals("]") && !nextToken.equals("}") && !nextToken.equals("{") &&
-                    !token.equals("(") && !token.equals("[") &&
-                    !(token.equals("Input") && nextToken.equals(".")) && 
-                    !(i > 0 && tokens.get(i-1).equals("Input") && token.equals(".")) && 
-                    !nextToken.equals(".") 
+                    !nextToken.equals(";") && // No espacio antes de ;
+                    !nextToken.equals(",") && // No espacio antes de , (si lo tuvieras)
+                    !nextToken.equals(")") && // No espacio antes de )
+                    !nextToken.equals("]") && // No espacio antes de ] (si lo tuvieras)
+                    !nextToken.equals("}") && // No espacio antes de }
+                    !nextToken.equals("{") && // No espacio antes de { (raro, usualmente { va en nueva línea)
+                    !token.equals("(") &&     // No espacio después de (
+                    !token.equals("[") &&     // No espacio después de [ (si lo tuvieras)
+                    !(token.equals("Input") && nextToken.equals(".")) && // No espacio entre Input y .
+                    !(prevToken.equals("Input") && token.equals(".")) && // No espacio entre Input. y Str/Int/Bool
+                    !nextToken.equals(".") &&  // No espacio antes de . (general)
+                    // No agregar espacio ANTES de ':' si el token actual es un valor de 'caso' o 'por_defecto'
+                    !(nextToken.equals(":") && (token.equals("caso") || token.equals("por_defecto") || token.matches("\"(?:\\\\.|[^\"\\\\])*\"") || token.matches("[a-zA-Z_][a-zA-Z0-9_]*") || token.matches("[0-9]+")))
                    ) {
                     sb.append(" ");
                 }

@@ -1,10 +1,18 @@
-FUNC J2G Main (){
-INT numero := 0;
-STR entrada;
-do {
-    Print("Ingrese un número positivo:");
-    entrada := Input().Str();
-    // Aquí el programador debe implementar la conversión de STR a INT
-} while (numero <= 0);
+FUNC J2G Main() {
+    STR dia := "Lunes";
+    sw (dia) {
+        caso "Lunes":
+            Print("Inicio de semana laboral");
+            INT numero;
+            numero += 1;
+            detener;
+        caso "Viernes":
+            Print(("Casi fin de semana!");
+            numero += 1;
+            detener;detener;
+        por_defecto:
+            Print("Otro día");
+            detener;
+    }
 
-}
+} // Fin de FUNC J2G Main() - BLOCK_END

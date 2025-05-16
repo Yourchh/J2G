@@ -35,7 +35,7 @@ sw	sw	palabra_res
 caso	caso	palabra_res	
 por_defecto	por_defecto	palabra_res	
 for	for	palabra_res	
-while	while	palabra_res	
+while	while	palabra_res
 do	do	palabra_res	
 FUNC	FUNC	palabra_res	
 J2G	J2G	palabra_res	
@@ -45,5 +45,8 @@ Input	Input	función
 Int	Int	tipo_convers	
 Str	Str	tipo_convers	
 Bool	Bool	tipo_convers	
-TRUE	TRUE	booleano	true
-FALSE	FALSE	booleano	false
+TRUE	ture	booleano	true
+FALSE	false	booleano	false
+detener	detener	palabra_res	null
+true	true	booleano	true
+false	false	booleano	false
