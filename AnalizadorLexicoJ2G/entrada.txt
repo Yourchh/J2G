@@ -15,10 +15,8 @@ FUNC     J2G     Main   (   )    {  // Inicio de la función principal
     Print ( "Bienvenido al sistema"  ) ;
 
     Print ( "Ingrese su edad:" ) ;
-    edad :=    Input     . Int ( ) ;
 
     Print("Ingrese su calificación:");
-    calificacion := Input     . Int (  ) ;
 
     // Evaluación del día
     sw ( dia   )    {
@@ -79,14 +77,12 @@ FUNC     J2G     Main   (   )    {  // Inicio de la función principal
         Print( "Ingrese un número positivo:"  )   ;
 
         STR   entrada ;
-        entrada := Input . Int (  ) ;
 
         numero := 56; // Conversión asumida de STR a INT
     } while ( numero <= 0 ) ;
 
     // Entrada booleana
     Print("¿Desea continuar? (true/false):");
-    respuesta := Input . Bool ( ) ;
 
     if (respuesta == true) {
         Print("Continuando el programa...");
@@ -111,15 +107,16 @@ FUNC     J2G     Main   (   )    {  // Inicio de la función principal
     }
 
     // Simulación de menú con sw
-    INT   opcion :=   2  ;
+    INT   opcion :=   45  ;
 
     Print  ( "Selecciona una opción:" ) ;
     Print("1. Mostrar nombre");
     Print ( "2. Mostrar edad" );
     Print("3. Salir");
 
-    opcion :=   Input.Str();
-
+    opcion :=   Input (). Int();
+    STR con;
+    con := Input ().Str();
     sw ( opcion ) {
         caso 1:
             Print("Nombre:");

@@ -73,7 +73,7 @@ public class J2GAnalizadorApp {
 
         for (int i = 0; i < tokens.size(); i++) {
             String token = tokens.get(i);
-            String prevToken = (i > 0) ? tokens.get(i-1) : ""; // Necesitamos el token previo
+            String prevToken = (i > 0) ? tokens.get(i-1) : "";
             String nextToken = (i + 1 < tokens.size()) ? tokens.get(i + 1) : "";
 
             if (token.equals("}")) {
@@ -109,18 +109,6 @@ public class J2GAnalizadorApp {
                 // Si el token es ':' Y viene después de "caso <valor>" o "por_defecto"
                 sb.append("\n");
                 atStartOfLine = true;
-                // La indentación para la siguiente línea dentro del caso/default
-                // usualmente sería la del switch + 1. 
-                // El appendIndent al inicio de la siguiente línea manejada por atStartOfLine
-                // debería indentar correctamente si el indentLevel es el del switch.
-                // Si la línea de 'caso:' o 'por_defecto:' no incrementa indentLevel,
-                // la siguiente línea se indentará al mismo nivel que 'caso'.
-                // Podríamos añadir un appendIndent(sb, indentLevel + 1, indentUnit); aquí y
-                // luego atStartOfLine = false; pero es más simple dejar que la siguiente línea lo maneje.
-                // Para que las instrucciones dentro de un caso estén más indentadas,
-                // el bloque del 'sw' debería haber incrementado el indentLevel.
-                // Esta lógica asume que la línea de 'caso:' o 'por_defecto:' no cambia el indentLevel.
-                // La indentación de las sentencias DENTRO del caso se maneja por la lógica general.
 
             } else if (token.equals("}")) { // Este 'else if' es para el '}' que no es el primero en la línea
                 if (!nextToken.equals("else")) {
@@ -160,9 +148,9 @@ public class J2GAnalizadorApp {
     }
 
     private static void mostrarNuevasVariablesConsola(List<SymbolTableEntry> nuevasVariables) {
-        System.out.println(new String(new char[90]).replace("\0", "-"));
+        System.out.println(new String(new char[110]).replace("\0", "-"));
         System.out.println(String.format("%-40s | %-10s | %-10s | %-40s", "VARIABLE", "ID", "TIPO", "VALOR"));
-        System.out.println(new String(new char[90]).replace("\0", "-"));
+        System.out.println(new String(new char[110]).replace("\0", "-"));
         
         Map<String, SymbolTableEntry> displayOrderMap = new LinkedHashMap<>();
         for(SymbolTableEntry entry : nuevasVariables){
@@ -178,6 +166,6 @@ public class J2GAnalizadorApp {
         for (SymbolTableEntry entry : displayOrderMap.values()) {
             System.out.println(entry);
         }
-        System.out.println(new String(new char[90]).replace("\0", "-"));
+        System.out.println(new String(new char[10]).replace("\0", "-"));
     }
 }
