@@ -1,63 +1,140 @@
-FUNC J2G Main() {
-    STR dia := "Lunes";
-    STR nombre := "carlos";
-    INT promedio := 10;
+// Programa principal para pruebas sintácticas y estructurales
 
-    INT edad ;
-    sw (dia) {
-        caso "Lunes":
-            Print("Inicio de semana laboral");
-            INT numero;
-            numero += 1;
-            detener;
+FUNC     J2G     Main   (   )    {  // Inicio de la función principal
+
+    // Declaración de variables iniciales
+    STR    dia    :=    "Lunes"   ;    
+    STR     nombre    :=   "Carlos"  ;    
+    INT     promedio   :=    10  ;
+
+    INT     edad     ;   // Edad del usuario
+    INT      calificacion   ; // Calificación capturada
+    INT numero := 0;  // Variable auxiliar
+
+    // Mensajes iniciales
+    Print ( "Bienvenido al sistema de evaluación J2G."  ) ;
+
+    Print ( "Ingrese su edad:" ) ;
+    edad :=    Input     . Int ( ) ;
+
+    Print("Ingrese su calificación:");
+    calificacion := Input     . Int (  ) ;
+
+    // Evaluación del día
+    sw ( dia   )    {
+        caso     "Lunes" :
+            Print (   "Inicio de semana laboral" )  ; 
+            numero     +=    1 ;
+            detener ;
         caso "Viernes":
-            Print("Casi fin de semana!");
-            numero += 1;
+            Print( "Casi fin de semana!" )   ;
+            numero   += 1   ;
+            detener ;
+        por_defecto  :
+            Print("Otro día");
+            detener ;
+    }
+
+    // Evaluación de aprobación
+    if   ( promedio   >=   6    ||     numero <   24 )   {
+        Print( "Aprobado" );
+    } 
+    else {
+        Print (  "Reprobado" )  ;
+    }
+
+    // Evaluación de mayoría de edad
+    if (    edad    >=   18  )   {
+
+        Print  ( "Es mayor de edad" )   ;
+        Print( "Es mayor de edad" ) ; // Mensaje redundante
+
+        sw ( edad ) {
+            caso  13  :
+                Print("Muy joven");
+                detener;
+            caso     18 :
+                Print  (   "Justo en la mayoría de edad"  ) ;
+                detener  ;
+            caso  25:
+                Print("Joven adulto");
+                detener;
+            por_defecto:
+                Print  ( "Edad no categorizada" );
+                detener;
+        }
+
+        // Evaluación por calificación
+        if (   calificacion >= 9 ) {
+            Print("Excelente desempeño");
+        } else   {
+            Print("Necesita mejorar");
+        }
+    }
+
+    // Entrada de datos en bucle
+    STR   respuesta   ;
+
+    do {
+        Print( "Ingrese un número positivo:"  )   ;
+
+        STR   entrada ;
+        entrada := Input . Int (  ) ;
+
+        numero := 56; // Conversión asumida de STR a INT
+    } while ( numero <= 0 ) ;
+
+    // Entrada booleana
+    Print("¿Desea continuar? (true/false):");
+    respuesta := Input . Bool ( ) ;
+
+    if (respuesta == true) {
+        Print("Continuando el programa...");
+    } 
+    else {
+        Print("Programa finalizado por el usuario.");
+    }
+
+    // Ciclo while de prueba
+    INT     contador :=   0   ;
+
+    while   (   contador < 5  ) {
+        Print("Contando:");
+        Print( contador );
+        contador    +=   1 ;
+    }
+
+    // Ciclo for de prueba
+    for ( INT  i  := 5  :   i  < 10  :   i += 1   ) {
+        Print("Valor de i:");
+        Print( i );
+    }
+
+    // Simulación de menú con sw
+    INT   opcion :=   2  ;
+
+    Print  ( "Selecciona una opción:" ) ;
+    Print("1. Mostrar nombre");
+    Print ( "2. Mostrar edad" );
+    Print("3. Salir");
+
+    opcion :=   Input.Str();
+
+    sw ( opcion ) {
+        caso 1:
+            Print("Nombre:");
+            Print( nombre );
+           detener; 
+        caso 2:
+            Print ( "Edad:" );
+            Print( edad );
+            detener;
+        caso 23:
+            Print("Saliendo del programa...");
             detener;
         por_defecto:
-            Print("Otro día");
+            Print( "Opción no válida" );
             detener;
     }
-if (promedio >= 6 || numero < 24) {
-    Print("Aprobado");
-    
-} else {
-    Print("Reprobado");
-}
-if (edad >= 18) {
-    Print("Es mayor de edad");
-    Print("Es mayor de edad");
-    sw (edad) {
-        caso 13:
-            Print("Inicio de semana laboral");
-            
-            numero += 1;
-            detener;
-        caso 56:
-            Print("Casi fin de semana!");
-            numero += 1;
-            detener;
-        por_defecto:
-            Print("Otro día");
-            detener;
-    }
-}
-INT aux := 34;
-aux :=Input.Int();
-do {
-    Print("Ingrese un número positivo:");
-    STR entrada;
-    entrada :=Input.Int();
-    // Aquí el programador debe implementar la conversión de STR a INT
-} while (numero <= 0);
-entrada :=Input.Bool();
-INT contador := 0;
-contador := 56;
-while (contador < 5) {
-    Print(contador);
-    contador += 1;
-}
-for (INT i := 0: i < 5: i += 1) {
-    Print(i);
-}
-} // Fin de FUNC J2G Main() - BLOCK_END
+
+}   //    Fin    de    FUNC   J2G   Main()
