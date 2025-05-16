@@ -1,0 +1,7 @@
+INT numero := 0;
+STR entrada;
+do {
+    Print("Ingrese un número positivo:");
+    entrada := Input().Str();
+    // Aquí el programador debe implementar la conversión de STR a INT
+} while (numero <= 0);
