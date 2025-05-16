@@ -1,5 +1,9 @@
 FUNC J2G Main() {
     STR dia := "Lunes";
+    STR nombre := "carlos";
+    INT promedio := 10;
+
+    INT edad ;
     sw (dia) {
         caso "Lunes":
             Print("Inicio de semana laboral");
@@ -7,12 +11,54 @@ FUNC J2G Main() {
             numero += 1;
             detener;
         caso "Viernes":
-            Print(("Casi fin de semana!");
+            Print("Casi fin de semana!");
             numero += 1;
-            detener;detener;
+            detener;
         por_defecto:
             Print("Otro día");
             detener;
     }
+if (promedio >= 6 || numero < 24) {
+    Print("Aprobado");
+    
+} else {
+    Print("Reprobado");
+}else {
+    Print("Reprobado");
+}else {
+    Print("Reprobado");
+}
 
+if (edad >= 18) {
+    Print("Es mayor de edad");
+    Print("Es mayor de edad");
+    sw (edad) {
+        caso 13:
+            Print("Inicio de semana laboral");
+            
+            numero += 1;
+            detener;
+        caso 14:
+            Print("Casi fin de semana!");
+            numero += 1;
+            detener;
+        por_defecto:
+            Print("Otro día");
+            detener;
+    }
+}
+do {
+    Print("Ingrese un número positivo:");
+    STR entrada;
+    entrada := 34;
+    entrada :=Input.Int();
+    // Aquí el programador debe implementar la conversión de STR a INT
+} while (numero <= 0);
+
+INT contador := 0;
+contador := 15;
+while (contador < 5 ){
+    Print(contador);
+    contador += 1;
+}
 } // Fin de FUNC J2G Main() - BLOCK_END
