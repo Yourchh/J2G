@@ -1,3 +1,25 @@
+/**
+ * Aplicación principal para el análisis léxico de código J2G.
+ * Esta clase maneja el proceso de análisis de código fuente, incluyendo:
+ * - Lectura de archivos de entrada
+ * - Limpieza y tokenización del código
+ * - Transformación de tokens
+ * - Validación estructural
+ * - Manejo de tabla de símbolos
+ *
+ * La clase contiene los siguientes métodos principales:
+ * - main: Punto de entrada que coordina todo el proceso de análisis
+ * - leerArchivo: Lee el contenido de un archivo de texto
+ * - prettyPrintCode: Formatea el código para mejor legibilidad
+ * - appendIndent: Agrega indentación al código formateado
+ * - mostrarNuevasVariablesConsola: Muestra las variables nuevas detectadas
+ *
+ * Requiere los siguientes archivos:
+ * - entrada.txt: Archivo con el código fuente a analizar
+ * - tabsim.txt: Archivo con la tabla de símbolos inicial
+ *
+ */
+
 package AnalizadorLexicoJ2G;
 
 import java.io.BufferedReader;

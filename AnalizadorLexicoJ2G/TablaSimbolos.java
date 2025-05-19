@@ -1,3 +1,23 @@
+/**
+ * Clase que maneja la tabla de símbolos para el analizador léxico.
+ * Almacena y gestiona símbolos, variables, literales y sus identificadores.
+ *
+ * La clase mantiene:
+ * - Una tabla base de símbolos
+ * - Un registro de nuevas variables detectadas
+ * - Mapeos de variables a IDs
+ * - Mapeos de literales a IDs
+ * - Un contador para generar IDs únicos
+ * - Una lista de palabras reservadas y símbolos conocidos
+ *
+ * Los símbolos se cargan desde un archivo y se pueden agregar nuevos elementos
+ * durante el análisis. La clase proporciona métodos para:
+ * - Cargar la tabla desde archivo
+ * - Generar nuevos IDs
+ * - Agregar y consultar variables y literales
+ * - Actualizar valores después del análisis
+ */
+
 package AnalizadorLexicoJ2G;
 
 import java.io.BufferedReader;

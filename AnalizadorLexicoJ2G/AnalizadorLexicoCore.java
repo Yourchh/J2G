@@ -1,3 +1,32 @@
+/**
+ * AnalizadorLexicoCore - Clase principal para analizar código fuente.
+ * Se encarga de dividir el código en partes y manejar una tabla de símbolos.
+ * 
+ * Esta clase hace lo siguiente:
+ * 1. Limpia y divide el código eliminando comentarios
+ * 2. Convierte las partes del código en identificadores
+ * 3. Maneja las variables y sus tipos
+ * 
+ * El análisis se hace en dos partes:
+ * - Parte 1 (fase1_limpiarYTokenizar): Quita comentarios y divide el código
+ * - Parte 2 (fase2_transformarTokens): Convierte las partes en identificadores
+ *
+ * El analizador reconoce:
+ * - Textos (entre comillas dobles)
+ * - Palabras reservadas y símbolos conocidos
+ * - Nombres de variables
+ * - Números
+ * - Operadores básicos
+ *
+ * Tipos de elementos que maneja:
+ * - INT, STR, BOOL (tipos de datos)
+ * - Textos ("...")
+ * - Números
+ * - Variables creadas por el usuario
+ * - Operadores y símbolos especiales
+ *
+ */
+
 package AnalizadorLexicoJ2G;
 
 import java.util.ArrayList;

@@ -1,3 +1,29 @@
+/**
+ * Clase que valida la estructura y tipos de un programa J2G.
+ * 
+ * Esta clase verifica:
+ * - Estructura general del programa (función Main)
+ * - Balance de llaves y paréntesis 
+ * - Declaración y uso correcto de variables
+ * - Tipos de datos en asignaciones
+ * - Estructuras de control (if, while, for, switch)
+ * - Sintaxis de sentencias
+ *
+ * Principales características:
+ * - Valida que exista una única función Main
+ * - Verifica que las variables estén declaradas antes de usarse
+ * - Comprueba que los tipos de datos sean compatibles en asignaciones
+ * - Valida la estructura correcta de bloques switch/case
+ * - Detecta errores de sintaxis en expresiones
+ * 
+ * La clase mantiene estado sobre:
+ * - Variables declaradas y sus tipos
+ * - Profundidad de bloques anidados
+ * - Estado actual de bloques switch
+ * - Balance global de llaves
+ *
+ */
+
 package AnalizadorLexicoJ2G;
 
 import java.util.ArrayList;
