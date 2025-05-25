@@ -32,8 +32,8 @@ import java.util.Map;
 public class J2GAnalizadorApp {
 
     public static void main(String[] args) {
-        String archivoEntrada = "entrada.txt"; 
-        String archivoTabsim = "tabsim.txt";
+        String archivoEntrada = "/Users/jorgeandreshernandezpelayo/Documents/.yorch/Escuela/Codigos/J2G/AnalizadorLexicoJ2G/entrada.txt"; 
+        String archivoTabsim = "/Users/jorgeandreshernandezpelayo/Documents/.yorch/Escuela/Codigos/J2G/AnalizadorLexicoJ2G/tabsim.txt";
         
 
         TablaSimbolos tablaSimbolos = new TablaSimbolos();
