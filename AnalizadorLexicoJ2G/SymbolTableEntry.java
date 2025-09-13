@@ -15,11 +15,11 @@
 
 package AnalizadorLexicoJ2G;
 
-class SymbolTableEntry {
-    String variable;
-    String id;
-    String tipo;
-    String valor;
+public class SymbolTableEntry {
+    public String variable;
+    public String id;
+    public String tipo;
+    public String valor;
 
     public SymbolTableEntry(String variable, String id, String tipo, String valor) {
         this.variable = variable;

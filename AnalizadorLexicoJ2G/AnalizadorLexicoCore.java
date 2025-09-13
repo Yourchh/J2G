@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 
 public class AnalizadorLexicoCore {
 
-    private TablaSimbolos tablaSimbolos;
+    public TablaSimbolos tablaSimbolos;
 
     public AnalizadorLexicoCore(TablaSimbolos tablaSimbolos) {
         this.tablaSimbolos = tablaSimbolos;

@@ -6,6 +6,7 @@ FUNC     J2G     Main   (   )    {  // Inicio de la función principal
     STR    dia    :=    "Lunes"   ;    
     STR     nombre    :=   "Carlos"  ;    
     INT     promedio   :=    10  ;
+    BOOL    auio;
 
     INT     edad     ;   // Edad del usuario
     INT      calificacion   ; // Calificación capturada

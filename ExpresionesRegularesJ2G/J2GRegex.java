@@ -1,9 +1,11 @@
+package ExpresionesRegularesJ2G;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-public class J2GRegexValidator {
+public class J2GRegex {
 
     private static final Scanner scanner = new Scanner(System.in);
 

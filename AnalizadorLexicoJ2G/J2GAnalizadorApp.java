@@ -32,9 +32,8 @@ import java.util.Map;
 public class J2GAnalizadorApp {
 
     public static void main(String[] args) {
-        String archivoEntrada = "/Users/jorgeandreshernandezpelayo/Documents/.yorch/Escuela/Codigos/J2G/AnalizadorLexicoJ2G/entrada.txt"; 
-        String archivoTabsim = "/Users/jorgeandreshernandezpelayo/Documents/.yorch/Escuela/Codigos/J2G/AnalizadorLexicoJ2G/tabsim.txt";
-        
+        String archivoEntrada = "AnalizadorLexicoJ2G/entrada.txt"; // Archivo de entrada con el código fuente a analizar
+        String archivoTabsim = "AnalizadorLexicoJ2G/tabsim.txt"; // Archivo de tabla de símbolos
 
         TablaSimbolos tablaSimbolos = new TablaSimbolos();
         AnalizadorLexicoCore analizadorLexico = new AnalizadorLexicoCore(tablaSimbolos);
@@ -143,13 +142,13 @@ public class J2GAnalizadorApp {
                 // Lógica para agregar espacios entre tokens en la misma línea
                 if (!nextToken.isEmpty() &&
                     !nextToken.equals(";") && // No espacio antes de ;
-                    !nextToken.equals(",") && // No espacio antes de , (si lo tuvieras)
+                    !nextToken.equals(",") && // No espacio antes de , (si lo tuviera)
                     !nextToken.equals(")") && // No espacio antes de )
-                    !nextToken.equals("]") && // No espacio antes de ] (si lo tuvieras)
+                    !nextToken.equals("]") && // No espacio antes de ] (si lo tuviera)
                     !nextToken.equals("}") && // No espacio antes de }
                     !nextToken.equals("{") && // No espacio antes de { (raro, usualmente { va en nueva línea)
                     !token.equals("(") &&     // No espacio después de (
-                    !token.equals("[") &&     // No espacio después de [ (si lo tuvieras)
+                    !token.equals("[") &&     // No espacio después de [ (si lo tuviera)
                     !(token.equals("Input") && nextToken.equals(".")) && // No espacio entre Input y .
                     !(prevToken.equals("Input") && token.equals(".")) && // No espacio entre Input. y Str/Int/Bool
                     !nextToken.equals(".") &&  // No espacio antes de . (general)

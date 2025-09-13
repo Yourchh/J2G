@@ -1,3 +1,5 @@
+package AnalizadorSintacticoJ2G;
+
 import java.util.*; // Importa colecciones como List, Map, Stack, Scanner.
 import java.util.regex.Matcher; // Para coincidencias de expresiones regulares.
 import java.util.regex.Pattern; // Para compilar expresiones regulares.
@@ -29,11 +31,6 @@ class ProductionRule {
     }
 }
 
-/**
- * Implementa un parser LR (Left-to-Right, Rightmost derivation).
- * Utiliza una tabla de acciones (ACTION) y una tabla GOTO para analizar
- * una secuencia de tokens basada en una gramática definida.
- */
 public class LRParser {
 
     // Tabla ACTION: Mapea (estado, token_terminal) -> acción (desplazar, reducir, aceptar, error).
@@ -97,6 +94,8 @@ public class LRParser {
         }
     }
 
+    private static final String PARSING_TABLE_PATH = "AnalizadorSintacticoJ2G/matriz_parsing.txt";
+
     // Bloque estático: Se ejecuta una vez cuando la clase es cargada por la JVM.
     // Se utiliza para inicializar miembros estáticos, como las producciones y cargar las tablas.
     static {
@@ -122,15 +121,14 @@ public class LRParser {
         grammarProductions.put(18, new ProductionRule("E", 3, "E -> E / F"));
         grammarProductions.put(19, new ProductionRule("E", 3, "E -> E % F"));
         grammarProductions.put(20, new ProductionRule("F", 1, "F -> G"));
-        grammarProductions.put(21, new ProductionRule("F", 2, "F -> ! F")); // Lado derecho tiene 2 símbolos: "!" y "F"
+        grammarProductions.put(21, new ProductionRule("F", 2, "F -> ! F")); 
         grammarProductions.put(22, new ProductionRule("G", 3, "G -> ( A )"));
         grammarProductions.put(23, new ProductionRule("G", 1, "G -> id"));
         grammarProductions.put(24, new ProductionRule("G", 1, "G -> TRUE"));
         grammarProductions.put(25, new ProductionRule("G", 1, "G -> FALSE"));
 
         try {
-            // Carga de la matriz "matriz_parsing.txt".
-            loadParsingTable("matriz_parsing.txt");
+            loadParsingTable(PARSING_TABLE_PATH);
         } catch (IOException e) {
             System.err.println("Error fatal al cargar la tabla de parsing desde el archivo: " + e.getMessage());
             throw new RuntimeException("No se pudo cargar la tabla de parsing.", e);
