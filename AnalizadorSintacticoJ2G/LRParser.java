@@ -52,7 +52,7 @@ public class LRParser {
      * @param filePath La ruta al archivo que contiene la tabla de parsing.
      * @throws IOException Si ocurre un error al leer el archivo.
      */
-    private static void loadParsingTable(String filePath) throws IOException {
+    public static void loadParsingTable(String filePath) throws IOException {
         // Usamos try-with-resources para asegurar que el BufferedReader se cierre automáticamente.
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line; // Variable para almacenar cada línea leída del archivo.
@@ -94,7 +94,7 @@ public class LRParser {
         }
     }
 
-    private static final String PARSING_TABLE_PATH = "AnalizadorSintacticoJ2G/matriz_parsing.txt";
+    public static final String PARSING_TABLE_PATH = "J2G/AnalizadorSintacticoJ2G/matriz_parsing.txt";
 
     // Bloque estático: Se ejecuta una vez cuando la clase es cargada por la JVM.
     // Se utiliza para inicializar miembros estáticos, como las producciones y cargar las tablas.

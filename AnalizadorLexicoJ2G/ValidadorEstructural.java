@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 public class ValidadorEstructural {
 
-    private TablaSimbolos tablaSimbolosGlobal;
+    public TablaSimbolos tablaSimbolosGlobal;
 
     private boolean currentlyInSwitchBlock = false;
     private int switchBlockEntryDepth = 0;

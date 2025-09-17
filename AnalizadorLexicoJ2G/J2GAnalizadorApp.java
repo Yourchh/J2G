@@ -32,8 +32,8 @@ import java.util.Map;
 public class J2GAnalizadorApp {
 
     public static void main(String[] args) {
-        String archivoEntrada = "AnalizadorLexicoJ2G/entrada.txt"; // Archivo de entrada con el código fuente a analizar
-        String archivoTabsim = "AnalizadorLexicoJ2G/tabsim.txt"; // Archivo de tabla de símbolos
+        String archivoEntrada = "J2G/AnalizadorLexicoJ2G/entrada.txt"; // Archivo de entrada con el código fuente a analizar
+        String archivoTabsim = "J2G/AnalizadorLexicoJ2G/tabsim.txt"; // Archivo de tabla de símbolos
 
         TablaSimbolos tablaSimbolos = new TablaSimbolos();
         AnalizadorLexicoCore analizadorLexico = new AnalizadorLexicoCore(tablaSimbolos);
@@ -72,7 +72,7 @@ public class J2GAnalizadorApp {
         validador.validarEstructuraConRegex(codigoLimpioFormateado); // Ya no se pasa el nombre del archivo de reglas
     }
 
-    private static String leerArchivo(String nombreArchivo) {
+    public static String leerArchivo(String nombreArchivo) {
         StringBuilder contenido = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
             String linea;
@@ -86,7 +86,7 @@ public class J2GAnalizadorApp {
         return contenido.toString().trim();
     }
 
-    private static String prettyPrintCode(List<String> tokens) {
+    public static String prettyPrintCode(List<String> tokens) {
         StringBuilder sb = new StringBuilder();
         int indentLevel = 0;
         final String indentUnit = "  "; 
@@ -162,13 +162,13 @@ public class J2GAnalizadorApp {
         return sb.toString().replaceAll("\\s+\n", "\n").replaceAll("\n\\s*\n", "\n").trim();
     }
 
-    private static void appendIndent(StringBuilder sb, int indentLevel, String indentUnit) {
+    public static void appendIndent(StringBuilder sb, int indentLevel, String indentUnit) {
         for (int j = 0; j < indentLevel; j++) {
             sb.append(indentUnit);
         }
     }
 
-    private static void mostrarNuevasVariablesConsola(List<SymbolTableEntry> nuevasVariables) {
+    public static void mostrarNuevasVariablesConsola(List<SymbolTableEntry> nuevasVariables) {
         System.out.println(new String(new char[110]).replace("\0", "-"));
         System.out.println(String.format("%-40s | %-10s | %-10s | %-40s", "VARIABLE", "ID", "TIPO", "VALOR"));
         System.out.println(new String(new char[110]).replace("\0", "-"));
@@ -189,4 +189,5 @@ public class J2GAnalizadorApp {
         }
         System.out.println(new String(new char[10]).replace("\0", "-"));
     }
+
 }
