@@ -1,30 +1,10 @@
-/**
- * Aplicación principal para el análisis léxico de código J2G.
- * Esta clase maneja el proceso de análisis de código fuente, incluyendo:
- * - Lectura de archivos de entrada
- * - Limpieza y tokenización del código
- * - Transformación de tokens
- * - Validación estructural
- * - Manejo de tabla de símbolos
- *
- * La clase contiene los siguientes métodos principales:
- * - main: Punto de entrada que coordina todo el proceso de análisis
- * - leerArchivo: Lee el contenido de un archivo de texto
- * - prettyPrintCode: Formatea el código para mejor legibilidad
- * - appendIndent: Agrega indentación al código formateado
- * - mostrarNuevasVariablesConsola: Muestra las variables nuevas detectadas
- *
- * Requiere los siguientes archivos:
- * - entrada.txt: Archivo con el código fuente a analizar
- * - tabsim.txt: Archivo con la tabla de símbolos inicial
- *
- */
-
 package AnalizadorLexicoJ2G;
 
+import AnalizadorSintacticoJ2G.LRParser;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,44 +12,57 @@ import java.util.Map;
 public class J2GAnalizadorApp {
 
     public static void main(String[] args) {
-        String archivoEntrada = "J2G/AnalizadorLexicoJ2G/entrada.txt"; // Archivo de entrada con el código fuente a analizar
-        String archivoTabsim = "J2G/AnalizadorLexicoJ2G/tabsim.txt"; // Archivo de tabla de símbolos
+        String archivoEntrada = "J2G/AnalizadorLexicoJ2G/entrada.txt";
+        String archivoTabsim = "J2G/AnalizadorLexicoJ2G/tabsim.txt";
 
+        // --- INICIO DE LA CONFIGURACIÓN ---
+        // Configura la salida para que todo se imprima en la consola.
+        PrintStream outConsola = System.out;
+        PrintStream errConsola = System.err;
+
+        // Se redirige la salida de error estándar a la consola de salida normal
+        // para asegurar que los mensajes de error aparezcan en orden con el resto del proceso.
+        System.setErr(outConsola);
+
+        // --- INICIO DEL ANÁLISIS ---
         TablaSimbolos tablaSimbolos = new TablaSimbolos();
         AnalizadorLexicoCore analizadorLexico = new AnalizadorLexicoCore(tablaSimbolos);
-        ValidadorEstructural validador = new ValidadorEstructural(tablaSimbolos);
+        
+        // Se crea el LRParser y el ValidadorEstructural, pasándoles la salida de la consola.
+        LRParser parser = new LRParser(outConsola);
+        ValidadorEstructural validador = new ValidadorEstructural(tablaSimbolos, analizadorLexico, outConsola);
+        // --- FIN DE LA CONFIGURACIÓN ---
 
-        System.out.println("Cargando archivo de tabla de símbolos: " + archivoTabsim);
+        outConsola.println("Cargando archivo de tabla de símbolos: " + archivoTabsim);
         tablaSimbolos.cargarTabsimDesdeArchivo(archivoTabsim);
 
-        System.out.println("Se cargó el archivo " + archivoEntrada + " el cual se está analizando.");
+        outConsola.println("Se cargó el archivo " + archivoEntrada + " el cual se está analizando.");
         String codigoOriginal = leerArchivo(archivoEntrada);
         if (codigoOriginal == null) {
-            System.err.println("Error: No se pudo leer el archivo de entrada.");
+            errConsola.println("Error: No se pudo leer el archivo de entrada.");
             return;
         }
 
-        System.out.println("\nINICIANDO PROCESAMIENTO DEL CÓDIGO");
+        outConsola.println("\nINICIANDO PROCESAMIENTO DEL CÓDIGO");
 
         // --- FASE 1 ---
-        System.out.println("\nRESULTADO DE LA FASE 1:");
-        System.out.println("Se eliminan comentarios y se tokeniza el código.\n");
+        outConsola.println("\nRESULTADO DE LA FASE 1:");
+        outConsola.println("Se eliminan comentarios y se tokeniza el código.\n");
         List<String> tokensFase1 = analizadorLexico.fase1_limpiarYTokenizar(codigoOriginal);
         String codigoLimpioFormateado = prettyPrintCode(tokensFase1);
-        System.out.println(codigoLimpioFormateado);
+        outConsola.println(codigoLimpioFormateado);
 
         // --- FASE 2 ---
-        System.out.println("\nRESULATDO DE LA FASE 2:");
-        System.out.println("Se transforman los tokens a IDs y se muestran las nuevas variables detectadas.\n");
+        outConsola.println("\nRESULATDO DE LA FASE 2:");
+        outConsola.println("Se transforman los tokens a IDs y se muestran las nuevas variables detectadas.\n");
         List<String> tokensTransformados = analizadorLexico.fase2_transformarTokens(tokensFase1);
         String codigoTransformadoFormateado = prettyPrintCode(tokensTransformados);
-        System.out.println(codigoTransformadoFormateado);
+        outConsola.println(codigoTransformadoFormateado);
 
-        System.out.println("\nNUEVA TABLA DE SÍMBOLOS:\n");
+        outConsola.println("\nNUEVA TABLA DE SÍMBOLOS:\n");
         mostrarNuevasVariablesConsola(tablaSimbolos.getNuevasVariablesDetectadas());
         
-        System.out.println("\nValidación de estructura del código (reglas internas):"); // Mensaje actualizado
-        validador.validarEstructuraConRegex(codigoLimpioFormateado); // Ya no se pasa el nombre del archivo de reglas
+        outConsola.println("\nEl análisis ha finalizado. Revisa la consola para ver todos los resultados.");
     }
 
     public static String leerArchivo(String nombreArchivo) {
@@ -104,9 +97,7 @@ public class J2GAnalizadorApp {
                 }
                 appendIndent(sb, indentLevel, indentUnit);
             } else if (atStartOfLine) {
-                // No indentar 'else' si viene justo después de un '}' en la misma línea lógica
-                // (el '}' ya decrementó la indentación y añadió nueva línea)
-                if (!(token.equals("else") && prevToken.equals("}"))) { // Modificado para usar prevToken directamente
+                if (!(token.equals("else") && prevToken.equals("}"))) {
                     appendIndent(sb, indentLevel, indentUnit);
                 }
             }
@@ -114,7 +105,6 @@ public class J2GAnalizadorApp {
             sb.append(token);
             atStartOfLine = false;
 
-            // Lógica para saltos de línea y indentación después de ciertos tokens
             if (token.equals("{")) {
                 sb.append("\n");
                 indentLevel++;
@@ -127,32 +117,27 @@ public class J2GAnalizadorApp {
                         prevToken.equals("por_defecto") ||
                         (i > 1 && tokens.get(i-2).equals("caso") && (prevToken.matches("\"(?:\\\\.|[^\"\\\\])*\"") || prevToken.matches("[a-zA-Z_][a-zA-Z0-9_]*") || prevToken.matches("[0-9]+")))
                        )) {
-                // Si el token es ':' Y viene después de "caso <valor>" o "por_defecto"
                 sb.append("\n");
                 atStartOfLine = true;
 
-            } else if (token.equals("}")) { // Este 'else if' es para el '}' que no es el primero en la línea
+            } else if (token.equals("}")) {
                 if (!nextToken.equals("else")) {
                     sb.append("\n");
                     atStartOfLine = true;
                 }
-                // Si es '}' seguido de 'else', el 'else' se manejará en la siguiente iteración
-                // y se colocará en la misma línea o indentado correctamente.
             } else {
-                // Lógica para agregar espacios entre tokens en la misma línea
                 if (!nextToken.isEmpty() &&
-                    !nextToken.equals(";") && // No espacio antes de ;
-                    !nextToken.equals(",") && // No espacio antes de , (si lo tuviera)
-                    !nextToken.equals(")") && // No espacio antes de )
-                    !nextToken.equals("]") && // No espacio antes de ] (si lo tuviera)
-                    !nextToken.equals("}") && // No espacio antes de }
-                    !nextToken.equals("{") && // No espacio antes de { (raro, usualmente { va en nueva línea)
-                    !token.equals("(") &&     // No espacio después de (
-                    !token.equals("[") &&     // No espacio después de [ (si lo tuviera)
-                    !(token.equals("Input") && nextToken.equals(".")) && // No espacio entre Input y .
-                    !(prevToken.equals("Input") && token.equals(".")) && // No espacio entre Input. y Str/Int/Bool
-                    !nextToken.equals(".") &&  // No espacio antes de . (general)
-                    // No agregar espacio ANTES de ':' si el token actual es un valor de 'caso' o 'por_defecto'
+                    !nextToken.equals(";") &&
+                    !nextToken.equals(",") &&
+                    !nextToken.equals(")") &&
+                    !nextToken.equals("]") &&
+                    !nextToken.equals("}") &&
+                    !nextToken.equals("{") &&
+                    !token.equals("(") &&
+                    !token.equals("[") &&
+                    !(token.equals("Input") && nextToken.equals(".")) &&
+                    !(prevToken.equals("Input") && token.equals(".")) &&
+                    !nextToken.equals(".") &&
                     !(nextToken.equals(":") && (token.equals("caso") || token.equals("por_defecto") || token.matches("\"(?:\\\\.|[^\"\\\\])*\"") || token.matches("[a-zA-Z_][a-zA-Z0-9_]*") || token.matches("[0-9]+")))
                    ) {
                     sb.append(" ");
@@ -189,5 +174,4 @@ public class J2GAnalizadorApp {
         }
         System.out.println(new String(new char[10]).replace("\0", "-"));
     }
-
 }
