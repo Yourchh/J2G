@@ -1,6 +1,5 @@
 package AnalizadorLexicoJ2G;
 
-import AnalizadorSintacticoJ2G.LRParser;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,9 +28,6 @@ public class J2GAnalizadorApp {
         AnalizadorLexicoCore analizadorLexico = new AnalizadorLexicoCore(tablaSimbolos);
         
         // Se crea el LRParser y el ValidadorEstructural, pasándoles la salida de la consola.
-        LRParser parser = new LRParser(outConsola);
-        ValidadorEstructural validador = new ValidadorEstructural(tablaSimbolos, analizadorLexico, outConsola);
-        // --- FIN DE LA CONFIGURACIÓN ---
 
         outConsola.println("Cargando archivo de tabla de símbolos: " + archivoTabsim);
         tablaSimbolos.cargarTabsimDesdeArchivo(archivoTabsim);
