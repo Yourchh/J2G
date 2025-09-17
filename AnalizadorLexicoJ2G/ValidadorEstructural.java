@@ -31,6 +31,13 @@ public class ValidadorEstructural {
         this.analizadorLexico = analizadorLexico;
         this.outputTables = outputTables;
     }
+    
+    // Constructor anterior por compatibilidad
+    public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal) {
+        this.tablaSimbolosGlobal = tablaSimbolosGlobal;
+        this.analizadorLexico = new AnalizadorLexicoCore(tablaSimbolosGlobal);
+        this.outputTables = System.out; // Salida estándar si no se especifica
+    }
 
     private Map<String, String> cargarReglasRegexEnMemoria() {
         Map<String, String> reglas = new HashMap<>();
@@ -342,14 +349,16 @@ public class ValidadorEstructural {
             int lineBraceBalance = 0;
             for (char ch : originalLineForBraceCheck.toCharArray()) {
                 if (ch == '{') {
-                    globalBraceBalance++;
                     lineBraceBalance++;
                 } else if (ch == '}') {
-                    globalBraceBalance--;
                     lineBraceBalance--;
                 }
             }
-            if (globalBraceBalance < 0 && lineBraceBalance < 0
+            
+            int globalBraceBalanceBeforeLine = globalBraceBalance;
+            globalBraceBalance += lineBraceBalance;
+
+            if (globalBraceBalanceBeforeLine + lineBraceBalance < 0 && lineBraceBalance < 0
                     && errorsEnLinea.stream().noneMatch(err -> err.contains("inesperada"))) {
                 errorsEnLinea.add(
                         "Error de sintaxis: Llave de cierre '}' inesperada en esta línea (causa desbalance global).");
@@ -362,26 +371,14 @@ public class ValidadorEstructural {
                     errorsEnLinea.add("Error ESTRUCTURAL: Definición de 'FUNC J2G Main()' anidada no permitida.");
                 mainFunctionDeclared = true;
                 currentlyInMainFunctionBlock = true;
-                mainFunctionBlockBraceDepth = 1;
+                mainFunctionBlockBraceDepth = globalBraceBalance;
                 reglaCoincidioEstaLinea = true;
             } else if (currentlyInMainFunctionBlock) {
-                boolean esAperturaDeBloqueInternoValido = false;
-                String[] blockOpeningRegexKeys = { "IF_STMT", "WHILE_STMT", "FOR_STMT", "SWITCH_STMT",
-                        "DO_WHILE_DO_STMT", "ELSE_STMT", "BLOCK_END_ELSE_STMT" };
-                for (String key : blockOpeningRegexKeys) {
-                    if (lineaActual.matches(reglas.getOrDefault(key, "^$")) && lineaActual.endsWith("{")) {
-                        esAperturaDeBloqueInternoValido = true;
-                        break;
-                    }
-                }
-                if (esAperturaDeBloqueInternoValido) {
-                    mainFunctionBlockBraceDepth++;
-                }
-
+                
                 if (lineaActual.matches(reglas.getOrDefault("SWITCH_STMT", "^$"))) {
                     reglaCoincidioEstaLinea = true;
                     this.currentlyInSwitchBlock = true;
-                    this.switchBlockEntryDepth = mainFunctionBlockBraceDepth;
+                    this.switchBlockEntryDepth = globalBraceBalance;
                     this.currentSwitchClauseActiveAndNeedsDetener = false;
                     this.currentSwitchClauseHasHadDetener = false;
                     this.switchActualOpeningLine = currentLineNumber;
@@ -460,7 +457,8 @@ public class ValidadorEstructural {
                         this.currentSwitchClauseActiveAndNeedsDetener = false;
                         this.currentSwitchClauseHasHadDetener = true;
                     } else if (lineaActual.matches(reglas.getOrDefault("BLOCK_END", "^$"))) {
-                        if (mainFunctionBlockBraceDepth == this.switchBlockEntryDepth) {
+                        reglaCoincidioEstaLinea = true;
+                        if (globalBraceBalance == this.switchBlockEntryDepth - 1) {
                             if (this.currentSwitchClauseActiveAndNeedsDetener) {
                                 globalStructuralErrors
                                         .add("Error en bloque final (" + this.contentOfCurrentSwitchClauseStart
@@ -485,7 +483,6 @@ public class ValidadorEstructural {
                     matcher = Pattern.compile(reglas.getOrDefault("FOR_STMT", "^$")).matcher(lineaActual);
                     if (matcher.matches()) {
                         reglaCoincidioEstaLinea = true;
-                        mainFunctionBlockBraceDepth++;
 
                         String initPart = matcher.group(1).trim();
                         String conditionPart = matcher.group(2).trim();
@@ -672,7 +669,7 @@ public class ValidadorEstructural {
                 if (!reglaCoincidioEstaLinea) {
                     String[] cStructs = { "IF_STMT", "WHILE_STMT", "DO_WHILE_TAIL_ONLY_STMT", "PRINT_STMT",
                             "DO_WHILE_CLOSURE_LINE_STMT", "ELSE_STMT",
-                            "BLOCK_END_ELSE_STMT", "DO_WHILE_DO_STMT" };
+                            "BLOCK_END_ELSE_STMT", "DO_WHILE_DO_STMT", "BLOCK_END" };
                     for (String key : cStructs) {
                         matcher = Pattern.compile(reglas.getOrDefault(key, "^$")).matcher(lineaActual);
                         if (matcher.matches()) {
@@ -697,7 +694,7 @@ public class ValidadorEstructural {
                                 }
                             } else {
                                 if (!key.equals("ELSE_STMT") && !key.equals("BLOCK_END_ELSE_STMT")
-                                        && !key.equals("DO_WHILE_DO_STMT")) {
+                                        && !key.equals("DO_WHILE_DO_STMT") && !key.equals("BLOCK_END")) {
                                     errorsEnLinea
                                             .addAll(checkBalancedSymbols(lineaActual, currentLineNumber, contextMsg));
                                 }
@@ -706,43 +703,10 @@ public class ValidadorEstructural {
                         }
                     }
                 }
-
-                if (lineaActual.matches(reglas.getOrDefault("BLOCK_END", "^$"))) {
-                    if (!reglaCoincidioEstaLinea && this.currentlyInSwitchBlock
-                            && mainFunctionBlockBraceDepth == this.switchBlockEntryDepth) {
-                        if (this.currentSwitchClauseActiveAndNeedsDetener) {
-                            globalStructuralErrors
-                                    .add("Error en bloque final (" + this.contentOfCurrentSwitchClauseStart
-                                            + " en línea " + this.lineOfCurrentSwitchClauseStart
-                                            + "): Se esperaba 'detener;' antes de cerrar el bloque 'sw'.");
-                        }
-                        this.currentlyInSwitchBlock = false;
-                        this.currentSwitchClauseActiveAndNeedsDetener = false;
-                        this.currentSwitchClauseHasHadDetener = false;
-                        this.currentSwitchExpressionType = null;
-                    }
-
-                    mainFunctionBlockBraceDepth--;
-                    if (!reglaCoincidioEstaLinea)
-                        reglaCoincidioEstaLinea = true;
-
-                    if (mainFunctionBlockBraceDepth == 0 && currentlyInMainFunctionBlock) {
-                        currentlyInMainFunctionBlock = false;
-                    } else if (mainFunctionBlockBraceDepth < 0 && mainFunctionDeclared) {
-                        if (errorsEnLinea.stream().noneMatch(e -> e.contains("Llave de cierre '}' inesperada"))) {
-                            errorsEnLinea.add("Error ESTRUCTURAL: Llave de cierre '}' extra o mal colocada.");
-                        }
-                        mainFunctionBlockBraceDepth = 0;
-                        currentlyInMainFunctionBlock = false;
-                    }
-                } else if (lineaActual.matches(reglas.getOrDefault("DO_WHILE_CLOSURE_LINE_STMT", "^$"))) {
-                    mainFunctionBlockBraceDepth--;
-                    if (!reglaCoincidioEstaLinea)
-                        reglaCoincidioEstaLinea = true;
-                } else if (lineaActual.matches(reglas.getOrDefault("BLOCK_END_ELSE_STMT", "^$"))) {
-                    mainFunctionBlockBraceDepth--;
-                    if (!reglaCoincidioEstaLinea)
-                        reglaCoincidioEstaLinea = true;
+                
+                mainFunctionBlockBraceDepth = globalBraceBalance;
+                if (mainFunctionBlockBraceDepth == 0 && currentlyInMainFunctionBlock) {
+                    currentlyInMainFunctionBlock = false;
                 }
 
             } else {
@@ -816,10 +780,15 @@ public class ValidadorEstructural {
         if (!mainFunctionDeclared) {
             globalStructuralErrors
                     .add("Error ESTRUCTURAL GLOBAL: No se encontró la función principal 'FUNC J2G Main() {}'.");
-        } else if (currentlyInMainFunctionBlock) {
-            globalStructuralErrors
-                    .add("Error ESTRUCTURAL GLOBAL: El bloque 'FUNC J2G Main()' no se cerró correctamente (faltan "
-                            + mainFunctionBlockBraceDepth + " llave(s) de cierre '}').");
+        } else if (globalBraceBalance != 0) { 
+            if(globalBraceBalance > 0){
+                globalStructuralErrors
+                        .add("Error ESTRUCTURAL GLOBAL: El bloque 'FUNC J2G Main()' no se cerró correctamente (faltan "
+                                + globalBraceBalance + " llave(s) de cierre '}').");
+            } else {
+                 globalStructuralErrors.add("Error ESTRUCTURAL GLOBAL: Hay " + (-globalBraceBalance)
+                            + " llave(s) de cierre '}' extra o mal colocadas en el programa.");
+            }
         }
 
         if (this.currentlyInSwitchBlock) {
@@ -829,21 +798,6 @@ public class ValidadorEstructural {
                 globalStructuralErrors.add("Error en el último bloque (" + this.contentOfCurrentSwitchClauseStart
                         + " en línea " + this.lineOfCurrentSwitchClauseStart
                         + ") del switch no cerrado: Se esperaba 'detener;' antes del final del archivo o cierre del switch.");
-            }
-        }
-
-        if (globalBraceBalance != 0 && !currentlyInMainFunctionBlock && mainFunctionDeclared) {
-            boolean mainOrSwitchBlockErrorAlreadyReported = globalStructuralErrors.stream()
-                    .anyMatch(err -> err.contains("El bloque 'FUNC J2G Main()' no se cerró correctamente") ||
-                            err.contains("El bloque 'sw' iniciado en línea"));
-            if (!mainOrSwitchBlockErrorAlreadyReported) {
-                if (globalBraceBalance > 0) {
-                    globalStructuralErrors.add("Error ESTRUCTURAL GLOBAL: Faltan " + globalBraceBalance
-                            + " llave(s) de cierre '}' en el programa.");
-                } else {
-                    globalStructuralErrors.add("Error ESTRUCTURAL GLOBAL: Hay " + (-globalBraceBalance)
-                            + " llave(s) de cierre '}' extra o mal colocadas en el programa.");
-                }
             }
         }
 

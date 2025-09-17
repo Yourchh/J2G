@@ -89,22 +89,21 @@ FUNC J2G Main (){
   opcion := Input (). Int ();
   STR con;
   con := Input (). Str ();
-  sw (opcion){
-    caso 1:
-    Print ("Nombre:");
-    Print (nombre);
-    detener;
-    caso 2:
-    Print ("Edad:");
-    Print (edad);
-    detener;
-    caso 23:
-    Print ("Saliendo del programa...");
-    detener;
-    por_defecto:
-    Print ("Opción no válida");
-    detener;
-  }
+  sw (opcion) caso 1:
+  Print ("Nombre:");
+  Print (nombre);
+  detener;
+  caso 2:
+  Print ("Edad:");
+  Print (edad);
+  detener;
+  caso 23:
+  Print ("Saliendo del programa...");
+  detener;
+  por_defecto:
+  Print ("Opción no válida");
+  detener;
+}
 }
 
 RESULATDO DE LA FASE 2:
@@ -193,22 +192,21 @@ FUNC J2G Main (){
   id49 := id55;
   STR id56;
   id56 := id57;
-  sw (id49){
-    caso id16:
-    Print (id58);
-    Print (id3);
-    detener;
-    caso id59:
-    Print (id60);
-    Print (id8);
-    detener;
-    caso id61:
-    Print (id62);
-    detener;
-    por_defecto:
-    Print (id63);
-    detener;
-  }
+  sw (id49) caso id16:
+  Print (id58);
+  Print (id3);
+  detener;
+  caso id59:
+  Print (id60);
+  Print (id8);
+  detener;
+  caso id61:
+  Print (id62);
+  detener;
+  por_defecto:
+  Print (id63);
+  detener;
+}
 }
 
 NUEVA TABLA DE SÍMBOLOS:

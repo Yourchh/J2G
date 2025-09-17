@@ -15,6 +15,8 @@ public class app {
         String archivoProcesado = "J2G/AnalizadorSegmanticoJ2G/codigo_procesado.txt";
         String archivoTablas = "J2G/AnalizadorSegmanticoJ2G/tablas_analisis.txt";
 
+        System.out.println("\nEl análisis ha finalizado. Revise los archivos 'errores.txt', 'codigo_procesado.txt' y 'tablas_analisis.txt' para ver los resultados.");
+
         // Redirigir la salida estándar a los archivos
         try (
             PrintStream outErrors = new PrintStream(new File(archivoErrores));
@@ -61,11 +63,10 @@ public class app {
             
             System.out.println("\nValidación de estructura del código (reglas internas):");
             validador.validarEstructuraConRegex(codigoLimpioFormateado, parser);
-            
-            System.err.println("\nEl análisis ha finalizado. Revise los archivos 'errores.txt', 'codigo_procesado.txt' y 'tablas_analisis.txt' para ver los resultados.");
 
         } catch (FileNotFoundException e) {
             System.err.println("Error: No se pudo crear el archivo de salida: " + e.getMessage());
         }
+
     }
 }
