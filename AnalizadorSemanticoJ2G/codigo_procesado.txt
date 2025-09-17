@@ -1,0 +1,67 @@
+Cargando archivo de tabla de símbolos: J2G/AnalizadorLexicoJ2G/tabsim.txt
+Se cargó el archivo J2G/AnalizadorLexicoJ2G/entrada.txt el cual se está analizando.
+
+INICIANDO PROCESAMIENTO DEL CÓDIGO
+
+RESULTADO DE LA FASE 1:
+Se eliminan comentarios y se tokeniza el código.
+
+FUNC J2G Main (){
+  STR dia := "Lunes";
+  STR nombre := "Carlos";
+  INT promedio := 12;
+  BOOL auio;
+  INT edad;
+  INT calificacion;
+  INT numero := 0;
+  Print ("Bienvenido al sistema");
+  Print ("Ingrese su edad:");
+  Print ("Ingrese su calificación:");
+  if (34 > "pedro"){
+    Print ("Ingrese su calificación:");
+  }
+}
+
+RESULATDO DE LA FASE 2:
+Se transforman los tokens a IDs y se muestran las nuevas variables detectadas.
+
+FUNC J2G Main (){
+  STR id1 := id2;
+  STR id3 := id4;
+  INT id5 := id6;
+  BOOL id7;
+  INT id8;
+  INT id9;
+  INT id10 := id11;
+  Print (id12);
+  Print (id13);
+  Print (id14);
+  if (id15 > id16){
+    Print (id14);
+  }
+}
+
+NUEVA TABLA DE SÍMBOLOS:
+
+--------------------------------------------------------------------------------------------------------------
+VARIABLE                                 | ID         | TIPO       | VALOR                                   
+--------------------------------------------------------------------------------------------------------------
+"Lunes"                                  | id2        | string     | Lunes                                   
+"Carlos"                                 | id4        | string     | Carlos                                  
+promedio                                 | id5        | int        | id6                                     
+12                                       | id6        | int        | 12                                      
+auio                                     | id7        | bool       | id7                                     
+edad                                     | id8        | int        | edad                                    
+calificacion                             | id9        | int        | calificacion                            
+numero                                   | id10       | int        | id11                                    
+0                                        | id11       | int        | 0                                       
+"Bienvenido al sistema"                  | id12       | string     | Bienvenido al sistema                   
+"Ingrese su edad:"                       | id13       | string     | Ingrese su edad:                        
+"Ingrese su calificación:"               | id14       | string     | Ingrese su calificación:                
+34                                       | id15       | int        | 34                                      
+"pedro"                                  | id16       | string     | pedro                                   
+dia                                      | id1        | str        | id2                                     
+nombre                                   | id3        | str        | id4                                     
+----------
+
+Validación de estructura del código (reglas internas):

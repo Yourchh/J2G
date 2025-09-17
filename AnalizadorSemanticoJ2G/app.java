@@ -1,4 +1,4 @@
-package AnalizadorSegmanticoJ2G;
+package AnalizadorSemanticoJ2G;
 
 import AnalizadorLexicoJ2G.*;
 import AnalizadorSintacticoJ2G.LRParser;
@@ -11,9 +11,9 @@ public class app {
     public static void main(String[] args) {
         String archivoEntrada = "J2G/AnalizadorLexicoJ2G/entrada.txt";
         String archivoTabsim = "J2G/AnalizadorLexicoJ2G/tabsim.txt";
-        String archivoErrores = "J2G/AnalizadorSegmanticoJ2G/errores.txt";
-        String archivoProcesado = "J2G/AnalizadorSegmanticoJ2G/codigo_procesado.txt";
-        String archivoTablas = "J2G/AnalizadorSegmanticoJ2G/tablas_analisis.txt";
+        String archivoErrores = "J2G/AnalizadorSemanticoJ2G/errores.txt";
+        String archivoProcesado = "J2G/AnalizadorSemanticoJ2G/codigo_procesado.txt";
+        String archivoTablas = "J2G/AnalizadorSemanticoJ2G/tablas_analisis.txt";
 
         System.out.println("\nEl análisis ha finalizado. Revise los archivos 'errores.txt', 'codigo_procesado.txt' y 'tablas_analisis.txt' para ver los resultados.");
 

@@ -1,0 +1,127 @@
+Análisis Sintáctico de la expresión de inicialización: '"Lunes"'
+P. SEMANTICA                   | PILA                           | ENTRADA                        | SALIDA         
+--------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id $                           | s10            
+_ s                            | 0 10                           | $                              | r23            
+_ s                            | 0 7                            | $                              | r20            
+_ s                            | 0 6                            | $                              | r16            
+_ s                            | 0 5                            | $                              | r13            
+_ s                            | 0 4                            | $                              | r6             
+_ s                            | 0 3                            | $                              | r5             
+_ s                            | 0 2                            | $                              | r3             
+_ s                            | 0 1                            | $                              | acc            
+Entrada aceptada.
+Análisis Sintáctico de la expresión de inicialización: '"Carlos"'
+P. SEMANTICA                   | PILA                           | ENTRADA                        | SALIDA         
+--------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id $                           | s10            
+_ s                            | 0 10                           | $                              | r23            
+_ s                            | 0 7                            | $                              | r20            
+_ s                            | 0 6                            | $                              | r16            
+_ s                            | 0 5                            | $                              | r13            
+_ s                            | 0 4                            | $                              | r6             
+_ s                            | 0 3                            | $                              | r5             
+_ s                            | 0 2                            | $                              | r3             
+_ s                            | 0 1                            | $                              | acc            
+Entrada aceptada.
+Análisis Sintáctico de la expresión de inicialización: '12'
+P. SEMANTICA                   | PILA                           | ENTRADA                        | SALIDA         
+--------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id $                           | s10            
+_ i                            | 0 10                           | $                              | r23            
+_ i                            | 0 7                            | $                              | r20            
+_ i                            | 0 6                            | $                              | r16            
+_ i                            | 0 5                            | $                              | r13            
+_ i                            | 0 4                            | $                              | r6             
+_ i                            | 0 3                            | $                              | r5             
+_ i                            | 0 2                            | $                              | r3             
+_ i                            | 0 1                            | $                              | acc            
+Entrada aceptada.
+Análisis Sintáctico de la expresión de inicialización: '0'
+P. SEMANTICA                   | PILA                           | ENTRADA                        | SALIDA         
+--------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id $                           | s10            
+_ i                            | 0 10                           | $                              | r23            
+_ i                            | 0 7                            | $                              | r20            
+_ i                            | 0 6                            | $                              | r16            
+_ i                            | 0 5                            | $                              | r13            
+_ i                            | 0 4                            | $                              | r6             
+_ i                            | 0 3                            | $                              | r5             
+_ i                            | 0 2                            | $                              | r3             
+_ i                            | 0 1                            | $                              | acc            
+Entrada aceptada.
+Análisis Sintáctico del argumento del print: '"Bienvenido al sistema"'
+P. SEMANTICA                   | PILA                           | ENTRADA                        | SALIDA         
+--------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id $                           | s10            
+_ s                            | 0 10                           | $                              | r23            
+_ s                            | 0 7                            | $                              | r20            
+_ s                            | 0 6                            | $                              | r16            
+_ s                            | 0 5                            | $                              | r13            
+_ s                            | 0 4                            | $                              | r6             
+_ s                            | 0 3                            | $                              | r5             
+_ s                            | 0 2                            | $                              | r3             
+_ s                            | 0 1                            | $                              | acc            
+Entrada aceptada.
+Análisis Sintáctico del argumento del print: '"Ingrese su edad:"'
+P. SEMANTICA                   | PILA                           | ENTRADA                        | SALIDA         
+--------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id $                           | s10            
+_ s                            | 0 10                           | $                              | r23            
+_ s                            | 0 7                            | $                              | r20            
+_ s                            | 0 6                            | $                              | r16            
+_ s                            | 0 5                            | $                              | r13            
+_ s                            | 0 4                            | $                              | r6             
+_ s                            | 0 3                            | $                              | r5             
+_ s                            | 0 2                            | $                              | r3             
+_ s                            | 0 1                            | $                              | acc            
+Entrada aceptada.
+Análisis Sintáctico del argumento del print: '"Ingrese su calificación:"'
+P. SEMANTICA                   | PILA                           | ENTRADA                        | SALIDA         
+--------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id $                           | s10            
+_ s                            | 0 10                           | $                              | r23            
+_ s                            | 0 7                            | $                              | r20            
+_ s                            | 0 6                            | $                              | r16            
+_ s                            | 0 5                            | $                              | r13            
+_ s                            | 0 4                            | $                              | r6             
+_ s                            | 0 3                            | $                              | r5             
+_ s                            | 0 2                            | $                              | r3             
+_ s                            | 0 1                            | $                              | acc            
+Entrada aceptada.
+Análisis Sintáctico de la expresión de la condición: '34 > "pedro"'
+P. SEMANTICA                   | PILA                           | ENTRADA                        | SALIDA         
+--------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id > id $                      | s10            
+_ i                            | 0 10                           | > id $                         | r23            
+_ i                            | 0 7                            | > id $                         | r20            
+_ i                            | 0 6                            | > id $                         | r16            
+_ i                            | 0 5                            | > id $                         | r13            
+_ i                            | 0 4                            | > id $                         | r6             
+_ i                            | 0 3                            | > id $                         | s17            
+_ i _                          | 0 3 17                         | id $                           | s10            
+_ i _ s                        | 0 3 17 10                      | $                              | r23            
+_ i _ s                        | 0 3 17 7                       | $                              | r20            
+_ i _ s                        | 0 3 17 6                       | $                              | r16            
+_ i _ s                        | 0 3 17 5                       | $                              | r13            
+_ i _ s                        | 0 3 17 33                      | $                              | r9             
+Error Semántico: Incompatibilidad de tipos en la regla C -> C > D
+_ ERROR                        | 0 3                            | $                              | r5             
+Error Semántico: Incompatibilidad de tipos en la regla B -> C
+_ ERROR                        | 0 2                            | $                              | r3             
+Error Semántico: Incompatibilidad de tipos en la regla A -> B
+_ ERROR                        | 0 1                            | $                              | acc            
+Entrada aceptada.
+Análisis Sintáctico del argumento del print: '"Ingrese su calificación:"'
+P. SEMANTICA                   | PILA                           | ENTRADA                        | SALIDA         
+--------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id $                           | s10            
+_ s                            | 0 10                           | $                              | r23            
+_ s                            | 0 7                            | $                              | r20            
+_ s                            | 0 6                            | $                              | r16            
+_ s                            | 0 5                            | $                              | r13            
+_ s                            | 0 4                            | $                              | r6             
+_ s                            | 0 3                            | $                              | r5             
+_ s                            | 0 2                            | $                              | r3             
+_ s                            | 0 1                            | $                              | acc            
+Entrada aceptada.
