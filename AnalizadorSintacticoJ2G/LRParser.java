@@ -162,10 +162,15 @@ public class LRParser {
                 internalStack.push(nextState);
 
                 String resultingType = performSemanticAction(ruleNumber, t1, t2, t3);
+                
+                // **LA CORRECCIÓN CLAVE ESTÁ AQUÍ**
                 if (resultingType.equals("ERROR")) {
                     outputStream.println("Error Semántico: Incompatibilidad de tipos en la regla " + rule.originalRuleString);
+                    // Se detiene el análisis al devolver 'false'
+                    return false; 
                 }
                 semanticStack.push(resultingType);
+
             } else if (action.equals("acc")) {
                 outputStream.println("Entrada aceptada.");
                 return true;
