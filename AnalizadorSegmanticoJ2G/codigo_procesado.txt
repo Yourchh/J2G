@@ -89,21 +89,22 @@ FUNC J2G Main (){
   opcion := Input (). Int ();
   STR con;
   con := Input (). Str ();
-  sw (opcion) caso 1:
-  Print ("Nombre:");
-  Print (nombre);
-  detener;
-  caso 2:
-  Print ("Edad:");
-  Print (edad);
-  detener;
-  caso 23:
-  Print ("Saliendo del programa...");
-  detener;
-  por_defecto:
-  Print ("Opción no válida");
-  detener;
-}
+  sw (opcion){
+    caso 1:
+    Print ("Nombre:");
+    Print (nombre);
+    detener;
+    caso 2:
+    Print ("Edad:");
+    Print (edad);
+    detener;
+    caso 23:
+    Print ("Saliendo del programa...");
+    detener;
+    por_defecto:
+    Print ("Opción no válida");
+    detener;
+  }
 }
 
 RESULATDO DE LA FASE 2:
@@ -192,21 +193,22 @@ FUNC J2G Main (){
   id49 := id55;
   STR id56;
   id56 := id57;
-  sw (id49) caso id16:
-  Print (id58);
-  Print (id3);
-  detener;
-  caso id59:
-  Print (id60);
-  Print (id8);
-  detener;
-  caso id61:
-  Print (id62);
-  detener;
-  por_defecto:
-  Print (id63);
-  detener;
-}
+  sw (id49){
+    caso id16:
+    Print (id58);
+    Print (id3);
+    detener;
+    caso id59:
+    Print (id60);
+    Print (id8);
+    detener;
+    caso id61:
+    Print (id62);
+    detener;
+    por_defecto:
+    Print (id63);
+    detener;
+  }
 }
 
 NUEVA TABLA DE SÍMBOLOS:
@@ -216,7 +218,12 @@ VARIABLE                                 | ID         | TIPO       | VALOR
 --------------------------------------------------------------------------------------------------------------
 "Lunes"                                  | id2        | string     | Lunes                                   
 "Carlos"                                 | id4        | string     | Carlos                                  
+promedio                                 | id5        | int        | id6                                     
 12                                       | id6        | int        | 12                                      
+auio                                     | id7        | bool       | id7                                     
+edad                                     | id8        | int        | edad                                    
+calificacion                             | id9        | int        | calificacion                            
+numero                                   | id10       | int        | id11                                    
 0                                        | id11       | int        | 0                                       
 "Bienvenido al sistema"                  | id12       | string     | Bienvenido al sistema                   
 "Ingrese su edad:"                       | id13       | string     | Ingrese su edad:                        
@@ -247,10 +254,13 @@ VARIABLE                                 | ID         | TIPO       | VALOR
 "true"                                   | id40       | string     | true                                    
 "Continuando el programa..."             | id41       | string     | Continuando el programa...              
 "Programa finalizado por el usuario."    | id42       | string     | Programa finalizado por el usuario.     
+contador                                 | id43       | int        | id11                                    
 5                                        | id44       | int        | 5                                       
 "Contando:"                              | id45       | string     | Contando:                               
+i                                        | id46       | int        | id44                                    
 10                                       | id47       | int        | 10                                      
 "Valor de i:"                            | id48       | string     | Valor de i:                             
+opcion                                   | id49       | int        | id50                                    
 45                                       | id50       | int        | 45                                      
 "Selecciona una opción:"                 | id51       | string     | Selecciona una opción:                  
 "1. Mostrar nombre"                      | id52       | string     | 1. Mostrar nombre                       
@@ -264,19 +274,11 @@ Input().Str()                            | id57       | string     | id57
 23                                       | id61       | int        | 23                                      
 "Saliendo del programa..."               | id62       | string     | Saliendo del programa...                
 "Opción no válida"                       | id63       | string     | Opción no válida                        
-dia                                      | id1        | desconocido | id2                                     
-nombre                                   | id3        | desconocido | id4                                     
-promedio                                 | id5        | desconocido | id6                                     
-auio                                     | id7        | desconocido | id7                                     
-edad                                     | id8        | desconocido | id8                                     
-calificacion                             | id9        | desconocido | id9                                     
-numero                                   | id10       | desconocido | id11                                    
-respuesta                                | id35       | desconocido | id35                                    
-entrada                                  | id37       | desconocido | id37                                    
-contador                                 | id43       | desconocido | id11                                    
-i                                        | id46       | desconocido | id44                                    
-opcion                                   | id49       | desconocido | id50                                    
-con                                      | id56       | desconocido | id56                                    
+dia                                      | id1        | str        | id2                                     
+nombre                                   | id3        | str        | id4                                     
+respuesta                                | id35       | str        | id35                                    
+entrada                                  | id37       | str        | id37                                    
+con                                      | id56       | str        | id56                                    
 ----------
 
 Validación de estructura del código (reglas internas):

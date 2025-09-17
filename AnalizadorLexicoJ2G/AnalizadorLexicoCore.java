@@ -60,17 +60,13 @@ public class AnalizadorLexicoCore {
                 (tokensOriginales.get(i+4).equals("Int") || tokensOriginales.get(i+4).equals("Str") || tokensOriginales.get(i+4).equals("Bool")) &&
                 tokensOriginales.get(i+5).equals("(") && tokensOriginales.get(i+6).equals(")")) {
                 
-                String inputCall = tokensOriginales.get(i) + tokensOriginales.get(i+1) + tokensOriginales.get(i+2) + tokensOriginales.get(i+3) + tokensOriginales.get(i+4) + tokensOriginales.get(i+5) + tokensOriginales.get(i+6);
+                String inputCall = String.join("", tokensOriginales.subList(i, i + 7));
                 String id;
                 String inputType = "desconocido";
                 
-                if (tokensOriginales.get(i+4).equals("Int")) {
-                    inputType = "int";
-                } else if (tokensOriginales.get(i+4).equals("Str")) {
-                    inputType = "string";
-                } else if (tokensOriginales.get(i+4).equals("Bool")) {
-                    inputType = "bool";
-                }
+                if (tokensOriginales.get(i+4).equals("Int")) inputType = "int";
+                else if (tokensOriginales.get(i+4).equals("Str")) inputType = "string";
+                else if (tokensOriginales.get(i+4).equals("Bool")) inputType = "bool";
                 
                 if (this.tablaSimbolos.contieneLiteral(inputCall)) {
                     id = this.tablaSimbolos.obtenerIdParaLiteral(inputCall);
@@ -81,17 +77,19 @@ public class AnalizadorLexicoCore {
                 }
                 tokenToEmit = id;
                 i += 6; 
+
             } else if (currentOriginalToken.matches("\"(?:\\\\.|[^\"\\\\])*\"")) {
                 String id;
-                String stringContent = currentOriginalToken.substring(1, currentOriginalToken.length() - 1).replace("\\\"", "\""); 
                 if (this.tablaSimbolos.contieneLiteral(currentOriginalToken)) { 
                     id = this.tablaSimbolos.obtenerIdParaLiteral(currentOriginalToken);
                 } else {
                     id = this.tablaSimbolos.generarProximoId();
                     this.tablaSimbolos.agregarLiteralConId(currentOriginalToken, id); 
+                    String stringContent = currentOriginalToken.substring(1, currentOriginalToken.length() - 1).replace("\\\"", "\"");
                     this.tablaSimbolos.agregarNuevaVariable(new SymbolTableEntry(currentOriginalToken, id, "string", stringContent));
                 }
                 tokenToEmit = id;
+
             } else if (currentOriginalToken.matches("[0-9]+")) {
                 String id;
                 if (this.tablaSimbolos.contieneLiteral(currentOriginalToken)) {
@@ -102,6 +100,7 @@ public class AnalizadorLexicoCore {
                     this.tablaSimbolos.agregarNuevaVariable(new SymbolTableEntry(currentOriginalToken, id, "int", currentOriginalToken));
                 }
                 tokenToEmit = id;
+
             } else {
                 Map<String, SymbolTableEntry> baseTabsim = this.tablaSimbolos.getTabsimBase();
                 if (baseTabsim.containsKey(currentOriginalToken)) {

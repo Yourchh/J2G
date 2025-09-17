@@ -30,7 +30,7 @@ public class TablaSimbolos {
     public void cargarTabsimDesdeArchivo(String archivoTabsimPath) {
         try (BufferedReader br = new BufferedReader(new FileReader(archivoTabsimPath))) {
             String linea;
-            br.readLine(); // Omitir cabecera
+            br.readLine();
             while ((linea = br.readLine()) != null) {
                 String[] partes = linea.split("\t");
                 if (partes.length >= 3) {
@@ -54,6 +54,9 @@ public class TablaSimbolos {
 
     public void agregarNuevaVariable(SymbolTableEntry entry) {
         this.nuevasVariablesDetectadas.add(entry);
+        // **LA CORRECCIÓN CLAVE ESTÁ AQUÍ**
+        // Se anula el mapa para forzar su reconstrucción con la nueva variable.
+        this.tokenToTypeMap = null; 
     }
     
     public void agregarVariableConId(String token, String id) {
@@ -120,6 +123,7 @@ public class TablaSimbolos {
         switch (tipo.toLowerCase()) {
             case "int": return "i";
             case "string": return "s";
+            case "str": return "s"; // Alias para robustez
             case "bool": return "b";
         }
         
