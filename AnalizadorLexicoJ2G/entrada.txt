@@ -5,7 +5,7 @@ FUNC     J2G     Main   (   )    {  // Inicio de la función principal
     // Declaración de variables iniciales
     STR    dia    :=    "Lunes"   ;    
     STR     nombre    :=   "Carlos"  ;    
-    INT     promedio   :=    10  ;
+    INT     promedio   :=    12  ;
     BOOL    auio;
 
     INT     edad     ;   // Edad del usuario
@@ -85,7 +85,7 @@ FUNC     J2G     Main   (   )    {  // Inicio de la función principal
     // Entrada booleana
     Print("¿Desea continuar? (true/false):");
 
-    if (respuesta == true) {
+    if (respuesta == "true") {
         Print("Continuando el programa...");
     } 
     else {

@@ -1,31 +1,7 @@
-/**
- * Clase que valida la estructura y tipos de un programa J2G.
- * 
- * Esta clase verifica:
- * - Estructura general del programa (función Main)
- * - Balance de llaves y paréntesis 
- * - Declaración y uso correcto de variables
- * - Tipos de datos en asignaciones
- * - Estructuras de control (if, while, for, switch)
- * - Sintaxis de sentencias
- *
- * Principales características:
- * - Valida que exista una única función Main
- * - Verifica que las variables estén declaradas antes de usarse
- * - Comprueba que los tipos de datos sean compatibles en asignaciones
- * - Valida la estructura correcta de bloques switch/case
- * - Detecta errores de sintaxis en expresiones
- * 
- * La clase mantiene estado sobre:
- * - Variables declaradas y sus tipos
- * - Profundidad de bloques anidados
- * - Estado actual de bloques switch
- * - Balance global de llaves
- *
- */
-
 package AnalizadorLexicoJ2G;
 
+import AnalizadorSintacticoJ2G.LRParser;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -38,6 +14,8 @@ import java.util.regex.Pattern;
 public class ValidadorEstructural {
 
     public TablaSimbolos tablaSimbolosGlobal;
+    private AnalizadorLexicoCore analizadorLexico;
+    private PrintStream outputTables;
 
     private boolean currentlyInSwitchBlock = false;
     private int switchBlockEntryDepth = 0;
@@ -48,8 +26,10 @@ public class ValidadorEstructural {
     private int switchActualOpeningLine = 0;
     private String currentSwitchExpressionType = null;
 
-    public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal) {
+    public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal, AnalizadorLexicoCore analizadorLexico, PrintStream outputTables) {
         this.tablaSimbolosGlobal = tablaSimbolosGlobal;
+        this.analizadorLexico = analizadorLexico;
+        this.outputTables = outputTables;
     }
 
     private Map<String, String> cargarReglasRegexEnMemoria() {
@@ -90,7 +70,6 @@ public class ValidadorEstructural {
         reglas.put("CASE_STMT", "^caso\\s+" + anyLiteralOrVarRegex + "\\s*:");
         reglas.put("DEFAULT_STMT", "^por_defecto\\s*:");
         reglas.put("DETENER_STMT", "^detener\\s*;");
-        // Updated FOR_STMT regex to use (?<!=):(?!=) for more specific colon delimiters
         reglas.put("FOR_STMT", "^for\\s*\\((.*?)\\s*(?<!=):(?!=)\\s*(.*?)\\s*(?<!=):(?!=)\\s*(.*?)\\)\\s*\\{");
         reglas.put("WHILE_STMT", "^while\\s*\\((.+)\\)\\s*\\{");
         reglas.put("DO_WHILE_DO_STMT", "^do\\s*\\{");
@@ -186,6 +165,14 @@ public class ValidadorEstructural {
         return errors;
     }
 
+    private List<String> getExpressionTokens(String expression) {
+        String cleanedExpression = expression.replaceAll("/\\*[\\s\\S]*?\\*/", "").replaceAll("//.*", "").trim();
+        List<String> rawTokens = this.analizadorLexico.fase1_limpiarYTokenizar(cleanedExpression);
+        List<String> transformedTokens = this.analizadorLexico.fase2_transformarTokens(rawTokens);
+        transformedTokens.add("$");
+        return transformedTokens;
+    }
+
     private List<String> checkExpressionVariables(String expression, String contextForExpression,
             Map<String, String> reglas, Map<String, String> declaredVariablesTypeMap, int lineNumber) {
         List<String> errors = new ArrayList<>();
@@ -252,21 +239,19 @@ public class ValidadorEstructural {
     }
 
      private String getExpressionType(String expression, Map<String, String> reglas, Map<String, String> declaredVariablesTypeMap) {
-        if (expression == null) return "UNKNOWN"; // Manejar null para evitar NullPointerException
-        String trimmedExpression = expression.trim(); // Usar la expresión trimeada para las comparaciones
+        if (expression == null) return "UNKNOWN";
+        String trimmedExpression = expression.trim();
 
         if (trimmedExpression.matches(reglas.get("STRING_LITERAL"))) return "STR";
         if (trimmedExpression.matches(reglas.get("NUMBER_LITERAL"))) return "INT";
         if (trimmedExpression.matches(reglas.get("BOOLEAN_LITERAL"))) return "BOOL";
         if (declaredVariablesTypeMap.containsKey(trimmedExpression)) return declaredVariablesTypeMap.get(trimmedExpression);
 
-        // Validar Input().Tipo() usando regex para flexibilidad con espacios
-        // Estas regex son para la parte de la expresión, no para la sentencia completa con ';'
         if (trimmedExpression.matches("^Input\\s*\\(\\s*\\)\\s*\\.\\s*Str\\s*\\(\\s*\\)$")) return "STR";
         if (trimmedExpression.matches("^Input\\s*\\(\\s*\\)\\s*\\.\\s*Int\\s*\\(\\s*\\)$")) return "INT";
         if (trimmedExpression.matches("^Input\\s*\\(\\s*\\)\\s*\\.\\s*Bool\\s*\\(\\s*\\)$")) return "BOOL";
         
-        return "UNKNOWN"; 
+        return "UNKNOWN";
     }
 
     private void performAssignmentTypeChecks(String lhsVar, String op, String rhsExpression, String context,
@@ -278,9 +263,7 @@ public class ValidadorEstructural {
 
             if (op.equals(":=")) {
                 if (rhsType.equals("UNKNOWN")) {
-                    // Si el tipo del lado derecho es desconocido, verificamos si es un problema con
-                    // Input
-                    if (rhsExpression.matches("^Input\\s*\\(\\s*\\)$")) { // Coincide con "Input()" exacto
+                    if (rhsExpression.matches("^Input\\s*\\(\\s*\\)$")) {
                         errorsEnLinea.add(
                                 "Error de sintaxis: Falta concatenar tipo de dato al Input (ej: Input().Int(), Input().Str()) en la asignación a '"
                                         + lhsVar + "'. Contexto: " + context + ".");
@@ -291,24 +274,19 @@ public class ValidadorEstructural {
                     } else {
                         errorsEnLinea.add("Error de Tipo: No se pudo determinar el tipo de la expresión " + rhsExpression + "' para la asignación a '" + lhsVar + "'. Contexto: " + context + ".");
                     }
-                } else if (!lhsType.equals(rhsType)) { // rhsType es CONOCIDO y DIFERENTE de lhsType
+                } else if (!lhsType.equals(rhsType)) {
                     errorsEnLinea.add("Error de Tipo: No se puede asignar un valor de tipo " + rhsType +
                             " a la variable '" + lhsVar + "' (tipo " + lhsType + ") " + context + ".");
                 }
-                // Si rhsType es CONOCIDO e IGUAL a lhsType, la asignación es válida, no hay
-                // error.
 
             } else if (op.matches("\\+=|-=|\\*=|\\/=")) {
-                // Para operadores compuestos, el RHS también debe ser verificable.
                 if (!lhsType.equals("INT")) {
                     errorsEnLinea.add("Error de tipo: Operador de asignación compuesta '" + op +
                             "' requiere que la variable '" + lhsVar + "' sea de tipo INT, pero es " + lhsType + " "
                             + context + ".");
                 }
                 if (rhsType.equals("UNKNOWN")) {
-                    // Si el tipo del RHS es desconocido para un operador compuesto.
-                    if (rhsExpression.startsWith("Input")) { // Es poco probable usar Input directamente aquí, pero por
-                                                             // si acaso.
+                    if (rhsExpression.startsWith("Input")) {
                         errorsEnLinea.add("Error: No se puede usar una expresión Input ('" + rhsExpression
                                 + "') directamente con el operador de asignación compuesta '" + op
                                 + "'. Se espera un valor de tipo INT. Contexto: " + context + ".");
@@ -324,12 +302,9 @@ public class ValidadorEstructural {
                 }
             }
         }
-        // Si lhsVar no está en declaredVariablesTypeMap, checkVariableUsage ya debería
-        // haber reportado
-        // "Variable 'lhsVar' no declarada".
     }
 
-    public void validarEstructuraConRegex(String codigoLimpioFormateado) {
+    public void validarEstructuraConRegex(String codigoLimpioFormateado, LRParser parser) {
         Map<String, String> reglas = cargarReglasRegexEnMemoria();
         Map<String, String> declaredVariablesTypeMap = new HashMap<>();
         int globalBraceBalance = 0;
@@ -391,7 +366,7 @@ public class ValidadorEstructural {
                 reglaCoincidioEstaLinea = true;
             } else if (currentlyInMainFunctionBlock) {
                 boolean esAperturaDeBloqueInternoValido = false;
-                String[] blockOpeningRegexKeys = { "IF_STMT", "WHILE_STMT", /* "FOR_STMT", */ "SWITCH_STMT",
+                String[] blockOpeningRegexKeys = { "IF_STMT", "WHILE_STMT", "FOR_STMT", "SWITCH_STMT",
                         "DO_WHILE_DO_STMT", "ELSE_STMT", "BLOCK_END_ELSE_STMT" };
                 for (String key : blockOpeningRegexKeys) {
                     if (lineaActual.matches(reglas.getOrDefault(key, "^$")) && lineaActual.endsWith("{")) {
@@ -415,10 +390,14 @@ public class ValidadorEstructural {
                     Matcher switchMatcher = Pattern.compile(reglas.get("SWITCH_STMT")).matcher(lineaActual);
                     if (switchMatcher.matches()) {
                         String switchExpressionText = switchMatcher.group(1).trim();
-                        errorsEnLinea.addAll(checkExpressionVariables(switchExpressionText, "en expr switch", reglas,
-                                declaredVariablesTypeMap, currentLineNumber));
-                        this.currentSwitchExpressionType = getExpressionType(switchExpressionText, reglas,
-                                declaredVariablesTypeMap);
+                        List<String> expressionTokens = getExpressionTokens(switchExpressionText);
+                        outputTables.println("Análisis Sintáctico de la expresión del switch: '" + switchExpressionText + "'");
+                        boolean sintaxisValida = parser.parse(expressionTokens);
+                        if (!sintaxisValida) {
+                             errorsEnLinea.add("Error de sintaxis en la expresión del switch: '" + switchExpressionText + "'.");
+                        }
+                        
+                        this.currentSwitchExpressionType = getExpressionType(switchExpressionText, reglas, declaredVariablesTypeMap);
                         if (this.currentSwitchExpressionType.equals("UNKNOWN")
                                 && switchExpressionText.matches(varOrIdCorePattern)
                                 && !declaredVariablesTypeMap.containsKey(switchExpressionText)) {
@@ -529,9 +508,13 @@ public class ValidadorEstructural {
                                 declaredVariablesTypeMap.put(varName, varDeclaredType);
                                 errorsEnLinea.addAll(checkVariableUsage(varName, contextFor + " (declaración)", reglas,
                                         declaredVariablesTypeMap));
-                                errorsEnLinea.addAll(checkExpressionVariables(rhsAssigned,
-                                        contextFor + " (RHS para " + varName + ")", reglas, declaredVariablesTypeMap,
-                                        currentLineNumber));
+                                
+                                List<String> expressionTokens = getExpressionTokens(rhsAssigned);
+                                outputTables.println("Análisis Sintáctico de la expresión de inicialización del for: '" + rhsAssigned + "'");
+                                if (!parser.parse(expressionTokens)) {
+                                     errorsEnLinea.add("Error de sintaxis en la expresión de inicialización del for: '" + rhsAssigned + "'.");
+                                }
+
                                 performAssignmentTypeChecks(varName, ":=", rhsAssigned, contextFor, reglas,
                                         declaredVariablesTypeMap, errorsEnLinea);
                             } else if (initAssignMatcher.matches()) {
@@ -540,23 +523,28 @@ public class ValidadorEstructural {
                                 String rhsEx = initAssignMatcher.group(3).trim();
                                 errorsEnLinea.addAll(checkVariableUsage(lhsVar, contextFor + " (LHS asignación)",
                                         reglas, declaredVariablesTypeMap));
-                                errorsEnLinea.addAll(checkExpressionVariables(rhsEx,
-                                        contextFor + " (RHS asignación para " + lhsVar + ")", reglas,
-                                        declaredVariablesTypeMap, currentLineNumber));
+                                
+                                List<String> expressionTokens = getExpressionTokens(rhsEx);
+                                outputTables.println("Análisis Sintáctico de la expresión de asignación del for: '" + rhsEx + "'");
+                                if (!parser.parse(expressionTokens)) {
+                                     errorsEnLinea.add("Error de sintaxis en la expresión de asignación del for: '" + rhsEx + "'.");
+                                }
+                                
                                 performAssignmentTypeChecks(lhsVar, op, rhsEx, contextFor, reglas,
                                         declaredVariablesTypeMap, errorsEnLinea);
                             } else {
                                 errorsEnLinea.add("Error de sintaxis: Parte de inicialización del for ('" + initPart
                                         + "') no es una declaración (ej: INT i := 0) o una asignación válida.");
-                                errorsEnLinea.addAll(checkExpressionVariables(initPart, contextFor, reglas,
-                                        declaredVariablesTypeMap, currentLineNumber));
                             }
                         }
 
                         contextFor = "en condición de for";
                         if (!conditionPart.isEmpty()) {
-                            errorsEnLinea.addAll(checkExpressionVariables(conditionPart, contextFor, reglas,
-                                    declaredVariablesTypeMap, currentLineNumber));
+                            List<String> expressionTokens = getExpressionTokens(conditionPart);
+                            outputTables.println("Análisis Sintáctico de la expresión de condición del for: '" + conditionPart + "'");
+                            if (!parser.parse(expressionTokens)) {
+                                errorsEnLinea.add("Error de sintaxis en la expresión de condición del for: '" + conditionPart + "'.");
+                            }
                         } else {
                             errorsEnLinea.add("Error de sintaxis: Falta la parte de condición en la sentencia for.");
                         }
@@ -572,16 +560,18 @@ public class ValidadorEstructural {
                                 String rhsEx = updateAssignMatcher.group(3).trim();
                                 errorsEnLinea.addAll(checkVariableUsage(lhsVar, contextFor + " (LHS actualización)",
                                         reglas, declaredVariablesTypeMap));
-                                errorsEnLinea.addAll(checkExpressionVariables(rhsEx,
-                                        contextFor + " (RHS actualización para " + lhsVar + ")", reglas,
-                                        declaredVariablesTypeMap, currentLineNumber));
+                                
+                                List<String> expressionTokens = getExpressionTokens(rhsEx);
+                                outputTables.println("Análisis Sintáctico de la expresión de actualización del for: '" + rhsEx + "'");
+                                if (!parser.parse(expressionTokens)) {
+                                     errorsEnLinea.add("Error de sintaxis en la expresión de actualización del for: '" + rhsEx + "'.");
+                                }
+                                
                                 performAssignmentTypeChecks(lhsVar, op, rhsEx, contextFor, reglas,
                                         declaredVariablesTypeMap, errorsEnLinea);
                             } else {
                                 errorsEnLinea.add("Error de sintaxis: Parte de actualización del for ('" + updatePart
                                         + "') no es una asignación válida (ej: i += 1).");
-                                errorsEnLinea.addAll(checkExpressionVariables(updatePart, contextFor, reglas,
-                                        declaredVariablesTypeMap, currentLineNumber));
                             }
                         }
                     }
@@ -618,9 +608,13 @@ public class ValidadorEstructural {
                             declaredVariablesTypeMap.put(varName, varDeclaredType);
                         errorsEnLinea.addAll(checkVariableUsage(varName, "en declaración (nombre)", reglas,
                                 declaredVariablesTypeMap));
-                        errorsEnLinea.addAll(
-                                checkExpressionVariables(rhsAssigned, "en RHS de inicialización para " + varName,
-                                        reglas, declaredVariablesTypeMap, currentLineNumber));
+                        
+                        List<String> expressionTokens = getExpressionTokens(rhsAssigned);
+                        outputTables.println("Análisis Sintáctico de la expresión de inicialización: '" + rhsAssigned + "'");
+                        if (!parser.parse(expressionTokens)) {
+                             errorsEnLinea.add("Error de sintaxis en la expresión de inicialización: '" + rhsAssigned + "'.");
+                        }
+                        
                         performAssignmentTypeChecks(varName, ":=", rhsAssigned, "en inicialización de variable", reglas,
                                 declaredVariablesTypeMap, errorsEnLinea);
                     }
@@ -663,9 +657,13 @@ public class ValidadorEstructural {
                         String rhsExpression = matcher.group(3).trim();
                         errorsEnLinea.addAll(
                                 checkVariableUsage(lhsVar, "en LHS de asignación", reglas, declaredVariablesTypeMap));
-                        errorsEnLinea
-                                .addAll(checkExpressionVariables(rhsExpression, "en RHS de asignación para " + lhsVar,
-                                        reglas, declaredVariablesTypeMap, currentLineNumber));
+                        
+                        List<String> expressionTokens = getExpressionTokens(rhsExpression);
+                        outputTables.println("Análisis Sintáctico de la expresión de asignación: '" + rhsExpression + "'");
+                        if (!parser.parse(expressionTokens)) {
+                             errorsEnLinea.add("Error de sintaxis en la expresión de asignación: '" + rhsExpression + "'.");
+                        }
+                        
                         performAssignmentTypeChecks(lhsVar, op, rhsExpression, "en asignación", reglas,
                                 declaredVariablesTypeMap, errorsEnLinea);
                     }
@@ -683,13 +681,20 @@ public class ValidadorEstructural {
 
                             if (key.equals("IF_STMT") || key.equals("WHILE_STMT") ||
                                     key.equals("DO_WHILE_CLOSURE_LINE_STMT") || key.equals("DO_WHILE_TAIL_ONLY_STMT")) {
-                                errorsEnLinea
-                                        .addAll(checkExpressionVariables(matcher.group(1), "condición de " + contextMsg,
-                                                reglas, declaredVariablesTypeMap, currentLineNumber));
+                                String expression = matcher.group(1);
+                                List<String> expressionTokens = getExpressionTokens(expression);
+                                outputTables.println("Análisis Sintáctico de la expresión de la condición: '" + expression + "'");
+                                if (!parser.parse(expressionTokens)) {
+                                    errorsEnLinea.add("Error de sintaxis en la expresión de la condición: '" + expression + "'.");
+                                }
+                                
                             } else if (key.equals("PRINT_STMT")) {
-                                errorsEnLinea
-                                        .addAll(checkExpressionVariables(matcher.group(1), "argumento de " + contextMsg,
-                                                reglas, declaredVariablesTypeMap, currentLineNumber));
+                                String expression = matcher.group(1);
+                                List<String> expressionTokens = getExpressionTokens(expression);
+                                outputTables.println("Análisis Sintáctico del argumento del print: '" + expression + "'");
+                                if (!parser.parse(expressionTokens)) {
+                                    errorsEnLinea.add("Error de sintaxis en el argumento del print: '" + expression + "'.");
+                                }
                             } else {
                                 if (!key.equals("ELSE_STMT") && !key.equals("BLOCK_END_ELSE_STMT")
                                         && !key.equals("DO_WHILE_DO_STMT")) {
@@ -712,6 +717,9 @@ public class ValidadorEstructural {
                                             + "): Se esperaba 'detener;' antes de cerrar el bloque 'sw'.");
                         }
                         this.currentlyInSwitchBlock = false;
+                        this.currentSwitchClauseActiveAndNeedsDetener = false;
+                        this.currentSwitchClauseHasHadDetener = false;
+                        this.currentSwitchExpressionType = null;
                     }
 
                     mainFunctionBlockBraceDepth--;
@@ -798,9 +806,9 @@ public class ValidadorEstructural {
             }
 
             if (!errorsEnLinea.isEmpty()) {
-                System.out.println("Error(es) en línea " + currentLineNumber + ": " + lineasCodigo[i]);
+                System.err.println("Error(es) en línea " + currentLineNumber + ": " + lineasCodigo[i]);
                 for (String error : errorsEnLinea)
-                    System.out.println("  - " + error);
+                    System.err.println("  - " + error);
                 erroresEncontradosEnGeneral = true;
             }
         }
@@ -840,15 +848,15 @@ public class ValidadorEstructural {
         }
 
         if (!globalStructuralErrors.isEmpty()) {
-            System.out.println("\n--- Errores Estructurales Globales Detectados ---");
+            System.err.println("\n--- Errores Estructurales Globales Detectados ---");
             for (String error : globalStructuralErrors)
-                System.out.println(error);
+                System.err.println(error);
             erroresEncontradosEnGeneral = true;
         }
 
         if (!erroresEncontradosEnGeneral && globalStructuralErrors.isEmpty()) {
-            System.out.println("No se encontraron errores de estructura.");
+            System.err.println("No se encontraron errores de estructura.");
         }
-        System.out.println("---------------------------------------");
+        System.err.println("---------------------------------------");
     }
 }

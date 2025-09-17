@@ -1,0 +1,284 @@
+Cargando archivo de tabla de símbolos: J2G/AnalizadorLexicoJ2G/tabsim.txt
+Se cargó el archivo J2G/AnalizadorLexicoJ2G/entrada.txt el cual se está analizando.
+
+INICIANDO PROCESAMIENTO DEL CÓDIGO
+
+RESULTADO DE LA FASE 1:
+Se eliminan comentarios y se tokeniza el código.
+
+FUNC J2G Main (){
+  STR dia := "Lunes";
+  STR nombre := "Carlos";
+  INT promedio := 12;
+  BOOL auio;
+  INT edad;
+  INT calificacion;
+  INT numero := 0;
+  Print ("Bienvenido al sistema");
+  Print ("Ingrese su edad:");
+  Print ("Ingrese su calificación:");
+  sw (dia){
+    caso "Lunes":
+    Print ("Inicio de semana laboral");
+    numero += 1;
+    detener;
+    caso "Viernes":
+    Print ("Casi fin de semana!");
+    numero += 1;
+    detener;
+    por_defecto:
+    Print ("Otro día");
+    detener;
+  }
+  if (promedio >= 6 || numero < 24){
+    Print ("Aprobado");
+  }else{
+    Print ("Reprobado");
+  }
+  if (edad >= 18){
+    Print ("Es mayor de edad");
+    Print ("Es mayor de edad");
+    sw (edad){
+      caso 13:
+      Print ("Muy joven");
+      detener;
+      caso 18:
+      Print ("Justo en la mayoría de edad");
+      detener;
+      caso 25:
+      Print ("Joven adulto");
+      detener;
+      por_defecto:
+      Print ("Edad no categorizada");
+      detener;
+    }
+    if (calificacion >= 9){
+      Print ("Excelente desempeño");
+    }else{
+      Print ("Necesita mejorar");
+    }
+  }
+  STR respuesta;
+  do{
+    Print ("Ingrese un número positivo:");
+    STR entrada;
+    numero := 56;
+  }
+  while (numero <= 0);
+  Print ("¿Desea continuar? (true/false):");
+  if (respuesta == "true"){
+    Print ("Continuando el programa...");
+  }else{
+    Print ("Programa finalizado por el usuario.");
+  }
+  INT contador := 0;
+  while (contador < 5){
+    Print ("Contando:");
+    Print (contador);
+    contador += 1;
+  }
+  for (INT i := 5: i < 10: i += 1){
+    Print ("Valor de i:");
+    Print (i);
+  }
+  INT opcion := 45;
+  Print ("Selecciona una opción:");
+  Print ("1. Mostrar nombre");
+  Print ("2. Mostrar edad");
+  Print ("3. Salir");
+  opcion := Input (). Int ();
+  STR con;
+  con := Input (). Str ();
+  sw (opcion){
+    caso 1:
+    Print ("Nombre:");
+    Print (nombre);
+    detener;
+    caso 2:
+    Print ("Edad:");
+    Print (edad);
+    detener;
+    caso 23:
+    Print ("Saliendo del programa...");
+    detener;
+    por_defecto:
+    Print ("Opción no válida");
+    detener;
+  }
+}
+
+RESULATDO DE LA FASE 2:
+Se transforman los tokens a IDs y se muestran las nuevas variables detectadas.
+
+FUNC J2G Main (){
+  STR id1 := id2;
+  STR id3 := id4;
+  INT id5 := id6;
+  BOOL id7;
+  INT id8;
+  INT id9;
+  INT id10 := id11;
+  Print (id12);
+  Print (id13);
+  Print (id14);
+  sw (id1){
+    caso id2:
+    Print (id15);
+    id10 += id16;
+    detener;
+    caso id17:
+    Print (id18);
+    id10 += id16;
+    detener;
+    por_defecto:
+    Print (id19);
+    detener;
+  }
+  if (id5 >= id20 || id10 < id21){
+    Print (id22);
+  }else{
+    Print (id23);
+  }
+  if (id8 >= id24){
+    Print (id25);
+    Print (id25);
+    sw (id8){
+      caso id26:
+      Print (id27);
+      detener;
+      caso id24:
+      Print (id28);
+      detener;
+      caso id29:
+      Print (id30);
+      detener;
+      por_defecto:
+      Print (id31);
+      detener;
+    }
+    if (id9 >= id32){
+      Print (id33);
+    }else{
+      Print (id34);
+    }
+  }
+  STR id35;
+  do{
+    Print (id36);
+    STR id37;
+    id10 := id38;
+  }
+  while (id10 <= id11);
+  Print (id39);
+  if (id35 == id40){
+    Print (id41);
+  }else{
+    Print (id42);
+  }
+  INT id43 := id11;
+  while (id43 < id44){
+    Print (id45);
+    Print (id43);
+    id43 += id16;
+  }
+  for (INT id46 := id44: id46 < id47: id46 += id16){
+    Print (id48);
+    Print (id46);
+  }
+  INT id49 := id50;
+  Print (id51);
+  Print (id52);
+  Print (id53);
+  Print (id54);
+  id49 := id55;
+  STR id56;
+  id56 := id57;
+  sw (id49){
+    caso id16:
+    Print (id58);
+    Print (id3);
+    detener;
+    caso id59:
+    Print (id60);
+    Print (id8);
+    detener;
+    caso id61:
+    Print (id62);
+    detener;
+    por_defecto:
+    Print (id63);
+    detener;
+  }
+}
+
+NUEVA TABLA DE SÍMBOLOS:
+
+--------------------------------------------------------------------------------------------------------------
+VARIABLE                                 | ID         | TIPO       | VALOR                                   
+--------------------------------------------------------------------------------------------------------------
+"Lunes"                                  | id2        | string     | Lunes                                   
+"Carlos"                                 | id4        | string     | Carlos                                  
+12                                       | id6        | int        | 12                                      
+0                                        | id11       | int        | 0                                       
+"Bienvenido al sistema"                  | id12       | string     | Bienvenido al sistema                   
+"Ingrese su edad:"                       | id13       | string     | Ingrese su edad:                        
+"Ingrese su calificación:"               | id14       | string     | Ingrese su calificación:                
+"Inicio de semana laboral"               | id15       | string     | Inicio de semana laboral                
+1                                        | id16       | int        | 1                                       
+"Viernes"                                | id17       | string     | Viernes                                 
+"Casi fin de semana!"                    | id18       | string     | Casi fin de semana!                     
+"Otro día"                               | id19       | string     | Otro día                                
+6                                        | id20       | int        | 6                                       
+24                                       | id21       | int        | 24                                      
+"Aprobado"                               | id22       | string     | Aprobado                                
+"Reprobado"                              | id23       | string     | Reprobado                               
+18                                       | id24       | int        | 18                                      
+"Es mayor de edad"                       | id25       | string     | Es mayor de edad                        
+13                                       | id26       | int        | 13                                      
+"Muy joven"                              | id27       | string     | Muy joven                               
+"Justo en la mayoría de edad"            | id28       | string     | Justo en la mayoría de edad             
+25                                       | id29       | int        | 25                                      
+"Joven adulto"                           | id30       | string     | Joven adulto                            
+"Edad no categorizada"                   | id31       | string     | Edad no categorizada                    
+9                                        | id32       | int        | 9                                       
+"Excelente desempeño"                    | id33       | string     | Excelente desempeño                     
+"Necesita mejorar"                       | id34       | string     | Necesita mejorar                        
+"Ingrese un número positivo:"            | id36       | string     | Ingrese un número positivo:             
+56                                       | id38       | int        | 56                                      
+"¿Desea continuar? (true/false):"        | id39       | string     | ¿Desea continuar? (true/false):         
+"true"                                   | id40       | string     | true                                    
+"Continuando el programa..."             | id41       | string     | Continuando el programa...              
+"Programa finalizado por el usuario."    | id42       | string     | Programa finalizado por el usuario.     
+5                                        | id44       | int        | 5                                       
+"Contando:"                              | id45       | string     | Contando:                               
+10                                       | id47       | int        | 10                                      
+"Valor de i:"                            | id48       | string     | Valor de i:                             
+45                                       | id50       | int        | 45                                      
+"Selecciona una opción:"                 | id51       | string     | Selecciona una opción:                  
+"1. Mostrar nombre"                      | id52       | string     | 1. Mostrar nombre                       
+"2. Mostrar edad"                        | id53       | string     | 2. Mostrar edad                         
+"3. Salir"                               | id54       | string     | 3. Salir                                
+Input().Int()                            | id55       | int        | Input().Int()                           
+Input().Str()                            | id57       | string     | id57                                    
+"Nombre:"                                | id58       | string     | Nombre:                                 
+2                                        | id59       | int        | 2                                       
+"Edad:"                                  | id60       | string     | Edad:                                   
+23                                       | id61       | int        | 23                                      
+"Saliendo del programa..."               | id62       | string     | Saliendo del programa...                
+"Opción no válida"                       | id63       | string     | Opción no válida                        
+dia                                      | id1        | desconocido | id2                                     
+nombre                                   | id3        | desconocido | id4                                     
+promedio                                 | id5        | desconocido | id6                                     
+auio                                     | id7        | desconocido | id7                                     
+edad                                     | id8        | desconocido | id8                                     
+calificacion                             | id9        | desconocido | id9                                     
+numero                                   | id10       | desconocido | id11                                    
+respuesta                                | id35       | desconocido | id35                                    
+entrada                                  | id37       | desconocido | id37                                    
+contador                                 | id43       | desconocido | id11                                    
+i                                        | id46       | desconocido | id44                                    
+opcion                                   | id49       | desconocido | id50                                    
+con                                      | id56       | desconocido | id56                                    
+----------
+
+Validación de estructura del código (reglas internas):

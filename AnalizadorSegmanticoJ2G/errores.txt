@@ -1,0 +1,6 @@
+
+--- Errores Estructurales Globales Detectados ---
+Error ESTRUCTURAL GLOBAL: El bloque 'FUNC J2G Main()' no se cerró correctamente (faltan 1 llave(s) de cierre '}').
+---------------------------------------
+
+El análisis ha finalizado. Revise los archivos 'errores.txt', 'codigo_procesado.txt' y 'tablas_analisis.txt' para ver los resultados.
