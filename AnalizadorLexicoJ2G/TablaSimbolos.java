@@ -1,23 +1,3 @@
-/**
- * Clase que maneja la tabla de símbolos para el analizador léxico.
- * Almacena y gestiona símbolos, variables, literales y sus identificadores.
- *
- * La clase mantiene:
- * - Una tabla base de símbolos
- * - Un registro de nuevas variables detectadas
- * - Mapeos de variables a IDs
- * - Mapeos de literales a IDs
- * - Un contador para generar IDs únicos
- * - Una lista de palabras reservadas y símbolos conocidos
- *
- * Los símbolos se cargan desde un archivo y se pueden agregar nuevos elementos
- * durante el análisis. La clase proporciona métodos para:
- * - Cargar la tabla desde archivo
- * - Generar nuevos IDs
- * - Agregar y consultar variables y literales
- * - Actualizar valores después del análisis
- */
-
 package AnalizadorLexicoJ2G;
 
 import java.io.BufferedReader;
@@ -32,10 +12,11 @@ import java.util.Map;
 public class TablaSimbolos {
     private Map<String, SymbolTableEntry> tabsimBase;
     private List<SymbolTableEntry> nuevasVariablesDetectadas;
-    private Map<String, String> variableToIdMap; // IDs para variables de usuario
-    private Map<String, String> literalToIdMap;  // IDs para literales (números, strings)
+    private Map<String, String> variableToIdMap;
+    private Map<String, String> literalToIdMap;
     private int nextIdCounter;
     private List<String> palabrasReservadasYSimbolosConocidos;
+    private Map<String, String> tokenToTypeMap = null;
 
     public TablaSimbolos() {
         this.tabsimBase = new HashMap<>();
@@ -52,13 +33,13 @@ public class TablaSimbolos {
             br.readLine(); // Omitir cabecera
             while ((linea = br.readLine()) != null) {
                 String[] partes = linea.split("\t");
-                if (partes.length >= 3) { 
+                if (partes.length >= 3) {
                     String variable = partes[0].trim();
                     String id = partes[1].trim();
                     String tipo = partes[2].trim();
                     String valor = (partes.length == 4) ? partes[3].trim() : "";
                     SymbolTableEntry entry = new SymbolTableEntry(variable, id, tipo, valor);
-                    this.tabsimBase.put(variable, entry); 
+                    this.tabsimBase.put(variable, entry);
                     this.palabrasReservadasYSimbolosConocidos.add(variable);
                 }
             }
@@ -113,15 +94,39 @@ public class TablaSimbolos {
 
     public void actualizarValoresDeVariablesPostAnalisis() {
         for (SymbolTableEntry entry : nuevasVariablesDetectadas) {
-            if (!(entry.tipo.equals("int") && entry.variable.equals(entry.valor)) && 
+            if (!(entry.tipo.equals("int") && entry.variable.equals(entry.valor)) &&
                 !(entry.tipo.equals("string") && entry.variable.startsWith("\""))) {
                 
-                if (variableToIdMap.containsKey(entry.valor)) { 
+                if (variableToIdMap.containsKey(entry.valor)) {
                     entry.valor = variableToIdMap.get(entry.valor);
-                } else if (literalToIdMap.containsKey(entry.valor)) { 
+                } else if (literalToIdMap.containsKey(entry.valor)) {
                     entry.valor = literalToIdMap.get(entry.valor);
                 }
             }
         }
+    }
+
+    public String getTipoDeIdSimplificado(String token) {
+        if (tokenToTypeMap == null) {
+            tokenToTypeMap = new HashMap<>();
+            for (SymbolTableEntry entry : nuevasVariablesDetectadas) {
+                tokenToTypeMap.put(entry.variable, entry.tipo);
+                tokenToTypeMap.put(entry.id, entry.tipo);
+            }
+        }
+
+        String tipo = tokenToTypeMap.getOrDefault(token, "desconocido");
+
+        switch (tipo.toLowerCase()) {
+            case "int": return "i";
+            case "string": return "s";
+            case "bool": return "b";
+        }
+        
+        if (token.matches("\"(?:\\\\.|[^\"\\\\])*\"")) return "s";
+        if (token.matches("[0-9]+")) return "i";
+        if (token.equalsIgnoreCase("true") || token.equalsIgnoreCase("false") || token.equalsIgnoreCase("TRUE") || token.equalsIgnoreCase("FALSE")) return "b";
+        
+        return "_";
     }
 }

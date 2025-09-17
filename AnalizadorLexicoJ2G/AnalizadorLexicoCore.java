@@ -106,6 +106,9 @@ public class AnalizadorLexicoCore {
                 Map<String, SymbolTableEntry> baseTabsim = this.tablaSimbolos.getTabsimBase();
                 if (baseTabsim.containsKey(currentOriginalToken)) {
                     tokenToEmit = baseTabsim.get(currentOriginalToken).id;
+                    if (tokenToEmit.equals("INT") || tokenToEmit.equals("STR") || tokenToEmit.equals("BOOL")) {
+                        lastDeclaredType = tokenToEmit.toLowerCase();
+                    }
                 } else {
                     if (currentOriginalToken.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
                         String id;
@@ -114,6 +117,7 @@ public class AnalizadorLexicoCore {
                         } else {
                             id = this.tablaSimbolos.generarProximoId();
                             this.tablaSimbolos.agregarVariableConId(currentOriginalToken, id);
+                            
                             String tipoVar = (lastDeclaredType != null) ? lastDeclaredType : "desconocido";
                             
                             String valorParaTabla = currentOriginalToken;
@@ -121,12 +125,17 @@ public class AnalizadorLexicoCore {
                                 valorParaTabla = tokensOriginales.get(i + 2);
                             }
                             this.tablaSimbolos.agregarNuevaVariable(new SymbolTableEntry(currentOriginalToken, id, tipoVar, valorParaTabla));
+                            lastDeclaredType = null;
                         }
                         tokenToEmit = id;
                     }
                 }
             }
             transformedTokens.add(tokenToEmit);
+
+            if (currentOriginalToken.equals(";")) {
+                lastDeclaredType = null;
+            }
         }
         
         this.tablaSimbolos.actualizarValoresDeVariablesPostAnalisis();

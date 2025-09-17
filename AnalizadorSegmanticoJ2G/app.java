@@ -29,7 +29,7 @@ public class app {
             // Iniciar el análisis del código
             TablaSimbolos tablaSimbolos = new TablaSimbolos();
             AnalizadorLexicoCore analizadorLexico = new AnalizadorLexicoCore(tablaSimbolos);
-            LRParser parser = new LRParser(outTables); // Pasar el PrintStream al parser
+           LRParser parser = new LRParser(outTables, tablaSimbolos); 
             ValidadorEstructural validador = new ValidadorEstructural(tablaSimbolos, analizadorLexico, outTables);
 
             System.out.println("Cargando archivo de tabla de símbolos: " + archivoTabsim);
