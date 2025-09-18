@@ -82,7 +82,12 @@ public class LRParser {
         for (String token : originalTokens) {
             if (idPattern.matcher(token).matches()) {
                 normalized.add("id");
-            } else {
+            } else if (token.equalsIgnoreCase("true")) {
+                normalized.add("TRUE");
+            } else if (token.equalsIgnoreCase("false")) {
+                normalized.add("FALSE");
+            }
+             else {
                 normalized.add(token);
             }
         }
@@ -163,10 +168,8 @@ public class LRParser {
 
                 String resultingType = performSemanticAction(ruleNumber, t1, t2, t3);
                 
-                // **LA CORRECCIÓN CLAVE ESTÁ AQUÍ**
                 if (resultingType.equals("ERROR")) {
                     outputStream.println("Error Semántico: Incompatibilidad de tipos en la regla " + rule.originalRuleString);
-                    // Se detiene el análisis al devolver 'false'
                     return false; 
                 }
                 semanticStack.push(resultingType);
@@ -183,29 +186,29 @@ public class LRParser {
 
      private String performSemanticAction(int ruleNumber, String t1, String t2, String t3) {
          switch (ruleNumber) {
-            case 3: case 5: case 6: case 13: case 16: case 20: // Propagación
-            case 23: return t1; // G -> id
-            case 24: case 25: return "b"; // G -> TRUE/FALSE
+            case 3: case 5: case 6: case 13: case 16: case 20:
+            case 23: return t1;
+            case 24: case 25: return "b";
             
-            case 22: return t2; // G -> ( A )
+            case 22: return t2;
 
-            case 2: case 4: // A -> A || B, B -> B && C
+            case 2: case 4:
                 if (t1.equals("b") && t3.equals("b")) return "b";
                 return "ERROR";
 
-            case 7: case 8: // C -> C == D, C -> C != D
+            case 7: case 8:
                 if (t1.equals(t3) && !t1.equals("_") && !t1.equals("ERROR")) return "b";
                 return "ERROR";
 
-            case 9: case 10: case 11: case 12: // C -> C > D, etc.
+            case 9: case 10: case 11: case 12:
                 if (t1.equals("i") && t3.equals("i")) return "b";
                 return "ERROR";
 
-            case 14: case 15: case 17: case 18: case 19: // Operaciones Aritméticas
+            case 14: case 15: case 17: case 18: case 19:
                 if (t1.equals("i") && t3.equals("i")) return "i";
                 return "ERROR";
 
-            case 21: // F -> ! F
+            case 21:
                 if (t1.equals("b")) return "b";
                 return "ERROR";
 

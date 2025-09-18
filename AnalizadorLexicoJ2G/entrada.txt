@@ -1,29 +1,48 @@
 // Programa principal para pruebas sintácticas y estructurales
+FUNC J2G Main () {
 
-FUNC     J2G     Main   (   )    {  // Inicio de la función principal
+    // Declaración de variables para usar en las condiciones
+    INT a := 10;
+    INT b := 5;
+    INT c := 20;
+    INT d := 10;
+    INT resultado;
+    STR mensaje := "Hola";
+    BOOL esValido := TRUE;
+    INT var1 := "23";
+    BOOL var2 := 23;
+    STR var62 := TRUE;
 
-    // Declaración de variables iniciales
-    STR    dia    :=    "Lunes"   ;    
-    STR     nombre    :=   "Carlos"  ;    
-    INT     promedio   :=    12  ;
-    BOOL    auio;
-
-    INT     edad     ;   // Edad del usuario
-    INT      calificacion   ; // Calificación capturada
-    INT numero := 0;  // Variable auxiliar
-
-    // Mensajes iniciales
-    Print ( "Bienvenido al sistema"  ) ;
-
-    Print ( "Ingrese su edad:" ) ;
-
-    Print("Ingrese su calificación:");
-
-    // Evaluación del día
-
-    if (34 > "pedro") {
-        Print("Ingrese su calificación:");
+    // Condición 1: ((id + id) * id) > id && id <= id || id != id
+    if (((a + 5) * 100) > d && a <= 10 || b != c) {
+        Print("Se cumplió la condición 1");
     }
-    
 
-}   //    Fin    de    FUNC   J2G   Main()
+    // Condición 2: !(id - id / id < id) || (id + id) == id && id >= id
+    if (!((a - b / 2) == 0)  || (a + b) == d && c >= 10) {
+        Print("Se cumplió la condición 2");
+    }
+
+    // Condición 3: ((id * id) + id) > id || !(id - id <= id) && id == id
+    if (((a * 2) + c) > 30 || !(a - b <= c) && d == 10) {
+        Print("Se cumplió la condición 3");
+    }
+
+    // Condición 4: ((id + id) / id - id) == id || id <= id && !(id >= id)
+    if (((a + 15) / c - d) == a || 4 <= c && !(d >= a)) {
+        Print("Se cumplió la condición 4");
+    }
+
+    if ((a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE) {
+        Print("Esta condición tiene un error semántico");
+    }
+
+    if ((a * b + 50 != 10 && (esValido) > b || a <= 20)) {
+        Print("Esta condición tiene un error semántico");
+    }
+
+    if ((a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10) {
+        Print("Esta condición tiene un error semántico");
+    }
+
+}

@@ -54,8 +54,6 @@ public class TablaSimbolos {
 
     public void agregarNuevaVariable(SymbolTableEntry entry) {
         this.nuevasVariablesDetectadas.add(entry);
-        // **LA CORRECCIÓN CLAVE ESTÁ AQUÍ**
-        // Se anula el mapa para forzar su reconstrucción con la nueva variable.
         this.tokenToTypeMap = null; 
     }
     
@@ -123,7 +121,7 @@ public class TablaSimbolos {
         switch (tipo.toLowerCase()) {
             case "int": return "i";
             case "string": return "s";
-            case "str": return "s"; // Alias para robustez
+            case "str": return "s"; 
             case "bool": return "b";
         }
         
@@ -132,5 +130,27 @@ public class TablaSimbolos {
         if (token.equalsIgnoreCase("true") || token.equalsIgnoreCase("false") || token.equalsIgnoreCase("TRUE") || token.equalsIgnoreCase("FALSE")) return "b";
         
         return "_";
+    }
+    
+    public SymbolTableEntry findVariableEntry(String varName) {
+        for (SymbolTableEntry entry : nuevasVariablesDetectadas) {
+            if (entry.variable.equals(varName)) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    public SymbolTableEntry findEntryById(String id) {
+        for (SymbolTableEntry entry : nuevasVariablesDetectadas) {
+            if (entry.id.equals(id)) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    public void removeNewVariableEntry(SymbolTableEntry entry) {
+        this.nuevasVariablesDetectadas.remove(entry);
     }
 }

@@ -32,11 +32,10 @@ public class ValidadorEstructural {
         this.outputTables = outputTables;
     }
     
-    // Constructor anterior por compatibilidad
     public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal) {
         this.tablaSimbolosGlobal = tablaSimbolosGlobal;
         this.analizadorLexico = new AnalizadorLexicoCore(tablaSimbolosGlobal);
-        this.outputTables = System.out; // Salida estándar si no se especifica
+        this.outputTables = System.out; 
     }
 
     private Map<String, String> cargarReglasRegexEnMemoria() {
@@ -249,14 +248,20 @@ public class ValidadorEstructural {
         if (expression == null) return "UNKNOWN";
         String trimmedExpression = expression.trim();
 
-        if (trimmedExpression.matches(reglas.get("STRING_LITERAL"))) return "STR";
-        if (trimmedExpression.matches(reglas.get("NUMBER_LITERAL"))) return "INT";
-        if (trimmedExpression.matches(reglas.get("BOOLEAN_LITERAL"))) return "BOOL";
-        if (declaredVariablesTypeMap.containsKey(trimmedExpression)) return declaredVariablesTypeMap.get(trimmedExpression);
+        if (trimmedExpression.matches(reglas.get("STRING_LITERAL"))) return "string";
+        if (trimmedExpression.matches(reglas.get("NUMBER_LITERAL"))) return "int";
+        if (trimmedExpression.matches(reglas.get("BOOLEAN_LITERAL"))) return "bool";
+        
+        String mappedType = declaredVariablesTypeMap.get(trimmedExpression);
+        if (mappedType != null) {
+            if (mappedType.equalsIgnoreCase("STR")) return "string";
+            if (mappedType.equalsIgnoreCase("INT")) return "int";
+            if (mappedType.equalsIgnoreCase("BOOL")) return "bool";
+        }
 
-        if (trimmedExpression.matches("^Input\\s*\\(\\s*\\)\\s*\\.\\s*Str\\s*\\(\\s*\\)$")) return "STR";
-        if (trimmedExpression.matches("^Input\\s*\\(\\s*\\)\\s*\\.\\s*Int\\s*\\(\\s*\\)$")) return "INT";
-        if (trimmedExpression.matches("^Input\\s*\\(\\s*\\)\\s*\\.\\s*Bool\\s*\\(\\s*\\)$")) return "BOOL";
+        if (trimmedExpression.matches("^Input\\s*\\(\\s*\\)\\s*\\.\\s*Str\\s*\\(\\s*\\)$")) return "string";
+        if (trimmedExpression.matches("^Input\\s*\\(\\s*\\)\\s*\\.\\s*Int\\s*\\(\\s*\\)$")) return "int";
+        if (trimmedExpression.matches("^Input\\s*\\(\\s*\\)\\s*\\.\\s*Bool\\s*\\(\\s*\\)$")) return "bool";
         
         return "UNKNOWN";
     }
@@ -265,7 +270,9 @@ public class ValidadorEstructural {
             Map<String, String> reglas, Map<String, String> declaredVariablesTypeMap,
             List<String> errorsEnLinea) {
         if (declaredVariablesTypeMap.containsKey(lhsVar)) {
-            String lhsType = declaredVariablesTypeMap.get(lhsVar);
+            String lhsType = declaredVariablesTypeMap.get(lhsVar).toLowerCase();
+            if (lhsType.equals("str")) lhsType = "string";
+
             String rhsType = getExpressionType(rhsExpression, reglas, declaredVariablesTypeMap);
 
             if (op.equals(":=")) {
@@ -282,12 +289,14 @@ public class ValidadorEstructural {
                         errorsEnLinea.add("Error de Tipo: No se pudo determinar el tipo de la expresión " + rhsExpression + "' para la asignación a '" + lhsVar + "'. Contexto: " + context + ".");
                     }
                 } else if (!lhsType.equals(rhsType)) {
-                    errorsEnLinea.add("Error de Tipo: No se puede asignar un valor de tipo " + rhsType +
-                            " a la variable '" + lhsVar + "' (tipo " + lhsType + ") " + context + ".");
+                     if (!context.contains("inicialización de variable")) {
+                        errorsEnLinea.add("Error de Tipo: No se puede asignar un valor de tipo " + rhsType +
+                                " a la variable '" + lhsVar + "' (tipo " + lhsType + ") " + context + ".");
+                    }
                 }
 
             } else if (op.matches("\\+=|-=|\\*=|\\/=")) {
-                if (!lhsType.equals("INT")) {
+                if (!lhsType.equals("int")) {
                     errorsEnLinea.add("Error de tipo: Operador de asignación compuesta '" + op +
                             "' requiere que la variable '" + lhsVar + "' sea de tipo INT, pero es " + lhsType + " "
                             + context + ".");
@@ -302,7 +311,7 @@ public class ValidadorEstructural {
                                 + rhsExpression + "' para el operador de asignación compuesta '" + op
                                 + "'. Se espera un valor de tipo INT. Contexto: " + context + ".");
                     }
-                } else if (!rhsType.equals("INT")) {
+                } else if (!rhsType.equals("int")) {
                     errorsEnLinea.add("Error de tipo: Operador de asignación compuesta '" + op +
                             "' requiere que el valor a la derecha ('" + rhsExpression + "') sea de tipo INT, pero es "
                             + rhsType + " " + context + ".");
@@ -598,22 +607,44 @@ public class ValidadorEstructural {
                         String varName = matcher.group(2);
                         String rhsAssigned = matcher.group(3);
 
-                        if (declaredVariablesTypeMap.containsKey(varName))
-                            errorsEnLinea
-                                    .add("Error Semántico: Variable '" + varName + "' ya declarada (redefinición).");
-                        else
-                            declaredVariablesTypeMap.put(varName, varDeclaredType);
-                        errorsEnLinea.addAll(checkVariableUsage(varName, "en declaración (nombre)", reglas,
-                                declaredVariablesTypeMap));
-                        
-                        List<String> expressionTokens = getExpressionTokens(rhsAssigned);
-                        outputTables.println("Análisis Sintáctico de la expresión de inicialización: '" + rhsAssigned + "'");
-                        if (!parser.parse(expressionTokens)) {
-                             errorsEnLinea.add("Error de sintaxis en la expresión de inicialización: '" + rhsAssigned + "'.");
+                        if (declaredVariablesTypeMap.containsKey(varName)) {
+                            errorsEnLinea.add("Error Semántico: Variable '" + varName + "' ya declarada (redefinición).");
+                        } else {
+                            String rhsType = getExpressionType(rhsAssigned, reglas, declaredVariablesTypeMap);
+                            String varDeclaredTypeLower = varDeclaredType.toLowerCase();
+                            if(varDeclaredTypeLower.equals("str")) varDeclaredTypeLower = "string";
+
+                            if (!rhsType.equals("UNKNOWN") && !varDeclaredTypeLower.equals(rhsType)) {
+                                System.err.println("ADVERTENCIA: Se ignoró la asignación para la variable '" + varName +
+                                                  "' por incompatibilidad de tipos. Se esperaba " + varDeclaredType +
+                                                  " pero se encontró " + rhsType + ". La variable quedará solo declarada.");
+
+                                SymbolTableEntry varEntry = this.tablaSimbolosGlobal.findVariableEntry(varName);
+                                if (varEntry != null) {
+                                    String incorrectLiteralId = varEntry.valor;
+                                    SymbolTableEntry literalEntry = this.tablaSimbolosGlobal.findEntryById(incorrectLiteralId);
+                                    
+                                    varEntry.valor = varEntry.variable;
+                                    varEntry.tipo = varDeclaredTypeLower;
+                                    
+                                    if (literalEntry != null) {
+                                        this.tablaSimbolosGlobal.removeNewVariableEntry(literalEntry);
+                                    }
+                                }
+                                declaredVariablesTypeMap.put(varName, varDeclaredType);
+                            } else {
+                                declaredVariablesTypeMap.put(varName, varDeclaredType);
+                                errorsEnLinea.addAll(checkVariableUsage(varName, "en declaración (nombre)", reglas, declaredVariablesTypeMap));
+                                
+                                List<String> expressionTokens = getExpressionTokens(rhsAssigned);
+                                outputTables.println("Análisis Sintáctico de la expresión de inicialización: '" + rhsAssigned + "'");
+                                if (!parser.parse(expressionTokens)) {
+                                     errorsEnLinea.add("Error de sintaxis en la expresión de inicialización: '" + rhsAssigned + "'.");
+                                }
+                                
+                                performAssignmentTypeChecks(varName, ":=", rhsAssigned, "en inicialización de variable", reglas, declaredVariablesTypeMap, errorsEnLinea);
+                            }
                         }
-                        
-                        performAssignmentTypeChecks(varName, ":=", rhsAssigned, "en inicialización de variable", reglas,
-                                declaredVariablesTypeMap, errorsEnLinea);
                     }
                 }
 

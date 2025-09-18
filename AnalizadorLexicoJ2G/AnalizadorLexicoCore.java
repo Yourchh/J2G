@@ -101,6 +101,9 @@ public class AnalizadorLexicoCore {
                 }
                 tokenToEmit = id;
 
+            } else if (currentOriginalToken.equalsIgnoreCase("TRUE") || currentOriginalToken.equalsIgnoreCase("FALSE")) {
+                tokenToEmit = currentOriginalToken;
+            
             } else {
                 Map<String, SymbolTableEntry> baseTabsim = this.tablaSimbolos.getTabsimBase();
                 if (baseTabsim.containsKey(currentOriginalToken)) {

@@ -1,2 +1,10 @@
-No se encontraron errores de estructura.
+ADVERTENCIA: Se ignoró la asignación para la variable 'var1' por incompatibilidad de tipos. Se esperaba INT pero se encontró string. La variable quedará solo declarada.
+ADVERTENCIA: Se ignoró la asignación para la variable 'var2' por incompatibilidad de tipos. Se esperaba BOOL pero se encontró int. La variable quedará solo declarada.
+ADVERTENCIA: Se ignoró la asignación para la variable 'var62' por incompatibilidad de tipos. Se esperaba STR pero se encontró bool. La variable quedará solo declarada.
+Error(es) en línea 24:   if ((a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE){
+  - Error de sintaxis en la expresión de la condición: '(a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE'.
+Error(es) en línea 27:   if ((a * b + 50 != 10 && (esValido) > b || a <= 20)){
+  - Error de sintaxis en la expresión de la condición: '(a * b + 50 != 10 && (esValido) > b || a <= 20)'.
+Error(es) en línea 30:   if ((a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10){
+  - Error de sintaxis en la expresión de la condición: '(a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10'.
 ---------------------------------------

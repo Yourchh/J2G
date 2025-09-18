@@ -17,7 +17,6 @@ public class app {
 
         System.out.println("\nEl análisis ha finalizado. Revise los archivos 'errores.txt', 'codigo_procesado.txt' y 'tablas_analisis.txt' para ver los resultados.");
 
-        // Redirigir la salida estándar a los archivos
         try (
             PrintStream outErrors = new PrintStream(new File(archivoErrores));
             PrintStream outProcessedCode = new PrintStream(new File(archivoProcesado));
@@ -26,11 +25,13 @@ public class app {
             System.setErr(outErrors);
             System.setOut(outProcessedCode);
 
-            // Iniciar el análisis del código
             TablaSimbolos tablaSimbolos = new TablaSimbolos();
             AnalizadorLexicoCore analizadorLexico = new AnalizadorLexicoCore(tablaSimbolos);
-           LRParser parser = new LRParser(outTables, tablaSimbolos); 
-            ValidadorEstructural validador = new ValidadorEstructural(tablaSimbolos, analizadorLexico, outTables);
+            LRParser parser = new LRParser(outTables, tablaSimbolos); 
+            
+            // --- CORRECCIÓN ---
+            // Se instancia ValidadorEstructural desde su paquete correcto
+            AnalizadorLexicoJ2G.ValidadorEstructural validador = new AnalizadorLexicoJ2G.ValidadorEstructural(tablaSimbolos, analizadorLexico, outTables);
 
             System.out.println("Cargando archivo de tabla de símbolos: " + archivoTabsim);
             tablaSimbolos.cargarTabsimDesdeArchivo(archivoTabsim);
@@ -56,17 +57,18 @@ public class app {
             System.out.println("Se transforman los tokens a IDs y se muestran las nuevas variables detectadas.\n");
             List<String> tokensTransformados = analizadorLexico.fase2_transformarTokens(tokensFase1);
             String codigoTransformadoFormateado = AnalizadorLexicoJ2G.J2GAnalizadorApp.prettyPrintCode(tokensTransformados);
+            
+            // --- FASE 3 (Validación Semántica) ---
+            System.out.println("\nValidación de estructura del código (reglas internas):");
+            validador.validarEstructuraConRegex(codigoLimpioFormateado, parser);
+            
             System.out.println(codigoTransformadoFormateado);
 
             System.out.println("\nNUEVA TABLA DE SÍMBOLOS:\n");
             AnalizadorLexicoJ2G.J2GAnalizadorApp.mostrarNuevasVariablesConsola(tablaSimbolos.getNuevasVariablesDetectadas());
-            
-            System.out.println("\nValidación de estructura del código (reglas internas):");
-            validador.validarEstructuraConRegex(codigoLimpioFormateado, parser);
 
         } catch (FileNotFoundException e) {
             System.err.println("Error: No se pudo crear el archivo de salida: " + e.getMessage());
         }
-
     }
 }

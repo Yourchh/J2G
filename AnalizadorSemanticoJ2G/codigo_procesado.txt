@@ -7,37 +7,75 @@ RESULTADO DE LA FASE 1:
 Se eliminan comentarios y se tokeniza el código.
 
 FUNC J2G Main (){
-  STR dia := "Lunes";
-  STR nombre := "Carlos";
-  INT promedio := 12;
-  BOOL auio;
-  INT edad;
-  INT calificacion;
-  INT numero := 0;
-  Print ("Bienvenido al sistema");
-  Print ("Ingrese su edad:");
-  Print ("Ingrese su calificación:");
-  if (34 > "pedro"){
-    Print ("Ingrese su calificación:");
+  INT a := 10;
+  INT b := 5;
+  INT c := 20;
+  INT d := 10;
+  INT resultado;
+  STR mensaje := "Hola";
+  BOOL esValido := TRUE;
+  INT var1 := "23";
+  BOOL var2 := 23;
+  STR var62 := TRUE;
+  if (((a + 5) * 100) > d && a <= 10 || b != c){
+    Print ("Se cumplió la condición 1");
+  }
+  if (! ((a - b / 2) == 0) || (a + b) == d && c >= 10){
+    Print ("Se cumplió la condición 2");
+  }
+  if (((a * 2) + c) > 30 || ! (a - b <= c) && d == 10){
+    Print ("Se cumplió la condición 3");
+  }
+  if (((a + 15) / c - d) == a || 4 <= c && ! (d >= a)){
+    Print ("Se cumplió la condición 4");
+  }
+  if ((a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE){
+    Print ("Esta condición tiene un error semántico");
+  }
+  if ((a * b + 50 != 10 && (esValido) > b || a <= 20)){
+    Print ("Esta condición tiene un error semántico");
+  }
+  if ((a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10){
+    Print ("Esta condición tiene un error semántico");
   }
 }
 
 RESULATDO DE LA FASE 2:
 Se transforman los tokens a IDs y se muestran las nuevas variables detectadas.
 
+
+Validación de estructura del código (reglas internas):
 FUNC J2G Main (){
-  STR id1 := id2;
-  STR id3 := id4;
+  INT id1 := id2;
+  INT id3 := id4;
   INT id5 := id6;
-  BOOL id7;
+  INT id7 := id2;
   INT id8;
-  INT id9;
-  INT id10 := id11;
-  Print (id12);
-  Print (id13);
-  Print (id14);
-  if (id15 > id16){
-    Print (id14);
+  STR id9 := id10;
+  BOOL id11 := TRUE;
+  INT id12 := id13;
+  BOOL id14 := id15;
+  STR id16 := TRUE;
+  if (((id1 + id4) * id17) > id7 && id1 <= id2 || id3 != id5){
+    Print (id18);
+  }
+  if (! ((id1 - id3 / id19) == id20) || (id1 + id3) == id7 && id5 >= id2){
+    Print (id21);
+  }
+  if (((id1 * id19) + id5) > id22 || ! (id1 - id3 <= id5) && id7 == id2){
+    Print (id23);
+  }
+  if (((id1 + id24) / id5 - id7) == id1 || id25 <= id5 && ! (id7 >= id1)){
+    Print (id26);
+  }
+  if ((id1 + id3 - id9) * (id1 / id4) <= id2 && id1 == id3 || id11 != FALSE){
+    Print (id27);
+  }
+  if ((id1 * id3 + id28 != id2 && (id11) > id3 || id1 <= id6)){
+    Print (id27);
+  }
+  if ((id1 * id19 + id11) != id22 && (id3 - id29) > id20 || id1 <= id2){
+    Print (id27);
   }
 }
 
@@ -46,22 +84,31 @@ NUEVA TABLA DE SÍMBOLOS:
 --------------------------------------------------------------------------------------------------------------
 VARIABLE                                 | ID         | TIPO       | VALOR                                   
 --------------------------------------------------------------------------------------------------------------
-"Lunes"                                  | id2        | string     | Lunes                                   
-"Carlos"                                 | id4        | string     | Carlos                                  
-promedio                                 | id5        | int        | id6                                     
-12                                       | id6        | int        | 12                                      
-auio                                     | id7        | bool       | id7                                     
-edad                                     | id8        | int        | edad                                    
-calificacion                             | id9        | int        | calificacion                            
-numero                                   | id10       | int        | id11                                    
-0                                        | id11       | int        | 0                                       
-"Bienvenido al sistema"                  | id12       | string     | Bienvenido al sistema                   
-"Ingrese su edad:"                       | id13       | string     | Ingrese su edad:                        
-"Ingrese su calificación:"               | id14       | string     | Ingrese su calificación:                
-34                                       | id15       | int        | 34                                      
-"pedro"                                  | id16       | string     | pedro                                   
-dia                                      | id1        | str        | id2                                     
-nombre                                   | id3        | str        | id4                                     
+a                                        | id1        | int        | id2                                     
+10                                       | id2        | int        | 10                                      
+b                                        | id3        | int        | id4                                     
+5                                        | id4        | int        | 5                                       
+c                                        | id5        | int        | id6                                     
+20                                       | id6        | int        | 20                                      
+d                                        | id7        | int        | id2                                     
+resultado                                | id8        | int        | resultado                               
+"Hola"                                   | id10       | string     | Hola                                    
+esValido                                 | id11       | bool       | TRUE                                    
+var1                                     | id12       | int        | var1                                    
+var2                                     | id14       | bool       | id14                                    
+var62                                    | id16       | string     | id16                                    
+100                                      | id17       | int        | 100                                     
+"Se cumplió la condición 1"              | id18       | string     | Se cumplió la condición 1               
+2                                        | id19       | int        | 2                                       
+0                                        | id20       | int        | 0                                       
+"Se cumplió la condición 2"              | id21       | string     | Se cumplió la condición 2               
+30                                       | id22       | int        | 30                                      
+"Se cumplió la condición 3"              | id23       | string     | Se cumplió la condición 3               
+15                                       | id24       | int        | 15                                      
+4                                        | id25       | int        | 4                                       
+"Se cumplió la condición 4"              | id26       | string     | Se cumplió la condición 4               
+"Esta condición tiene un error semántico" | id27       | string     | Esta condición tiene un error semántico 
+50                                       | id28       | int        | 50                                      
+1                                        | id29       | int        | 1                                       
+mensaje                                  | id9        | str        | id10                                    
 ----------
-
-Validación de estructura del código (reglas internas):
