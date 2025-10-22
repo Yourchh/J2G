@@ -33,6 +33,7 @@ public class LRParser {
     private static final Map<Integer, ProductionRule> grammarProductions = new HashMap<>();
     private PrintStream outputStream;
     private TablaSimbolos tablaSimbolos;
+    private int tempCounter = 1; // Contador para temporales
 
     public static final String PARSING_TABLE_PATH = "J2G/AnalizadorSintacticoJ2G/matriz_parsing.txt";
 
@@ -74,6 +75,7 @@ public class LRParser {
     public LRParser(PrintStream outputStream, TablaSimbolos tablaSimbolos) {
         this.outputStream = outputStream;
         this.tablaSimbolos = tablaSimbolos;
+        this.tempCounter = 1; // Reiniciar contador por cada instancia
     }
 
     private List<String> createNormalizedList(List<String> originalTokens) {
@@ -95,6 +97,9 @@ public class LRParser {
     }
     
     public boolean parse(List<String> inputTokens) {
+        // Reiniciar el contador de temporales para cada nuevo análisis
+        this.tempCounter = 1; 
+        
         List<String> originalTokens = inputTokens; 
         List<String> normalizedTokens = createNormalizedList(originalTokens);
 
@@ -104,33 +109,41 @@ public class LRParser {
 
         Stack<Object> internalStack = new Stack<>();
         Stack<String> semanticStack = new Stack<>();
+        Stack<String> temporalStack = new Stack<>(); // Nueva pila para temporales
         internalStack.push(0); 
         semanticStack.push("_");
+        temporalStack.push("_"); // Inicializar la pila temporal
 
         int inputPtr = 0; 
         
-        outputStream.printf("%-30s | %-30s | %-30s | %-15s | %-15s\n", "P. SEMANTICA", "PILA", "ENTRADA", "SALIDA", "TEMPORAL");
-        outputStream.println(String.join("", Collections.nCopies(110, "-")));
+        outputStream.printf("%-30s | %-30s | %-60s | %-15s | %-15s\n", "P. SEMANTICA", "PILA", "ENTRADA", "SALIDA", "TEMPORAL");
+        outputStream.println(String.join("", Collections.nCopies(163, "-")));
 
         while (true) {
             int currentState = (Integer) internalStack.peek();
             String currentNormalizedToken = normalizedTokens.get(inputPtr);
 
             String semanticStackStr = semanticStack.stream().collect(Collectors.joining(" "));
+            String temporalStackStr = temporalStack.stream().collect(Collectors.joining(" ")); // String para pila temporal
             String stackStr = internalStack.stream()
                                           .filter(item -> item instanceof Integer)
                                           .map(Object::toString)
                                           .collect(Collectors.joining(" "));
-            String inputStr = normalizedTokens.subList(inputPtr, normalizedTokens.size()).stream().collect(Collectors.joining(" "));
+            
+            // *** AJUSTE REQUERIDO ***
+            // Usar originalTokens para mostrar la entrada, no normalizedTokens
+            String inputStr = originalTokens.subList(inputPtr, originalTokens.size()).stream().collect(Collectors.joining(" "));
             
             String action = actionTable.getOrDefault(currentState, new HashMap<>()).get(currentNormalizedToken);
 
             if (action == null) {
-                outputStream.printf("%-30s | %-30s | %-30s | Error: No hay acción para el estado %d y el token '%s'.\n", semanticStackStr, stackStr, inputStr, currentState, currentNormalizedToken);
+                outputStream.printf("%-30s | %-30s | %-60s | Error: No hay acción para el estado %d y el token '%s'. | %-15s\n", 
+                                    semanticStackStr, stackStr, inputStr, currentState, currentNormalizedToken, temporalStackStr);
                 return false;
             }
             
-            outputStream.printf("%-30s | %-30s | %-30s | %-15s\n", semanticStackStr, stackStr, inputStr, action);
+            outputStream.printf("%-30s | %-30s | %-60s | %-15s | %-15s\n", 
+                                semanticStackStr, stackStr, inputStr, action, temporalStackStr);
 
             if (action.startsWith("s")) {
                 int nextState = Integer.parseInt(action.substring(1));
@@ -139,7 +152,16 @@ public class LRParser {
 
                 String tokenForSemantic = originalTokens.get(inputPtr);
                 String tipo = tablaSimbolos.getTipoDeIdSimplificado(tokenForSemantic);
-                semanticStack.push(tipo);
+                
+                semanticStack.push(tipo); // Apilar el tipo (ej: "i", "b", "_")
+
+                // Apilar el ID/literal solo si es un tipo de dato real
+                // Apilar "_" si es un operador, paréntesis, etc.
+                if (tipo.equals("i") || tipo.equals("s") || tipo.equals("b")) {
+                    temporalStack.push(tokenForSemantic); 
+                } else {
+                    temporalStack.push("_");
+                }
 
                 inputPtr++;
             } else if (action.startsWith("r")) {
@@ -150,7 +172,8 @@ public class LRParser {
                     return false;
                 }
                 
-                String t1 = "", t2 = "", t3 = "";
+                String t1 = "", t2 = "", t3 = ""; // Tipos
+                String v1 = "", v2 = "", v3 = ""; // Valores/Temporales
                 for (int i = 0; i < rule.rhsLength; i++) {
                     internalStack.pop(); // State
                     internalStack.pop(); // Symbol
@@ -158,6 +181,11 @@ public class LRParser {
                          if (i==0) t1 = semanticStack.pop();
                          if (i==1) t2 = semanticStack.pop();
                          if (i==2) t3 = semanticStack.pop();
+                    }
+                    if (!temporalStack.isEmpty()) { // Extraer de la pila temporal
+                         if (i==0) v1 = temporalStack.pop();
+                         if (i==1) v2 = temporalStack.pop();
+                         if (i==2) v3 = temporalStack.pop();
                     }
                 }
                 
@@ -172,7 +200,15 @@ public class LRParser {
                     outputStream.println("Error Semántico: Incompatibilidad de tipos en la regla " + rule.originalRuleString);
                     return false; 
                 }
-                semanticStack.push(resultingType);
+                semanticStack.push(resultingType); // Apilar el tipo resultante
+
+                // Lógica para la pila temporal
+                String resultingTemporal = getTemporalResult(ruleNumber, v1, v2, v3, this.tempCounter);
+                if (resultingTemporal.equals("t" + this.tempCounter)) {
+                    this.tempCounter++; // Se usó un nuevo temporal, incrementar para el próximo
+                }
+                temporalStack.push(resultingTemporal); // Apilar el ID/temporal resultante
+
 
             } else if (action.equals("acc")) {
                 outputStream.println("Entrada aceptada.");
@@ -185,6 +221,7 @@ public class LRParser {
     }
 
      private String performSemanticAction(int ruleNumber, String t1, String t2, String t3) {
+         // Este método solo maneja la validación de TIPOS
          switch (ruleNumber) {
             case 3: case 5: case 6: case 13: case 16: case 20:
             case 23: return t1;
@@ -195,7 +232,6 @@ public class LRParser {
             case 2: case 4:
                 if (t1.equals("b") && t3.equals("b")) return "b";
                 return "ERROR";
-
 
             case 7: case 8:
                 if (t1.equals(t3) && !t1.equals("_") && !t1.equals("ERROR")) return "b";
@@ -213,7 +249,38 @@ public class LRParser {
                 if (t1.equals("b")) return "b";
                 return "ERROR";
 
-            default: return "_";
+            default: return "_"; // Para regla 1 (S' -> A) y otras
+        }
+    }
+    
+    private String getTemporalResult(int ruleNumber, String v1, String v2, String v3, int tempCounter) {
+         // Este método maneja qué ID/Temporal se apila
+         switch (ruleNumber) {
+            // Reglas de paso directo (X -> Y, G -> id, G -> TRUE, etc.)
+            case 3: case 5: case 6: case 13: case 16: case 20:
+            case 23: case 24: case 25:
+                return v1; // Pasa el valor del hijo (v1 es el de la derecha)
+            
+            // Regla de paréntesis (G -> ( A ))
+            case 22: 
+                return v2; // Pasa el valor de A (v2 es el del medio)
+
+            // Reglas de operaciones binarias (A -> A || B, D -> D + E, etc.)
+            // y operaciones unarias (F -> ! F)
+            // Estas crean un nuevo temporal
+            case 2: case 4:
+            case 7: case 8:
+            case 9: case 10: case 11: case 12:
+            case 14: case 15: case 17: case 18: case 19:
+            case 21:
+                return "t" + tempCounter; // Retorna el nuevo temporal tN
+
+            // Regla inicial (S' -> A)
+            case 1:
+                return v1; // Pasa el valor de A
+
+            default: 
+                return "_";
         }
     }
     
