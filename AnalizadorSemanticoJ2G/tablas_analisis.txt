@@ -76,41 +76,47 @@ _ b                            | 0 3                            | $             
 _ b                            | 0 2                            | $                                                            | r3              | _ TRUE         
 _ b                            | 0 1                            | $                                                            | acc             | _ TRUE         
 Entrada aceptada.
-Análisis Sintáctico de la expresión de la condición: 'b * c + d > a * d'
+Análisis Sintáctico de la expresión de la condición: 'b * c + d > a * d - c'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id3 * id5 + id7 > id1 * id7 $                                | s10             | _              
-_ i                            | 0 10                           | * id5 + id7 > id1 * id7 $                                    | r23             | _ id3          
-_ i                            | 0 7                            | * id5 + id7 > id1 * id7 $                                    | r20             | _ id3          
-_ i                            | 0 6                            | * id5 + id7 > id1 * id7 $                                    | r16             | _ id3          
-_ i                            | 0 5                            | * id5 + id7 > id1 * id7 $                                    | s23             | _ id3          
-_ i _                          | 0 5 23                         | id5 + id7 > id1 * id7 $                                      | s10             | _ id3 _        
-_ i _ i                        | 0 5 23 10                      | + id7 > id1 * id7 $                                          | r23             | _ id3 _ id5    
-_ i _ i                        | 0 5 23 7                       | + id7 > id1 * id7 $                                          | r20             | _ id3 _ id5    
-_ i _ i                        | 0 5 23 39                      | + id7 > id1 * id7 $                                          | r17             | _ id3 _ id5    
-_ i                            | 0 5                            | + id7 > id1 * id7 $                                          | r13             | _ t1           
-_ i                            | 0 4                            | + id7 > id1 * id7 $                                          | s21             | _ t1           
-_ i _                          | 0 4 21                         | id7 > id1 * id7 $                                            | s10             | _ t1 _         
-_ i _ i                        | 0 4 21 10                      | > id1 * id7 $                                                | r23             | _ t1 _ id7     
-_ i _ i                        | 0 4 21 7                       | > id1 * id7 $                                                | r20             | _ t1 _ id7     
-_ i _ i                        | 0 4 21 6                       | > id1 * id7 $                                                | r16             | _ t1 _ id7     
-_ i _ i                        | 0 4 21 37                      | > id1 * id7 $                                                | r14             | _ t1 _ id7     
-_ i                            | 0 4                            | > id1 * id7 $                                                | r6              | _ t2           
-_ i                            | 0 3                            | > id1 * id7 $                                                | s17             | _ t2           
-_ i _                          | 0 3 17                         | id1 * id7 $                                                  | s10             | _ t2 _         
-_ i _ i                        | 0 3 17 10                      | * id7 $                                                      | r23             | _ t2 _ id1     
-_ i _ i                        | 0 3 17 7                       | * id7 $                                                      | r20             | _ t2 _ id1     
-_ i _ i                        | 0 3 17 6                       | * id7 $                                                      | r16             | _ t2 _ id1     
-_ i _ i                        | 0 3 17 5                       | * id7 $                                                      | s23             | _ t2 _ id1     
-_ i _ i _                      | 0 3 17 5 23                    | id7 $                                                        | s10             | _ t2 _ id1 _   
-_ i _ i _ i                    | 0 3 17 5 23 10                 | $                                                            | r23             | _ t2 _ id1 _ id7
-_ i _ i _ i                    | 0 3 17 5 23 7                  | $                                                            | r20             | _ t2 _ id1 _ id7
-_ i _ i _ i                    | 0 3 17 5 23 39                 | $                                                            | r17             | _ t2 _ id1 _ id7
-_ i _ i                        | 0 3 17 5                       | $                                                            | r13             | _ t2 _ t3      
-_ i _ i                        | 0 3 17 33                      | $                                                            | r9              | _ t2 _ t3      
-_ b                            | 0 3                            | $                                                            | r5              | _ t4           
-_ b                            | 0 2                            | $                                                            | r3              | _ t4           
-_ b                            | 0 1                            | $                                                            | acc             | _ t4           
+_                              | 0                              | id3 * id5 + id7 > id1 * id7 - id5 $                          | s10             | _              
+_ i                            | 0 10                           | * id5 + id7 > id1 * id7 - id5 $                              | r23             | _ id3          
+_ i                            | 0 7                            | * id5 + id7 > id1 * id7 - id5 $                              | r20             | _ id3          
+_ i                            | 0 6                            | * id5 + id7 > id1 * id7 - id5 $                              | r16             | _ id3          
+_ i                            | 0 5                            | * id5 + id7 > id1 * id7 - id5 $                              | s23             | _ id3          
+_ i _                          | 0 5 23                         | id5 + id7 > id1 * id7 - id5 $                                | s10             | _ id3 _        
+_ i _ i                        | 0 5 23 10                      | + id7 > id1 * id7 - id5 $                                    | r23             | _ id3 _ id5    
+_ i _ i                        | 0 5 23 7                       | + id7 > id1 * id7 - id5 $                                    | r20             | _ id3 _ id5    
+_ i _ i                        | 0 5 23 39                      | + id7 > id1 * id7 - id5 $                                    | r17             | _ id3 _ id5    
+_ i                            | 0 5                            | + id7 > id1 * id7 - id5 $                                    | r13             | _ t1           
+_ i                            | 0 4                            | + id7 > id1 * id7 - id5 $                                    | s21             | _ t1           
+_ i _                          | 0 4 21                         | id7 > id1 * id7 - id5 $                                      | s10             | _ t1 _         
+_ i _ i                        | 0 4 21 10                      | > id1 * id7 - id5 $                                          | r23             | _ t1 _ id7     
+_ i _ i                        | 0 4 21 7                       | > id1 * id7 - id5 $                                          | r20             | _ t1 _ id7     
+_ i _ i                        | 0 4 21 6                       | > id1 * id7 - id5 $                                          | r16             | _ t1 _ id7     
+_ i _ i                        | 0 4 21 37                      | > id1 * id7 - id5 $                                          | r14             | _ t1 _ id7     
+_ i                            | 0 4                            | > id1 * id7 - id5 $                                          | r6              | _ t2           
+_ i                            | 0 3                            | > id1 * id7 - id5 $                                          | s17             | _ t2           
+_ i _                          | 0 3 17                         | id1 * id7 - id5 $                                            | s10             | _ t2 _         
+_ i _ i                        | 0 3 17 10                      | * id7 - id5 $                                                | r23             | _ t2 _ id1     
+_ i _ i                        | 0 3 17 7                       | * id7 - id5 $                                                | r20             | _ t2 _ id1     
+_ i _ i                        | 0 3 17 6                       | * id7 - id5 $                                                | r16             | _ t2 _ id1     
+_ i _ i                        | 0 3 17 5                       | * id7 - id5 $                                                | s23             | _ t2 _ id1     
+_ i _ i _                      | 0 3 17 5 23                    | id7 - id5 $                                                  | s10             | _ t2 _ id1 _   
+_ i _ i _ i                    | 0 3 17 5 23 10                 | - id5 $                                                      | r23             | _ t2 _ id1 _ id7
+_ i _ i _ i                    | 0 3 17 5 23 7                  | - id5 $                                                      | r20             | _ t2 _ id1 _ id7
+_ i _ i _ i                    | 0 3 17 5 23 39                 | - id5 $                                                      | r17             | _ t2 _ id1 _ id7
+_ i _ i                        | 0 3 17 5                       | - id5 $                                                      | r13             | _ t2 _ t3      
+_ i _ i                        | 0 3 17 33                      | - id5 $                                                      | s22             | _ t2 _ t3      
+_ i _ i _                      | 0 3 17 33 22                   | id5 $                                                        | s10             | _ t2 _ t3 _    
+_ i _ i _ i                    | 0 3 17 33 22 10                | $                                                            | r23             | _ t2 _ t3 _ id5
+_ i _ i _ i                    | 0 3 17 33 22 7                 | $                                                            | r20             | _ t2 _ t3 _ id5
+_ i _ i _ i                    | 0 3 17 33 22 6                 | $                                                            | r16             | _ t2 _ t3 _ id5
+_ i _ i _ i                    | 0 3 17 33 22 38                | $                                                            | r15             | _ t2 _ t3 _ id5
+_ i _ i                        | 0 3 17 33                      | $                                                            | r9              | _ t2 _ t4      
+_ b                            | 0 3                            | $                                                            | r5              | _ t5           
+_ b                            | 0 2                            | $                                                            | r3              | _ t5           
+_ b                            | 0 1                            | $                                                            | acc             | _ t5           
 Entrada aceptada.
 Análisis Sintáctico del argumento del print: '"hola mundo"'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       

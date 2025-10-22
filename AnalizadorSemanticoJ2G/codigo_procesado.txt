@@ -17,7 +17,7 @@ FUNC J2G Main (){
   INT var1 := "23";
   BOOL var2 := 23;
   STR var62 := TRUE;
-  if (b * c + d > a * d){
+  if (b * c + d > a * d - c){
     Print ("hola mundo");
   }
   if (((a + 5) * 100) > d && a <= 10 || b != c){
@@ -59,7 +59,7 @@ FUNC J2G Main (){
   INT id12 := id13;
   BOOL id14 := id15;
   STR id16 := TRUE;
-  if (id3 * id5 + id7 > id1 * id7){
+  if (id3 * id5 + id7 > id1 * id7 - id5){
     Print (id17);
   }
   if (((id1 + id4) * id18) > id7 && id1 <= id2 || id3 != id5){

@@ -13,7 +13,7 @@ FUNC J2G Main () {
     BOOL var2 := 23;
     STR var62 := TRUE;
 
-     if (b * c + d > a * d) {
+     if (b * c + d > a * d - c) {
         Print("hola mundo");
     }
 
