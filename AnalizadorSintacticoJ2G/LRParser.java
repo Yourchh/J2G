@@ -109,7 +109,7 @@ public class LRParser {
 
         int inputPtr = 0; 
         
-        outputStream.printf("%-30s | %-30s | %-30s | %-15s\n", "P. SEMANTICA", "PILA", "ENTRADA", "SALIDA");
+        outputStream.printf("%-30s | %-30s | %-30s | %-15s | %-15s\n", "P. SEMANTICA", "PILA", "ENTRADA", "SALIDA", "TEMPORAL");
         outputStream.println(String.join("", Collections.nCopies(110, "-")));
 
         while (true) {
@@ -195,6 +195,7 @@ public class LRParser {
             case 2: case 4:
                 if (t1.equals("b") && t3.equals("b")) return "b";
                 return "ERROR";
+
 
             case 7: case 8:
                 if (t1.equals(t3) && !t1.equals("_") && !t1.equals("ERROR")) return "b";

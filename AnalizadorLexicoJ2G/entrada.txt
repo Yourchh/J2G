@@ -13,6 +13,10 @@ FUNC J2G Main () {
     BOOL var2 := 23;
     STR var62 := TRUE;
 
+     if (b * c + d > a * d) {
+        Print("hola mundo");
+    }
+
     // Condición 1: ((id + id) * id) > id && id <= id || id != id
     if (((a + 5) * 100) > d && a <= 10 || b != c) {
         Print("Se cumplió la condición 1");
@@ -22,6 +26,8 @@ FUNC J2G Main () {
     if (!((a - b / 2) == 0)  || (a + b) == d && c >= 10) {
         Print("Se cumplió la condición 2");
     }
+
+   
 
     // Condición 3: ((id * id) + id) > id || !(id - id <= id) && id == id
     if (((a * 2) + c) > 30 || !(a - b <= c) && d == 10) {
