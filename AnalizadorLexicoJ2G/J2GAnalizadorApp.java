@@ -61,6 +61,7 @@ public class J2GAnalizadorApp {
         outConsola.println("\nEl análisis ha finalizado. Revisa la consola para ver todos los resultados.");
     }
 
+    // --- MODIFICACIÓN: Cambiado a public y sin trim() ---
     public static String leerArchivo(String nombreArchivo) {
         StringBuilder contenido = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
@@ -72,7 +73,7 @@ public class J2GAnalizadorApp {
             System.err.println("Error al leer el archivo " + nombreArchivo + ": " + e.getMessage());
             return null;
         }
-        return contenido.toString().trim();
+        return contenido.toString();
     }
 
     public static String prettyPrintCode(List<String> tokens) {

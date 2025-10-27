@@ -1,12 +1,14 @@
 package AnalizadorLexicoJ2G;
 
-import AnalizadorSintacticoJ2G.LRParser;
+import AnalizadorSintacticoJ2G.LRParser; // --- CORRECCIÓN DE IMPORTACIÓN ---
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet; // --- NUEVO ---
 import java.util.List;
 import java.util.Map;
+import java.util.Set; // --- NUEVO ---
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +19,15 @@ public class ValidadorEstructural {
     private AnalizadorLexicoCore analizadorLexico;
     private PrintStream outputTables;
 
+    // --- INICIO DE NUEVOS ATRIBUTOS PARA GENERACIÓN ASM ---
+    private PrintStream outputAsm;
+    // --- ATRIBUTOS GLOBALES ELIMINADOS ---
+    // private StringBuilder asmDatosGlobal;
+    // private StringBuilder asmCodigoGlobal;
+    private String baseAsmTemplate;
+    private Map<String, String> reglasRegexCache; // Cache para las regex
+    // --- FIN DE NUEVOS ATRIBUTOS ---
+
     private boolean currentlyInSwitchBlock = false;
     private int switchBlockEntryDepth = 0;
     private boolean currentSwitchClauseActiveAndNeedsDetener = false;
@@ -26,17 +37,123 @@ public class ValidadorEstructural {
     private int switchActualOpeningLine = 0;
     private String currentSwitchExpressionType = null;
 
-    public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal, AnalizadorLexicoCore analizadorLexico, PrintStream outputTables) {
+    // --- MODIFICACIÓN: Constructor actualizado para ASM ---
+    public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal, AnalizadorLexicoCore analizadorLexico, PrintStream outputTables, PrintStream outputAsm) {
         this.tablaSimbolosGlobal = tablaSimbolosGlobal;
         this.analizadorLexico = analizadorLexico;
         this.outputTables = outputTables;
+        // --- Inicializar nuevos atributos ---
+        this.outputAsm = outputAsm;
+        // --- ELIMINADOS ---
+        // this.asmDatosGlobal = new StringBuilder();
+        // this.asmCodigoGlobal = new StringBuilder();
+        this.baseAsmTemplate = J2GAnalizadorApp.leerArchivo("J2G/base.asm");
+        this.reglasRegexCache = cargarReglasRegexEnMemoria(); // Cargar regex una vez
     }
     
-    public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal) {
-        this.tablaSimbolosGlobal = tablaSimbolosGlobal;
-        this.analizadorLexico = new AnalizadorLexicoCore(tablaSimbolosGlobal);
-        this.outputTables = System.out; 
+    public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal, AnalizadorLexicoCore analizadorLexico, PrintStream outputTables) {
+        this(tablaSimbolosGlobal, analizadorLexico, outputTables, null); // Constructor anterior llama al nuevo
     }
+
+    public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal) {
+        this(tablaSimbolosGlobal, new AnalizadorLexicoCore(tablaSimbolosGlobal), System.out, null);
+    }
+    
+    // --- MÉTODO ELIMINADO ---
+    // public void escribirAsmFinal(TablaSimbolos tablaSimbolos) { ... }
+    
+    // --- INICIO DE NUEVO MÉTODO ---
+    /**
+     * Genera un bloque de código ensamblador completo para una expresión específica
+     * y lo escribe en el archivo de salida ASM.
+     * @param expresionOriginal La cadena de texto de la expresión (ej: "b * c + d")
+     * @param parser El parser que acaba de analizar la expresión.
+     */
+    private void generarAsmParaExpresion(String expresionOriginal, LRParser parser) {
+        if (this.outputAsm == null) {
+             System.err.println("Advertencia: No se proporcionó un PrintStream de salida para ASM. No se generará el archivo.");
+            return; // No escribir si no hay stream
+        }
+        if (this.baseAsmTemplate == null || this.baseAsmTemplate.isEmpty()) {
+            System.err.println("Error: Plantilla base.asm no cargada o vacía. No se puede generar ASM.");
+            return;
+        }
+
+        Set<String> idsUsados = parser.getIdsEncontrados();
+        String asmDatosTemporales = parser.getAsmDatos();
+        String asmCodigoExpresion = parser.getAsmCodigo();
+        String temporalFinal = parser.getFinalTemporalResult();
+
+        StringBuilder variablesComentario = new StringBuilder();
+        StringBuilder datosSegmento = new StringBuilder();
+        datosSegmento.append("\t; Variables de la expresion\n");
+        
+        Set<String> variablesDeclaradasEnDatos = new HashSet<>(); // Para no duplicar IDs
+
+        for (String id : idsUsados) {
+            SymbolTableEntry entry = this.tablaSimbolosGlobal.findEntryById(id);
+            if (entry != null) {
+                // 1. Añadir al comentario de variables
+                String valorLegible = entry.valor;
+                SymbolTableEntry valorEntry = this.tablaSimbolosGlobal.findEntryById(entry.valor);
+                if (valorEntry != null) {
+                    valorLegible = valorEntry.variable; // Resuelve "id2" a "10"
+                }
+                
+                // Añadir al comentario solo si es una variable de usuario (ej: 'a'), no un literal (ej: '10')
+                if (entry.variable.matches(reglasRegexCache.get("VAR_NAME"))) { 
+                    variablesComentario.append(String.format("%s (%s): %s\n", entry.variable, entry.id, valorLegible));
+                }
+
+                // 2. Añadir a la sección .data (tanto variables como literales)
+                if (entry.tipo.equals("int") || entry.tipo.equals("bool")) {
+                    String valorAsm = "?";
+                    if (entry.variable.matches(reglasRegexCache.get("VAR_NAME"))) { // Es 'a'
+                         if (valorEntry != null) {
+                             valorAsm = valorEntry.variable; // "10"
+                         } else {
+                             valorAsm = entry.valor; // Fallback
+                         }
+                    } else { // Es un literal '10'
+                        valorAsm = entry.variable; // "10"
+                    }
+
+                    if (valorAsm.equalsIgnoreCase("TRUE")) valorAsm = "1";
+                    else if (valorAsm.equalsIgnoreCase("FALSE")) valorAsm = "0";
+
+                    // Escribir la definición 'idX dw Y' si es un número válido y no se ha declarado ya
+                    if (valorAsm.matches("-?[0-9]+") && !variablesDeclaradasEnDatos.contains(entry.id)) {
+                         datosSegmento.append(String.format("\t%s dw %s \t; %s\n", entry.id, valorAsm, entry.variable));
+                         variablesDeclaradasEnDatos.add(entry.id);
+                    }
+                }
+            }
+        }
+
+        datosSegmento.append("\n\t; Temporales (segun traza de tablas_analisis.txt)\n");
+        datosSegmento.append(asmDatosTemporales);
+
+        // Inyectar en la plantilla
+        String asmFinal = this.baseAsmTemplate;
+        
+        asmFinal = asmFinal.replace("datos segment para public 'data'",
+                                  "datos segment para public 'data'\n" + datosSegmento.toString());
+        
+        asmFinal = asmFinal.replace(";codigo",
+                                  ";--- Inicio del codigo de la expresion ---\n\n" 
+                                  + asmCodigoExpresion 
+                                  + ";--- Fin del codigo de la expresion ---\n"
+                                  + "; El resultado booleano final esta en " + temporalFinal + "\n");
+        
+        // Escribir en el archivo de salida
+        this.outputAsm.println("Expresion o condicion:");
+        this.outputAsm.println(expresionOriginal.replaceAll("\\s+", " ").trim());
+        this.outputAsm.println("Variables:");
+        this.outputAsm.print(variablesComentario.toString()); // print, no println
+        this.outputAsm.println(asmFinal);
+        this.outputAsm.println("----------------------------------------------------");
+    }
+    // --- FIN DE NUEVO MÉTODO ---
 
     private Map<String, String> cargarReglasRegexEnMemoria() {
         Map<String, String> reglas = new HashMap<>();
@@ -286,7 +403,8 @@ public class ValidadorEstructural {
                                 + "') no es la adecuada o está incompleta para la asignación a '" + lhsVar
                                 + "'. Verifique la sintaxis (ej: Input().Int();). Contexto: " + context + ".");
                     } else {
-                        errorsEnLinea.add("Error de Tipo: No se pudo determinar el tipo de la expresión " + rhsExpression + "' para la asignación a '" + lhsVar + "'. Contexto: " + context + ".");
+                        // No agregar error aquí si es una expresión compleja, el parser lo validará
+                        // errorsEnLinea.add("Error de Tipo: No se pudo determinar el tipo de la expresión " + rhsExpression + "' para la asignación a '" + lhsVar + "'. Contexto: " + context + ".");
                     }
                 } else if (!lhsType.equals(rhsType)) {
                      if (!context.contains("inicialización de variable")) {
@@ -307,9 +425,10 @@ public class ValidadorEstructural {
                                 + "') directamente con el operador de asignación compuesta '" + op
                                 + "'. Se espera un valor de tipo INT. Contexto: " + context + ".");
                     } else {
-                        errorsEnLinea.add("Error de tipo: No se pudo determinar el tipo de la expresión '"
-                                + rhsExpression + "' para el operador de asignación compuesta '" + op
-                                + "'. Se espera un valor de tipo INT. Contexto: " + context + ".");
+                         // No agregar error aquí si es una expresión compleja, el parser lo validará
+                        // errorsEnLinea.add("Error de tipo: No se pudo determinar el tipo de la expresión '"
+                        //         + rhsExpression + "' para el operador de asignación compuesta '" + op
+                        //         + "'. Se espera un valor de tipo INT. Contexto: " + context + ".");
                     }
                 } else if (!rhsType.equals("int")) {
                     errorsEnLinea.add("Error de tipo: Operador de asignación compuesta '" + op +
@@ -321,7 +440,8 @@ public class ValidadorEstructural {
     }
 
     public void validarEstructuraConRegex(String codigoLimpioFormateado, LRParser parser) {
-        Map<String, String> reglas = cargarReglasRegexEnMemoria();
+        // --- MODIFICACIÓN: Usar cache de regex ---
+        Map<String, String> reglas = this.reglasRegexCache; 
         Map<String, String> declaredVariablesTypeMap = new HashMap<>();
         int globalBraceBalance = 0;
         List<String> globalStructuralErrors = new ArrayList<>();
@@ -401,6 +521,9 @@ public class ValidadorEstructural {
                         boolean sintaxisValida = parser.parse(expressionTokens);
                         if (!sintaxisValida) {
                              errorsEnLinea.add("Error de sintaxis en la expresión del switch: '" + switchExpressionText + "'.");
+                        } else {
+                            // --- NUEVO CÓDIGO ASM ---
+                            generarAsmParaExpresion(switchExpressionText, parser);
                         }
                         
                         this.currentSwitchExpressionType = getExpressionType(switchExpressionText, reglas, declaredVariablesTypeMap);
@@ -519,6 +642,9 @@ public class ValidadorEstructural {
                                 outputTables.println("Análisis Sintáctico de la expresión de inicialización del for: '" + rhsAssigned + "'");
                                 if (!parser.parse(expressionTokens)) {
                                      errorsEnLinea.add("Error de sintaxis en la expresión de inicialización del for: '" + rhsAssigned + "'.");
+                                } else {
+                                    // --- NUEVO CÓDIGO ASM ---
+                                    generarAsmParaExpresion(initPart, parser);
                                 }
 
                                 performAssignmentTypeChecks(varName, ":=", rhsAssigned, contextFor, reglas,
@@ -534,6 +660,9 @@ public class ValidadorEstructural {
                                 outputTables.println("Análisis Sintáctico de la expresión de asignación del for: '" + rhsEx + "'");
                                 if (!parser.parse(expressionTokens)) {
                                      errorsEnLinea.add("Error de sintaxis en la expresión de asignación del for: '" + rhsEx + "'.");
+                                } else {
+                                     // --- NUEVO CÓDIGO ASM ---
+                                    generarAsmParaExpresion(initPart, parser);
                                 }
                                 
                                 performAssignmentTypeChecks(lhsVar, op, rhsEx, contextFor, reglas,
@@ -550,6 +679,9 @@ public class ValidadorEstructural {
                             outputTables.println("Análisis Sintáctico de la expresión de condición del for: '" + conditionPart + "'");
                             if (!parser.parse(expressionTokens)) {
                                 errorsEnLinea.add("Error de sintaxis en la expresión de condición del for: '" + conditionPart + "'.");
+                            } else {
+                                // --- NUEVO CÓDIGO ASM ---
+                                generarAsmParaExpresion(conditionPart, parser);
                             }
                         } else {
                             errorsEnLinea.add("Error de sintaxis: Falta la parte de condición en la sentencia for.");
@@ -571,6 +703,9 @@ public class ValidadorEstructural {
                                 outputTables.println("Análisis Sintáctico de la expresión de actualización del for: '" + rhsEx + "'");
                                 if (!parser.parse(expressionTokens)) {
                                      errorsEnLinea.add("Error de sintaxis en la expresión de actualización del for: '" + rhsEx + "'.");
+                                } else {
+                                    // --- NUEVO CÓDIGO ASM ---
+                                    generarAsmParaExpresion(updatePart, parser);
                                 }
                                 
                                 performAssignmentTypeChecks(lhsVar, op, rhsEx, contextFor, reglas,
@@ -640,6 +775,11 @@ public class ValidadorEstructural {
                                 outputTables.println("Análisis Sintáctico de la expresión de inicialización: '" + rhsAssigned + "'");
                                 if (!parser.parse(expressionTokens)) {
                                      errorsEnLinea.add("Error de sintaxis en la expresión de inicialización: '" + rhsAssigned + "'.");
+                                } else {
+                                    // --- NUEVO CÓDIGO ASM ---
+                                    // Solo generamos ASM para expresiones complejas, no para
+                                    // asignaciones literales simples, para seguir el ejemplo.
+                                    // generarAsmParaExpresion(rhsAssigned, parser);
                                 }
                                 
                                 performAssignmentTypeChecks(varName, ":=", rhsAssigned, "en inicialización de variable", reglas, declaredVariablesTypeMap, errorsEnLinea);
@@ -690,6 +830,10 @@ public class ValidadorEstructural {
                         outputTables.println("Análisis Sintáctico de la expresión de asignación: '" + rhsExpression + "'");
                         if (!parser.parse(expressionTokens)) {
                              errorsEnLinea.add("Error de sintaxis en la expresión de asignación: '" + rhsExpression + "'.");
+                        } else {
+                            // --- NUEVO CÓDIGO ASM ---
+                            // Generar ASM para asignaciones si se desea
+                            // generarAsmParaExpresion(rhsExpression, parser);
                         }
                         
                         performAssignmentTypeChecks(lhsVar, op, rhsExpression, "en asignación", reglas,
@@ -714,14 +858,22 @@ public class ValidadorEstructural {
                                 outputTables.println("Análisis Sintáctico de la expresión de la condición: '" + expression + "'");
                                 if (!parser.parse(expressionTokens)) {
                                     errorsEnLinea.add("Error de sintaxis en la expresión de la condición: '" + expression + "'.");
+                                } else {
+                                    // --- MODIFICACIÓN: Llamar al nuevo método de generación ---
+                                    generarAsmParaExpresion(expression, parser);
                                 }
                                 
                             } else if (key.equals("PRINT_STMT")) {
                                 String expression = matcher.group(1);
-                                List<String> expressionTokens = getExpressionTokens(expression);
-                                outputTables.println("Análisis Sintáctico del argumento del print: '" + expression + "'");
-                                if (!parser.parse(expressionTokens)) {
-                                    errorsEnLinea.add("Error de sintaxis en el argumento del print: '" + expression + "'.");
+                                if (!expression.trim().isEmpty()) {
+                                    List<String> expressionTokens = getExpressionTokens(expression);
+                                    outputTables.println("Análisis Sintáctico del argumento del print: '" + expression + "'");
+                                    if (!parser.parse(expressionTokens)) {
+                                        errorsEnLinea.add("Error de sintaxis en el argumento del print: '" + expression + "'.");
+                                    } else {
+                                        // (Opcional: generar ASM para el argumento del print)
+                                        // generarAsmParaExpresion(expression, parser);
+                                    }
                                 }
                             } else {
                                 if (!key.equals("ELSE_STMT") && !key.equals("BLOCK_END_ELSE_STMT")
