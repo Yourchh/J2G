@@ -37,28 +37,33 @@ compa proc far
 ;--- Inicio del codigo de la expresion ---
 
 	; t1 = id3 * id5
-	mov ax, [id3]
-	mul [id5]
-	mov [t1], ax
+	mov dx, 0
+	mov ax, id3
+	mov bx, id5
+	mul bx
+	mov t1, ax
 
 	; t2 = t1 + id7
-	mov ax, [t1]
-	add ax, [id7]
-	mov [t2], ax
+	mov ax, t1
+	add ax, id7
+	mov t2, ax
 
 	; t3 = id1 * id7
-	mov ax, [id1]
-	mul [id7]
-	mov [t3], ax
+	mov dx, 0
+	mov ax, id1
+	mov bx, id7
+	mul bx
+	mov t3, ax
 
 	; t4 = t2 > t3
-	mov ax, [t2]
-	cmp ax, [t3]
+	mov ax, t2
+	mov bx, t3
+	cmp ax, bx
 	jg t4_true
-	mov [t4], 0
+	mov t4, 0
 	jmp t4_end
 t4_true:
-	mov [t4], 1
+	mov t4, 1
 t4_end:
 
 ;--- Fin del codigo de la expresion ---
@@ -118,56 +123,63 @@ compa proc far
 ;--- Inicio del codigo de la expresion ---
 
 	; t1 = id1 + id4
-	mov ax, [id1]
-	add ax, [id4]
-	mov [t1], ax
+	mov ax, id1
+	add ax, id4
+	mov t1, ax
 
 	; t1 = _ ? _
 	; t2 = t1 * id18
-	mov ax, [t1]
-	mul [id18]
-	mov [t2], ax
+	mov dx, 0
+	mov ax, t1
+	mov bx, id18
+	mul bx
+	mov t2, ax
 
 	; t2 = _ ? _
 	; t3 = t2 > id7
-	mov ax, [t2]
-	cmp ax, [id7]
+	mov ax, t2
+	mov bx, id7
+	cmp ax, bx
 	jg t3_true
-	mov [t3], 0
+	mov t3, 0
 	jmp t3_end
 t3_true:
-	mov [t3], 1
+	mov t3, 1
 t3_end:
 
 	; t4 = id1 <= id2
-	mov ax, [id1]
-	cmp ax, [id2]
+	mov ax, id1
+	mov bx, id2
+	cmp ax, bx
 	jle t4_true
-	mov [t4], 0
+	mov t4, 0
 	jmp t4_end
 t4_true:
-	mov [t4], 1
+	mov t4, 1
 t4_end:
 
 	; t5 = t3 && t4
-	mov ax, [t3]
-	and ax, [t4]
-	mov [t5], ax
+	mov ax, t3
+	mov bx, t4
+	and ax, bx
+	mov t5, ax
 
 	; t6 = id3 != id5
-	mov ax, [id3]
-	cmp ax, [id5]
+	mov ax, id3
+	mov bx, id5
+	cmp ax, bx
 	jne t6_true
-	mov [t6], 0
+	mov t6, 0
 	jmp t6_end
 t6_true:
-	mov [t6], 1
+	mov t6, 1
 t6_end:
 
 	; t7 = t5 || t6
-	mov ax, [t5]
-	or ax, [t6]
-	mov [t7], ax
+	mov ax, t5
+	mov bx, t6
+	or ax, bx
+	mov t7, ax
 
 ;--- Fin del codigo de la expresion ---
 ; El resultado booleano final esta en t7
@@ -228,72 +240,79 @@ compa proc far
 ;--- Inicio del codigo de la expresion ---
 
 	; t1 = id3 / id20
-	mov ax, [id3]
-	cwd ; Extender signo de AX a DX
-	idiv [id20]
-	mov [t1], ax
+	mov dx, 0
+	mov ax, id3
+	mov bx, id20
+	div bx
+	mov t1, ax
 
 	; t2 = id1 - t1
-	mov ax, [id1]
-	sub ax, [t1]
-	mov [t2], ax
+	mov ax, id1
+	sub ax, t1
+	mov t2, ax
 
 	; t2 = _ ? _
 	; t3 = t2 == id21
-	mov ax, [t2]
-	cmp ax, [id21]
+	mov ax, t2
+	mov bx, id21
+	cmp ax, bx
 	je t3_true
-	mov [t3], 0
+	mov t3, 0
 	jmp t3_end
 t3_true:
-	mov [t3], 1
+	mov t3, 1
 t3_end:
 
 	; t3 = _ ? _
 	; t4 = ! t3
-	cmp [t3], 0
+	mov ax, t3
+	cmp ax, 0
 	jne t4_false
-	mov [t4], 1
+	mov t4, 1
 	jmp t4_end
 t4_false:
-	mov [t4], 0
+	mov t4, 0
 t4_end:
 
 	; t5 = id1 + id3
-	mov ax, [id1]
-	add ax, [id3]
-	mov [t5], ax
+	mov ax, id1
+	add ax, id3
+	mov t5, ax
 
 	; t5 = _ ? _
 	; t6 = t5 == id7
-	mov ax, [t5]
-	cmp ax, [id7]
+	mov ax, t5
+	mov bx, id7
+	cmp ax, bx
 	je t6_true
-	mov [t6], 0
+	mov t6, 0
 	jmp t6_end
 t6_true:
-	mov [t6], 1
+	mov t6, 1
 t6_end:
 
 	; t7 = id5 >= id2
-	mov ax, [id5]
-	cmp ax, [id2]
+	mov ax, id5
+	mov bx, id2
+	cmp ax, bx
 	jge t7_true
-	mov [t7], 0
+	mov t7, 0
 	jmp t7_end
 t7_true:
-	mov [t7], 1
+	mov t7, 1
 t7_end:
 
 	; t8 = t6 && t7
-	mov ax, [t6]
-	and ax, [t7]
-	mov [t8], ax
+	mov ax, t6
+	mov bx, t7
+	and ax, bx
+	mov t8, ax
 
 	; t9 = t4 || t8
-	mov ax, [t4]
-	or ax, [t8]
-	mov [t9], ax
+	mov ax, t4
+	mov bx, t8
+	or ax, bx
+	mov t9, ax
 
 ;--- Fin del codigo de la expresion ---
 ; El resultado booleano final esta en t9
@@ -354,71 +373,79 @@ compa proc far
 ;--- Inicio del codigo de la expresion ---
 
 	; t1 = id1 * id20
-	mov ax, [id1]
-	mul [id20]
-	mov [t1], ax
+	mov dx, 0
+	mov ax, id1
+	mov bx, id20
+	mul bx
+	mov t1, ax
 
 	; t1 = _ ? _
 	; t2 = t1 + id5
-	mov ax, [t1]
-	add ax, [id5]
-	mov [t2], ax
+	mov ax, t1
+	add ax, id5
+	mov t2, ax
 
 	; t2 = _ ? _
 	; t3 = t2 > id23
-	mov ax, [t2]
-	cmp ax, [id23]
+	mov ax, t2
+	mov bx, id23
+	cmp ax, bx
 	jg t3_true
-	mov [t3], 0
+	mov t3, 0
 	jmp t3_end
 t3_true:
-	mov [t3], 1
+	mov t3, 1
 t3_end:
 
 	; t4 = id1 - id3
-	mov ax, [id1]
-	sub ax, [id3]
-	mov [t4], ax
+	mov ax, id1
+	sub ax, id3
+	mov t4, ax
 
 	; t5 = t4 <= id5
-	mov ax, [t4]
-	cmp ax, [id5]
+	mov ax, t4
+	mov bx, id5
+	cmp ax, bx
 	jle t5_true
-	mov [t5], 0
+	mov t5, 0
 	jmp t5_end
 t5_true:
-	mov [t5], 1
+	mov t5, 1
 t5_end:
 
 	; t5 = _ ? _
 	; t6 = ! t5
-	cmp [t5], 0
+	mov ax, t5
+	cmp ax, 0
 	jne t6_false
-	mov [t6], 1
+	mov t6, 1
 	jmp t6_end
 t6_false:
-	mov [t6], 0
+	mov t6, 0
 t6_end:
 
 	; t7 = id7 == id2
-	mov ax, [id7]
-	cmp ax, [id2]
+	mov ax, id7
+	mov bx, id2
+	cmp ax, bx
 	je t7_true
-	mov [t7], 0
+	mov t7, 0
 	jmp t7_end
 t7_true:
-	mov [t7], 1
+	mov t7, 1
 t7_end:
 
 	; t8 = t6 && t7
-	mov ax, [t6]
-	and ax, [t7]
-	mov [t8], ax
+	mov ax, t6
+	mov bx, t7
+	and ax, bx
+	mov t8, ax
 
 	; t9 = t3 || t8
-	mov ax, [t3]
-	or ax, [t8]
-	mov [t9], ax
+	mov ax, t3
+	mov bx, t8
+	or ax, bx
+	mov t9, ax
 
 ;--- Fin del codigo de la expresion ---
 ; El resultado booleano final esta en t9
@@ -476,72 +503,79 @@ compa proc far
 ;--- Inicio del codigo de la expresion ---
 
 	; t1 = id1 + id25
-	mov ax, [id1]
-	add ax, [id25]
-	mov [t1], ax
+	mov ax, id1
+	add ax, id25
+	mov t1, ax
 
 	; t1 = _ ? _
 	; t2 = t1 / id5
-	mov ax, [t1]
-	cwd ; Extender signo de AX a DX
-	idiv [id5]
-	mov [t2], ax
+	mov dx, 0
+	mov ax, t1
+	mov bx, id5
+	div bx
+	mov t2, ax
 
 	; t3 = t2 - id7
-	mov ax, [t2]
-	sub ax, [id7]
-	mov [t3], ax
+	mov ax, t2
+	sub ax, id7
+	mov t3, ax
 
 	; t3 = _ ? _
 	; t4 = t3 == id1
-	mov ax, [t3]
-	cmp ax, [id1]
+	mov ax, t3
+	mov bx, id1
+	cmp ax, bx
 	je t4_true
-	mov [t4], 0
+	mov t4, 0
 	jmp t4_end
 t4_true:
-	mov [t4], 1
+	mov t4, 1
 t4_end:
 
 	; t5 = id26 <= id5
-	mov ax, [id26]
-	cmp ax, [id5]
+	mov ax, id26
+	mov bx, id5
+	cmp ax, bx
 	jle t5_true
-	mov [t5], 0
+	mov t5, 0
 	jmp t5_end
 t5_true:
-	mov [t5], 1
+	mov t5, 1
 t5_end:
 
 	; t6 = id7 >= id1
-	mov ax, [id7]
-	cmp ax, [id1]
+	mov ax, id7
+	mov bx, id1
+	cmp ax, bx
 	jge t6_true
-	mov [t6], 0
+	mov t6, 0
 	jmp t6_end
 t6_true:
-	mov [t6], 1
+	mov t6, 1
 t6_end:
 
 	; t6 = _ ? _
 	; t7 = ! t6
-	cmp [t6], 0
+	mov ax, t6
+	cmp ax, 0
 	jne t7_false
-	mov [t7], 1
+	mov t7, 1
 	jmp t7_end
 t7_false:
-	mov [t7], 0
+	mov t7, 0
 t7_end:
 
 	; t8 = t5 && t7
-	mov ax, [t5]
-	and ax, [t7]
-	mov [t8], ax
+	mov ax, t5
+	mov bx, t7
+	and ax, bx
+	mov t8, ax
 
 	; t9 = t4 || t8
-	mov ax, [t4]
-	or ax, [t8]
-	mov [t9], ax
+	mov ax, t4
+	mov bx, t8
+	or ax, bx
+	mov t9, ax
 
 ;--- Fin del codigo de la expresion ---
 ; El resultado booleano final esta en t9

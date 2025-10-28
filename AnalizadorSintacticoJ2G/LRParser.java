@@ -368,32 +368,34 @@ public class LRParser {
 
         switch (ruleNumber) {
             case 14: // D -> D + E
-                asmCodigo.append("\tmov ax, [" + opL + "]\n");
-                asmCodigo.append("\tadd ax, [" + opR + "]\n");
-                asmCodigo.append("\tmov [" + result + "], ax\n\n");
+                asmCodigo.append("\tmov ax, " + opL + "\n");
+                asmCodigo.append("\tadd ax, " + opR + "\n");
+                asmCodigo.append("\tmov " + result + ", ax\n\n");
                 break;
             case 15: // D -> D - E
-                asmCodigo.append("\tmov ax, [" + opL + "]\n");
-                asmCodigo.append("\tsub ax, [" + opR + "]\n");
-                asmCodigo.append("\tmov [" + result + "], ax\n\n");
+                asmCodigo.append("\tmov ax, " + opL + "\n");
+                asmCodigo.append("\tsub ax, " + opR + "\n");
+                asmCodigo.append("\tmov " + result + ", ax\n\n");
                 break;
             case 17: // E -> E * F
-                // --- MODIFICACIÓN: Cambiado imul por mul ---
-                asmCodigo.append("\tmov ax, [" + opL + "]\n");
-                asmCodigo.append("\tmul [" + opR + "]\n"); // <-- CAMBIO AQUÍ
-                asmCodigo.append("\tmov [" + result + "], ax\n\n");
+                asmCodigo.append("\tmov dx, 0\n"); 
+                asmCodigo.append("\tmov ax, " + opL + "\n");
+                asmCodigo.append("\tmov bx, " + opR + "\n");
+                asmCodigo.append("\tmul bx\n"); 
+                asmCodigo.append("\tmov " + result + ", ax\n\n");
                 break;
             case 18: // E -> E / F
-                asmCodigo.append("\tmov ax, [" + opL + "]\n");
-                asmCodigo.append("\tcwd ; Extender signo de AX a DX\n");
-                asmCodigo.append("\tidiv [" + opR + "]\n");
-                asmCodigo.append("\tmov [" + result + "], ax\n\n");
+                asmCodigo.append("\tmov dx, 0\n"); 
+                asmCodigo.append("\tmov ax, " + opL + "\n");
+                asmCodigo.append("\tmov bx, " + opR + "\n");
+                asmCodigo.append("\tdiv bx\n");
+                asmCodigo.append("\tmov " + result + ", ax\n\n");
                 break;
             case 19: // E -> E % F
-                 asmCodigo.append("\tmov ax, [" + opL + "]\n");
-                 asmCodigo.append("\tcwd ; Extender signo de AX a DX\n");
-                 asmCodigo.append("\tidiv [" + opR + "]\n");
-                 asmCodigo.append("\tmov [" + result + "], dx ; El residuo queda en dx\n\n");
+                 asmCodigo.append("\tmov ax, " + opL + "\n");
+                 asmCodigo.append("\tmov bx, " + opR + "\n");
+                 asmCodigo.append("\tdiv bx\n");
+                 asmCodigo.append("\tmov " + result + ", dx ; El residuo queda en dx\n\n");
                  break;
 
             // Comparaciones (C -> C op D)
@@ -407,26 +409,29 @@ public class LRParser {
                 String trueLabel = result + "_true";
                 String endLabel = result + "_end";
 
-                asmCodigo.append("\tmov ax, [" + opL + "]\n");
-                asmCodigo.append("\tcmp ax, [" + opR + "]\n");
+                asmCodigo.append("\tmov ax, " + opL + "\n");
+                asmCodigo.append("\tmov bx, " + opR + "\n");
+                asmCodigo.append("\tcmp ax, bx\n");
                 asmCodigo.append("\t" + jumpInstruction + " " + trueLabel + "\n");
-                asmCodigo.append("\tmov [" + result + "], 0\n"); // false
+                asmCodigo.append("\tmov " + result + ", 0\n"); // false
                 asmCodigo.append("\tjmp " + endLabel + "\n");
                 asmCodigo.append(trueLabel + ":\n");
-                asmCodigo.append("\tmov [" + result + "], 1\n"); // true
+                asmCodigo.append("\tmov " + result + ", 1\n"); // true
                 asmCodigo.append(endLabel + ":\n\n");
                 break;
 
             // Lógica (A -> A || B, B -> B && C)
             case 2: // || (OR)
-                asmCodigo.append("\tmov ax, [" + opL + "]\n");
-                asmCodigo.append("\tor ax, [" + opR + "]\n");
-                asmCodigo.append("\tmov [" + result + "], ax\n\n");
+                asmCodigo.append("\tmov ax, " + opL + "\n");
+                asmCodigo.append("\tmov bx, " + opR + "\n");
+                asmCodigo.append("\tor ax, bx\n");
+                asmCodigo.append("\tmov " + result + ", ax\n\n");
                 break;
             case 4: // && (AND)
-                asmCodigo.append("\tmov ax, [" + opL + "]\n");
-                asmCodigo.append("\tand ax, [" + opR + "]\n");
-                asmCodigo.append("\tmov [" + result + "], ax\n\n");
+                asmCodigo.append("\tmov ax, " + opL + "\n");
+                asmCodigo.append("\tmov bx, " + opR + "\n");
+                asmCodigo.append("\tand ax, bx\n");
+                asmCodigo.append("\tmov " + result + ", ax\n\n");
                 break;
 
             // Unaria ! (F -> ! F)
@@ -434,12 +439,13 @@ public class LRParser {
                 String falseLabel = result + "_false";
                 String endNotLabel = result + "_end";
 
-                asmCodigo.append("\tcmp [" + opL + "], 0\n"); // if (opL != 0)
+                asmCodigo.append("\tmov ax, " + opL + "\n");
+                asmCodigo.append("\tcmp ax, 0\n"); // if (opL != 0)
                 asmCodigo.append("\tjne " + falseLabel + "\n"); // Es TRUE (1), saltar para hacerlo 0
-                asmCodigo.append("\tmov [" + result + "], 1\n");   // Es FALSE (0), hacerlo 1
+                asmCodigo.append("\tmov " + result + ", 1\n");   // Es FALSE (0), hacerlo 1
                 asmCodigo.append("\tjmp " + endNotLabel + "\n");
                 asmCodigo.append(falseLabel + ":\n");
-                asmCodigo.append("\tmov [" + result + "], 0\n");   // Era TRUE (1), hacerlo 0
+                asmCodigo.append("\tmov " + result + ", 0\n");   // Era TRUE (1), hacerlo 0
                 asmCodigo.append(endNotLabel + ":\n\n");
                 break;
         }
