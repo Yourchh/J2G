@@ -488,6 +488,14 @@ public class LRParser {
             default: return "?";
         }
     }
+    /**
+     * Obtiene el conjunto de nombres de temporales (ej: "t1", "t2")
+     * que se declararon en el segmento de datos durante este parseo.
+     * @return Un Set de strings con los nombres de los temporales.
+     */
+    public Set<String> getTemporalesDeclarados() {
+        return this.temporalesDeclarados;
+    }
     // --- FIN DE NUEVOS MÉTODOS DE GENERACIÓN ASM ---
 
     public static void loadParsingTable(String filePath) throws IOException {

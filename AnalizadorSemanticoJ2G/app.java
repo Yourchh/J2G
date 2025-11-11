@@ -1,10 +1,11 @@
 package AnalizadorSemanticoJ2G;
 
 import AnalizadorLexicoJ2G.*;
-import AnalizadorSintacticoJ2G.LRParser; // --- CORRECCIÓN DE IMPORTACIÓN ---
+import AnalizadorSintacticoJ2G.LRParser;
 import java.io.PrintStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 public class app {
@@ -14,17 +15,16 @@ public class app {
         String archivoErrores = "J2G/AnalizadorSemanticoJ2G/errores.txt";
         String archivoProcesado = "J2G/AnalizadorSemanticoJ2G/codigo_procesado.txt";
         String archivoTablas = "J2G/AnalizadorSemanticoJ2G/tablas_analisis.txt";
-        // --- NUEVO ARCHIVO DE SALIDA ---
+        // --- RUTA DEL ARCHIVO DE SALIDA ---
         String archivoAsm = "J2G/AnalizadorSemanticoJ2G/salida_ensamblador.asm";
 
-        System.out.println("\nEl análisis ha finalizado. Revise los archivos 'errores.txt', 'codigo_procesado.txt', 'tablas_analisis.txt' y 'salida_ensamblador.asm' para ver los resultados.");
-
+        // Mensaje de éxito movido al final
+        
         try (
             PrintStream outErrors = new PrintStream(new File(archivoErrores));
             PrintStream outProcessedCode = new PrintStream(new File(archivoProcesado));
-            PrintStream outTables = new PrintStream(new File(archivoTablas));
-            // --- NUEVO PRINTSTREAM PARA ASM ---
-            PrintStream outAsm = new PrintStream(new File(archivoAsm))
+            PrintStream outTables = new PrintStream(new File(archivoTablas))
+            // --- outAsm eliminado de aquí ---
         ) {
             System.setErr(outErrors);
             System.setOut(outProcessedCode);
@@ -33,8 +33,8 @@ public class app {
             AnalizadorLexicoCore analizadorLexico = new AnalizadorLexicoCore(tablaSimbolos);
             LRParser parser = new LRParser(outTables, tablaSimbolos); 
             
-            // --- MODIFICACIÓN: Pasar el PrintStream de ASM al validador ---
-            AnalizadorLexicoJ2G.ValidadorEstructural validador = new AnalizadorLexicoJ2G.ValidadorEstructural(tablaSimbolos, analizadorLexico, outTables, outAsm);
+            // --- MODIFICACIÓN: Pasar la RUTA de ASM, no el PrintStream ---
+            AnalizadorLexicoJ2G.ValidadorEstructural validador = new AnalizadorLexicoJ2G.ValidadorEstructural(tablaSimbolos, analizadorLexico, outTables, archivoAsm);
 
             System.out.println("Cargando archivo de tabla de símbolos: " + archivoTabsim);
             tablaSimbolos.cargarTabsimDesdeArchivo(archivoTabsim);
@@ -70,11 +70,17 @@ public class app {
             System.out.println("\nNUEVA TABLA DE SÍMBOLOS:\n");
             AnalizadorLexicoJ2G.J2GAnalizadorApp.mostrarNuevasVariablesConsola(tablaSimbolos.getNuevasVariablesDetectadas());
 
-            // --- LLAMADA ELIMINADA: La escritura ahora se hace incrementalmente ---
-            // validador.escribirAsmFinal(tablaSimbolos);
+            // --- NUEVA LLAMADA: Escribir el archivo ASM completo al final ---
+            validador.escribirAsmFinal(tablaSimbolos);
+            
+            // --- Mensaje final ---
+            System.out.println("\nEl análisis ha finalizado. Revise los archivos 'errores.txt', 'codigo_procesado.txt', 'tablas_analisis.txt' y 'salida_ensamblador.asm' para ver los resultados.");
+
 
         } catch (FileNotFoundException e) {
             System.err.println("Error: No se pudo crear el archivo de salida: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Error al escribir el archivo ASM final: " + e.getMessage());
         }
     }
 }

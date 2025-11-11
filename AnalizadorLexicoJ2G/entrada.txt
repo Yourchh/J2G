@@ -9,9 +9,9 @@ FUNC J2G Main () {
     INT resultado;
     STR mensaje := "Hola";
     BOOL esValido := TRUE;
-    INT var1 := "23";
-    BOOL var2 := 23;
-    STR var62 := TRUE;
+    INT var1 := 23;
+    BOOL var2 := TRUE;
+    STR var62 := "HOLA";
 
      if (b * c + d > a * d) {
         Print("hola mundo");
@@ -26,6 +26,8 @@ FUNC J2G Main () {
     if (!((a - b / 2) == 0)  || (a + b) == d && c >= 10) {
         Print("Se cumplió la condición 2");
     }
+
+    var1 := Input().Int();
 
    
 

@@ -14,9 +14,9 @@ FUNC J2G Main (){
   INT resultado;
   STR mensaje := "Hola";
   BOOL esValido := TRUE;
-  INT var1 := "23";
-  BOOL var2 := 23;
-  STR var62 := TRUE;
+  INT var1 := 23;
+  BOOL var2 := TRUE;
+  STR var62 := "HOLA";
   if (b * c + d > a * d){
     Print ("hola mundo");
   }
@@ -26,6 +26,7 @@ FUNC J2G Main (){
   if (! ((a - b / 2) == 0) || (a + b) == d && c >= 10){
     Print ("Se cumplió la condición 2");
   }
+  var1 := Input (). Int ();
   if (((a * 2) + c) > 30 || ! (a - b <= c) && d == 10){
     Print ("Se cumplió la condición 3");
   }
@@ -57,8 +58,8 @@ FUNC J2G Main (){
   STR id9 := id10;
   BOOL id11 := TRUE;
   INT id12 := id13;
-  BOOL id14 := id15;
-  STR id16 := TRUE;
+  BOOL id14 := TRUE;
+  STR id15 := id16;
   if (id3 * id5 + id7 > id1 * id7){
     Print (id17);
   }
@@ -68,20 +69,21 @@ FUNC J2G Main (){
   if (! ((id1 - id3 / id20) == id21) || (id1 + id3) == id7 && id5 >= id2){
     Print (id22);
   }
-  if (((id1 * id20) + id5) > id23 || ! (id1 - id3 <= id5) && id7 == id2){
-    Print (id24);
+  id12 := id23;
+  if (((id1 * id20) + id5) > id24 || ! (id1 - id3 <= id5) && id7 == id2){
+    Print (id25);
   }
-  if (((id1 + id25) / id5 - id7) == id1 || id26 <= id5 && ! (id7 >= id1)){
-    Print (id27);
+  if (((id1 + id26) / id5 - id7) == id1 || id27 <= id5 && ! (id7 >= id1)){
+    Print (id28);
   }
   if ((id1 + id3 - id9) * (id1 / id4) <= id2 && id1 == id3 || id11 != FALSE){
-    Print (id28);
+    Print (id29);
   }
-  if ((id1 * id3 + id29 != id2 && (id11) > id3 || id1 <= id6)){
-    Print (id28);
+  if ((id1 * id3 + id30 != id2 && (id11) > id3 || id1 <= id6)){
+    Print (id29);
   }
-  if ((id1 * id20 + id11) != id23 && (id3 - id30) > id21 || id1 <= id2){
-    Print (id28);
+  if ((id1 * id20 + id11) != id24 && (id3 - id31) > id21 || id1 <= id2){
+    Print (id29);
   }
 }
 
@@ -100,22 +102,27 @@ d                                        | id7        | int        | id2
 resultado                                | id8        | int        | resultado                               
 "Hola"                                   | id10       | string     | Hola                                    
 esValido                                 | id11       | bool       | TRUE                                    
-var1                                     | id12       | int        | var1                                    
-var2                                     | id14       | bool       | id14                                    
-var62                                    | id16       | string     | id16                                    
+var1                                     | id12       | int        | id13                                    
+23                                       | id13       | int        | 23                                      
+var2                                     | id14       | bool       | TRUE                                    
+"HOLA"                                   | id16       | string     | HOLA                                    
 "hola mundo"                             | id17       | string     | hola mundo                              
 100                                      | id18       | int        | 100                                     
 "Se cumplió la condición 1"              | id19       | string     | Se cumplió la condición 1               
 2                                        | id20       | int        | 2                                       
 0                                        | id21       | int        | 0                                       
 "Se cumplió la condición 2"              | id22       | string     | Se cumplió la condición 2               
-30                                       | id23       | int        | 30                                      
-"Se cumplió la condición 3"              | id24       | string     | Se cumplió la condición 3               
-15                                       | id25       | int        | 15                                      
-4                                        | id26       | int        | 4                                       
-"Se cumplió la condición 4"              | id27       | string     | Se cumplió la condición 4               
-"Esta condición tiene un error semántico" | id28       | string     | Esta condición tiene un error semántico 
-50                                       | id29       | int        | 50                                      
-1                                        | id30       | int        | 1                                       
+Input().Int()                            | id23       | int        | Input().Int()                           
+30                                       | id24       | int        | 30                                      
+"Se cumplió la condición 3"              | id25       | string     | Se cumplió la condición 3               
+15                                       | id26       | int        | 15                                      
+4                                        | id27       | int        | 4                                       
+"Se cumplió la condición 4"              | id28       | string     | Se cumplió la condición 4               
+"Esta condición tiene un error semántico" | id29       | string     | Esta condición tiene un error semántico 
+50                                       | id30       | int        | 50                                      
+1                                        | id31       | int        | 1                                       
 mensaje                                  | id9        | str        | id10                                    
+var62                                    | id15       | str        | id16                                    
 ----------
+
+El análisis ha finalizado. Revise los archivos 'errores.txt', 'codigo_procesado.txt', 'tablas_analisis.txt' y 'salida_ensamblador.asm' para ver los resultados.

@@ -1,82 +1,4 @@
-Análisis Sintáctico de la expresión de inicialización: '10'
-P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id2 $                                                        | s10             | _              
-_ i                            | 0 10                           | $                                                            | r23             | _ id2          
-_ i                            | 0 7                            | $                                                            | r20             | _ id2          
-_ i                            | 0 6                            | $                                                            | r16             | _ id2          
-_ i                            | 0 5                            | $                                                            | r13             | _ id2          
-_ i                            | 0 4                            | $                                                            | r6              | _ id2          
-_ i                            | 0 3                            | $                                                            | r5              | _ id2          
-_ i                            | 0 2                            | $                                                            | r3              | _ id2          
-_ i                            | 0 1                            | $                                                            | acc             | _ id2          
-Entrada aceptada.
-Análisis Sintáctico de la expresión de inicialización: '5'
-P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id4 $                                                        | s10             | _              
-_ i                            | 0 10                           | $                                                            | r23             | _ id4          
-_ i                            | 0 7                            | $                                                            | r20             | _ id4          
-_ i                            | 0 6                            | $                                                            | r16             | _ id4          
-_ i                            | 0 5                            | $                                                            | r13             | _ id4          
-_ i                            | 0 4                            | $                                                            | r6              | _ id4          
-_ i                            | 0 3                            | $                                                            | r5              | _ id4          
-_ i                            | 0 2                            | $                                                            | r3              | _ id4          
-_ i                            | 0 1                            | $                                                            | acc             | _ id4          
-Entrada aceptada.
-Análisis Sintáctico de la expresión de inicialización: '20'
-P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id6 $                                                        | s10             | _              
-_ i                            | 0 10                           | $                                                            | r23             | _ id6          
-_ i                            | 0 7                            | $                                                            | r20             | _ id6          
-_ i                            | 0 6                            | $                                                            | r16             | _ id6          
-_ i                            | 0 5                            | $                                                            | r13             | _ id6          
-_ i                            | 0 4                            | $                                                            | r6              | _ id6          
-_ i                            | 0 3                            | $                                                            | r5              | _ id6          
-_ i                            | 0 2                            | $                                                            | r3              | _ id6          
-_ i                            | 0 1                            | $                                                            | acc             | _ id6          
-Entrada aceptada.
-Análisis Sintáctico de la expresión de inicialización: '10'
-P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id2 $                                                        | s10             | _              
-_ i                            | 0 10                           | $                                                            | r23             | _ id2          
-_ i                            | 0 7                            | $                                                            | r20             | _ id2          
-_ i                            | 0 6                            | $                                                            | r16             | _ id2          
-_ i                            | 0 5                            | $                                                            | r13             | _ id2          
-_ i                            | 0 4                            | $                                                            | r6              | _ id2          
-_ i                            | 0 3                            | $                                                            | r5              | _ id2          
-_ i                            | 0 2                            | $                                                            | r3              | _ id2          
-_ i                            | 0 1                            | $                                                            | acc             | _ id2          
-Entrada aceptada.
-Análisis Sintáctico de la expresión de inicialización: '"Hola"'
-P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id10 $                                                       | s10             | _              
-_ s                            | 0 10                           | $                                                            | r23             | _ id10         
-_ s                            | 0 7                            | $                                                            | r20             | _ id10         
-_ s                            | 0 6                            | $                                                            | r16             | _ id10         
-_ s                            | 0 5                            | $                                                            | r13             | _ id10         
-_ s                            | 0 4                            | $                                                            | r6              | _ id10         
-_ s                            | 0 3                            | $                                                            | r5              | _ id10         
-_ s                            | 0 2                            | $                                                            | r3              | _ id10         
-_ s                            | 0 1                            | $                                                            | acc             | _ id10         
-Entrada aceptada.
-Análisis Sintáctico de la expresión de inicialización: 'TRUE'
-P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | TRUE $                                                       | s11             | _              
-_ b                            | 0 11                           | $                                                            | r24             | _ TRUE         
-_ b                            | 0 7                            | $                                                            | r20             | _ TRUE         
-_ b                            | 0 6                            | $                                                            | r16             | _ TRUE         
-_ b                            | 0 5                            | $                                                            | r13             | _ TRUE         
-_ b                            | 0 4                            | $                                                            | r6              | _ TRUE         
-_ b                            | 0 3                            | $                                                            | r5              | _ TRUE         
-_ b                            | 0 2                            | $                                                            | r3              | _ TRUE         
-_ b                            | 0 1                            | $                                                            | acc             | _ TRUE         
-Entrada aceptada.
-Análisis Sintáctico de la expresión de la condición: 'b * c + d > a * d'
+Análisis Sintáctico (condición IF_STMT): 'b * c + d > a * d'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 _                              | 0                              | id3 * id5 + id7 > id1 * id7 $                                | s10             | _              
@@ -112,7 +34,7 @@ _ b                            | 0 3                            | $             
 _ b                            | 0 2                            | $                                                            | r3              | _ t4           
 _ b                            | 0 1                            | $                                                            | acc             | _ t4           
 Entrada aceptada.
-Análisis Sintáctico del argumento del print: '"hola mundo"'
+Análisis Sintáctico (argumento de print): '"hola mundo"'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 _                              | 0                              | id17 $                                                       | s10             | _              
@@ -125,7 +47,7 @@ _ s                            | 0 3                            | $             
 _ s                            | 0 2                            | $                                                            | r3              | _ id17         
 _ s                            | 0 1                            | $                                                            | acc             | _ id17         
 Entrada aceptada.
-Análisis Sintáctico de la expresión de la condición: '((a + 5) * 100) > d && a <= 10 || b != c'
+Análisis Sintáctico (condición IF_STMT): '((a + 5) * 100) > d && a <= 10 || b != c'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 _                              | 0                              | ( ( id1 + id4 ) * id18 ) > id7 && id1 <= id2 || id3 != id5 $ | s9              | _              
@@ -205,7 +127,7 @@ _ b _ b                        | 0 1 13 3                       | $             
 _ b _ b                        | 0 1 13 28                      | $                                                            | r2              | _ t5 _ t6      
 _ b                            | 0 1                            | $                                                            | acc             | _ t7           
 Entrada aceptada.
-Análisis Sintáctico del argumento del print: '"Se cumplió la condición 1"'
+Análisis Sintáctico (argumento de print): '"Se cumplió la condición 1"'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 _                              | 0                              | id19 $                                                       | s10             | _              
@@ -218,7 +140,7 @@ _ s                            | 0 3                            | $             
 _ s                            | 0 2                            | $                                                            | r3              | _ id19         
 _ s                            | 0 1                            | $                                                            | acc             | _ id19         
 Entrada aceptada.
-Análisis Sintáctico de la expresión de la condición: '! ((a - b / 2) == 0) || (a + b) == d && c >= 10'
+Análisis Sintáctico (condición IF_STMT): '! ((a - b / 2) == 0) || (a + b) == d && c >= 10'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 _                              | 0                              | ! ( ( id1 - id3 / id20 ) == id21 ) || ( id1 + id3 ) == id7 && id5 >= id2 $ | s8              | _              
@@ -315,7 +237,7 @@ _ b _ b _ b                    | 0 1 13 28 14 30                | $             
 _ b _ b                        | 0 1 13 28                      | $                                                            | r2              | _ t4 _ t8      
 _ b                            | 0 1                            | $                                                            | acc             | _ t9           
 Entrada aceptada.
-Análisis Sintáctico del argumento del print: '"Se cumplió la condición 2"'
+Análisis Sintáctico (argumento de print): '"Se cumplió la condición 2"'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 _                              | 0                              | id22 $                                                       | s10             | _              
@@ -328,51 +250,64 @@ _ s                            | 0 3                            | $             
 _ s                            | 0 2                            | $                                                            | r3              | _ id22         
 _ s                            | 0 1                            | $                                                            | acc             | _ id22         
 Entrada aceptada.
-Análisis Sintáctico de la expresión de la condición: '((a * 2) + c) > 30 || ! (a - b <= c) && d == 10'
+Análisis Sintáctico (asignación RHS): 'Input (). Int ()'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | ( ( id1 * id20 ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s9              | _              
-_ _                            | 0 9                            | ( id1 * id20 ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s9              | _ _            
-_ _ _                          | 0 9 9                          | id1 * id20 ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s10             | _ _ _          
-_ _ _ i                        | 0 9 9 10                       | * id20 ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | r23             | _ _ _ id1      
-_ _ _ i                        | 0 9 9 7                        | * id20 ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | r20             | _ _ _ id1      
-_ _ _ i                        | 0 9 9 6                        | * id20 ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | r16             | _ _ _ id1      
-_ _ _ i                        | 0 9 9 5                        | * id20 ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s23             | _ _ _ id1      
-_ _ _ i _                      | 0 9 9 5 23                     | id20 ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s10             | _ _ _ id1 _    
-_ _ _ i _ i                    | 0 9 9 5 23 10                  | ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r23             | _ _ _ id1 _ id20
-_ _ _ i _ i                    | 0 9 9 5 23 7                   | ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r20             | _ _ _ id1 _ id20
-_ _ _ i _ i                    | 0 9 9 5 23 39                  | ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r17             | _ _ _ id1 _ id20
-_ _ _ i                        | 0 9 9 5                        | ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r13             | _ _ _ t1       
-_ _ _ i                        | 0 9 9 4                        | ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r6              | _ _ _ t1       
-_ _ _ i                        | 0 9 9 3                        | ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r5              | _ _ _ t1       
-_ _ _ i                        | 0 9 9 2                        | ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r3              | _ _ _ t1       
-_ _ _ i                        | 0 9 9 27                       | ) + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | s42             | _ _ _ t1       
-_ _ _ i _                      | 0 9 9 27 42                    | + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | r22             | _ _ _ t1 _     
-_ _ i                          | 0 9 7                          | + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | r20             | _ _ t1         
-_ _ i                          | 0 9 6                          | + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | r16             | _ _ t1         
-_ _ i                          | 0 9 5                          | + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | r13             | _ _ t1         
-_ _ i                          | 0 9 4                          | + id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | s21             | _ _ t1         
-_ _ i _                        | 0 9 4 21                       | id5 ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $       | s10             | _ _ t1 _       
-_ _ i _ i                      | 0 9 4 21 10                    | ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r23             | _ _ t1 _ id5   
-_ _ i _ i                      | 0 9 4 21 7                     | ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r20             | _ _ t1 _ id5   
-_ _ i _ i                      | 0 9 4 21 6                     | ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r16             | _ _ t1 _ id5   
-_ _ i _ i                      | 0 9 4 21 37                    | ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r14             | _ _ t1 _ id5   
-_ _ i                          | 0 9 4                          | ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r6              | _ _ t2         
-_ _ i                          | 0 9 3                          | ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r5              | _ _ t2         
-_ _ i                          | 0 9 2                          | ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r3              | _ _ t2         
-_ _ i                          | 0 9 27                         | ) > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | s42             | _ _ t2         
-_ _ i _                        | 0 9 27 42                      | > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r22             | _ _ t2 _       
-_ i                            | 0 7                            | > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r20             | _ t2           
-_ i                            | 0 6                            | > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r16             | _ t2           
-_ i                            | 0 5                            | > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r13             | _ t2           
-_ i                            | 0 4                            | > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r6              | _ t2           
-_ i                            | 0 3                            | > id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | s17             | _ t2           
-_ i _                          | 0 3 17                         | id23 || ! ( id1 - id3 <= id5 ) && id7 == id2 $               | s10             | _ t2 _         
-_ i _ i                        | 0 3 17 10                      | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r23             | _ t2 _ id23    
-_ i _ i                        | 0 3 17 7                       | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r20             | _ t2 _ id23    
-_ i _ i                        | 0 3 17 6                       | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r16             | _ t2 _ id23    
-_ i _ i                        | 0 3 17 5                       | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r13             | _ t2 _ id23    
-_ i _ i                        | 0 3 17 33                      | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r9              | _ t2 _ id23    
+_                              | 0                              | id23 $                                                       | s10             | _              
+_ i                            | 0 10                           | $                                                            | r23             | _ id23         
+_ i                            | 0 7                            | $                                                            | r20             | _ id23         
+_ i                            | 0 6                            | $                                                            | r16             | _ id23         
+_ i                            | 0 5                            | $                                                            | r13             | _ id23         
+_ i                            | 0 4                            | $                                                            | r6              | _ id23         
+_ i                            | 0 3                            | $                                                            | r5              | _ id23         
+_ i                            | 0 2                            | $                                                            | r3              | _ id23         
+_ i                            | 0 1                            | $                                                            | acc             | _ id23         
+Entrada aceptada.
+Análisis Sintáctico (condición IF_STMT): '((a * 2) + c) > 30 || ! (a - b <= c) && d == 10'
+P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+_                              | 0                              | ( ( id1 * id20 ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s9              | _              
+_ _                            | 0 9                            | ( id1 * id20 ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s9              | _ _            
+_ _ _                          | 0 9 9                          | id1 * id20 ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s10             | _ _ _          
+_ _ _ i                        | 0 9 9 10                       | * id20 ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | r23             | _ _ _ id1      
+_ _ _ i                        | 0 9 9 7                        | * id20 ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | r20             | _ _ _ id1      
+_ _ _ i                        | 0 9 9 6                        | * id20 ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | r16             | _ _ _ id1      
+_ _ _ i                        | 0 9 9 5                        | * id20 ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s23             | _ _ _ id1      
+_ _ _ i _                      | 0 9 9 5 23                     | id20 ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $ | s10             | _ _ _ id1 _    
+_ _ _ i _ i                    | 0 9 9 5 23 10                  | ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r23             | _ _ _ id1 _ id20
+_ _ _ i _ i                    | 0 9 9 5 23 7                   | ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r20             | _ _ _ id1 _ id20
+_ _ _ i _ i                    | 0 9 9 5 23 39                  | ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r17             | _ _ _ id1 _ id20
+_ _ _ i                        | 0 9 9 5                        | ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r13             | _ _ _ t1       
+_ _ _ i                        | 0 9 9 4                        | ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r6              | _ _ _ t1       
+_ _ _ i                        | 0 9 9 3                        | ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r5              | _ _ _ t1       
+_ _ _ i                        | 0 9 9 2                        | ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | r3              | _ _ _ t1       
+_ _ _ i                        | 0 9 9 27                       | ) + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $   | s42             | _ _ _ t1       
+_ _ _ i _                      | 0 9 9 27 42                    | + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | r22             | _ _ _ t1 _     
+_ _ i                          | 0 9 7                          | + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | r20             | _ _ t1         
+_ _ i                          | 0 9 6                          | + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | r16             | _ _ t1         
+_ _ i                          | 0 9 5                          | + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | r13             | _ _ t1         
+_ _ i                          | 0 9 4                          | + id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $     | s21             | _ _ t1         
+_ _ i _                        | 0 9 4 21                       | id5 ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $       | s10             | _ _ t1 _       
+_ _ i _ i                      | 0 9 4 21 10                    | ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r23             | _ _ t1 _ id5   
+_ _ i _ i                      | 0 9 4 21 7                     | ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r20             | _ _ t1 _ id5   
+_ _ i _ i                      | 0 9 4 21 6                     | ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r16             | _ _ t1 _ id5   
+_ _ i _ i                      | 0 9 4 21 37                    | ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r14             | _ _ t1 _ id5   
+_ _ i                          | 0 9 4                          | ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r6              | _ _ t2         
+_ _ i                          | 0 9 3                          | ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r5              | _ _ t2         
+_ _ i                          | 0 9 2                          | ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | r3              | _ _ t2         
+_ _ i                          | 0 9 27                         | ) > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $           | s42             | _ _ t2         
+_ _ i _                        | 0 9 27 42                      | > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r22             | _ _ t2 _       
+_ i                            | 0 7                            | > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r20             | _ t2           
+_ i                            | 0 6                            | > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r16             | _ t2           
+_ i                            | 0 5                            | > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r13             | _ t2           
+_ i                            | 0 4                            | > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | r6              | _ t2           
+_ i                            | 0 3                            | > id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $             | s17             | _ t2           
+_ i _                          | 0 3 17                         | id24 || ! ( id1 - id3 <= id5 ) && id7 == id2 $               | s10             | _ t2 _         
+_ i _ i                        | 0 3 17 10                      | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r23             | _ t2 _ id24    
+_ i _ i                        | 0 3 17 7                       | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r20             | _ t2 _ id24    
+_ i _ i                        | 0 3 17 6                       | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r16             | _ t2 _ id24    
+_ i _ i                        | 0 3 17 5                       | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r13             | _ t2 _ id24    
+_ i _ i                        | 0 3 17 33                      | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r9              | _ t2 _ id24    
 _ b                            | 0 3                            | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r5              | _ t3           
 _ b                            | 0 2                            | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | r3              | _ t3           
 _ b                            | 0 1                            | || ! ( id1 - id3 <= id5 ) && id7 == id2 $                    | s13             | _ t3           
@@ -425,86 +360,86 @@ _ b _ b _ b                    | 0 1 13 28 14 30                | $             
 _ b _ b                        | 0 1 13 28                      | $                                                            | r2              | _ t3 _ t8      
 _ b                            | 0 1                            | $                                                            | acc             | _ t9           
 Entrada aceptada.
-Análisis Sintáctico del argumento del print: '"Se cumplió la condición 3"'
+Análisis Sintáctico (argumento de print): '"Se cumplió la condición 3"'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id24 $                                                       | s10             | _              
-_ s                            | 0 10                           | $                                                            | r23             | _ id24         
-_ s                            | 0 7                            | $                                                            | r20             | _ id24         
-_ s                            | 0 6                            | $                                                            | r16             | _ id24         
-_ s                            | 0 5                            | $                                                            | r13             | _ id24         
-_ s                            | 0 4                            | $                                                            | r6              | _ id24         
-_ s                            | 0 3                            | $                                                            | r5              | _ id24         
-_ s                            | 0 2                            | $                                                            | r3              | _ id24         
-_ s                            | 0 1                            | $                                                            | acc             | _ id24         
+_                              | 0                              | id25 $                                                       | s10             | _              
+_ s                            | 0 10                           | $                                                            | r23             | _ id25         
+_ s                            | 0 7                            | $                                                            | r20             | _ id25         
+_ s                            | 0 6                            | $                                                            | r16             | _ id25         
+_ s                            | 0 5                            | $                                                            | r13             | _ id25         
+_ s                            | 0 4                            | $                                                            | r6              | _ id25         
+_ s                            | 0 3                            | $                                                            | r5              | _ id25         
+_ s                            | 0 2                            | $                                                            | r3              | _ id25         
+_ s                            | 0 1                            | $                                                            | acc             | _ id25         
 Entrada aceptada.
-Análisis Sintáctico de la expresión de la condición: '((a + 15) / c - d) == a || 4 <= c && ! (d >= a)'
+Análisis Sintáctico (condición IF_STMT): '((a + 15) / c - d) == a || 4 <= c && ! (d >= a)'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | ( ( id1 + id25 ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $ | s9              | _              
-_ _                            | 0 9                            | ( id1 + id25 ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $ | s9              | _ _            
-_ _ _                          | 0 9 9                          | id1 + id25 ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $ | s10             | _ _ _          
-_ _ _ i                        | 0 9 9 10                       | + id25 ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $ | r23             | _ _ _ id1      
-_ _ _ i                        | 0 9 9 7                        | + id25 ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $ | r20             | _ _ _ id1      
-_ _ _ i                        | 0 9 9 6                        | + id25 ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $ | r16             | _ _ _ id1      
-_ _ _ i                        | 0 9 9 5                        | + id25 ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $ | r13             | _ _ _ id1      
-_ _ _ i                        | 0 9 9 4                        | + id25 ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $ | s21             | _ _ _ id1      
-_ _ _ i _                      | 0 9 9 4 21                     | id25 ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $ | s10             | _ _ _ id1 _    
-_ _ _ i _ i                    | 0 9 9 4 21 10                  | ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $  | r23             | _ _ _ id1 _ id25
-_ _ _ i _ i                    | 0 9 9 4 21 7                   | ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $  | r20             | _ _ _ id1 _ id25
-_ _ _ i _ i                    | 0 9 9 4 21 6                   | ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $  | r16             | _ _ _ id1 _ id25
-_ _ _ i _ i                    | 0 9 9 4 21 37                  | ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $  | r14             | _ _ _ id1 _ id25
-_ _ _ i                        | 0 9 9 4                        | ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $  | r6              | _ _ _ t1       
-_ _ _ i                        | 0 9 9 3                        | ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $  | r5              | _ _ _ t1       
-_ _ _ i                        | 0 9 9 2                        | ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $  | r3              | _ _ _ t1       
-_ _ _ i                        | 0 9 9 27                       | ) / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $  | s42             | _ _ _ t1       
-_ _ _ i _                      | 0 9 9 27 42                    | / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $    | r22             | _ _ _ t1 _     
-_ _ i                          | 0 9 7                          | / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $    | r20             | _ _ t1         
-_ _ i                          | 0 9 6                          | / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $    | r16             | _ _ t1         
-_ _ i                          | 0 9 5                          | / id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $    | s24             | _ _ t1         
-_ _ i _                        | 0 9 5 24                       | id5 - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $      | s10             | _ _ t1 _       
-_ _ i _ i                      | 0 9 5 24 10                    | - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $          | r23             | _ _ t1 _ id5   
-_ _ i _ i                      | 0 9 5 24 7                     | - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $          | r20             | _ _ t1 _ id5   
-_ _ i _ i                      | 0 9 5 24 40                    | - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $          | r18             | _ _ t1 _ id5   
-_ _ i                          | 0 9 5                          | - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $          | r13             | _ _ t2         
-_ _ i                          | 0 9 4                          | - id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $          | s22             | _ _ t2         
-_ _ i _                        | 0 9 4 22                       | id7 ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $            | s10             | _ _ t2 _       
-_ _ i _ i                      | 0 9 4 22 10                    | ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                | r23             | _ _ t2 _ id7   
-_ _ i _ i                      | 0 9 4 22 7                     | ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                | r20             | _ _ t2 _ id7   
-_ _ i _ i                      | 0 9 4 22 6                     | ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                | r16             | _ _ t2 _ id7   
-_ _ i _ i                      | 0 9 4 22 38                    | ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                | r15             | _ _ t2 _ id7   
-_ _ i                          | 0 9 4                          | ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                | r6              | _ _ t3         
-_ _ i                          | 0 9 3                          | ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                | r5              | _ _ t3         
-_ _ i                          | 0 9 2                          | ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                | r3              | _ _ t3         
-_ _ i                          | 0 9 27                         | ) == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                | s42             | _ _ t3         
-_ _ i _                        | 0 9 27 42                      | == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                  | r22             | _ _ t3 _       
-_ i                            | 0 7                            | == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                  | r20             | _ t3           
-_ i                            | 0 6                            | == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                  | r16             | _ t3           
-_ i                            | 0 5                            | == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                  | r13             | _ t3           
-_ i                            | 0 4                            | == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                  | r6              | _ t3           
-_ i                            | 0 3                            | == id1 || id26 <= id5 && ! ( id7 >= id1 ) $                  | s15             | _ t3           
-_ i _                          | 0 3 15                         | id1 || id26 <= id5 && ! ( id7 >= id1 ) $                     | s10             | _ t3 _         
-_ i _ i                        | 0 3 15 10                      | || id26 <= id5 && ! ( id7 >= id1 ) $                         | r23             | _ t3 _ id1     
-_ i _ i                        | 0 3 15 7                       | || id26 <= id5 && ! ( id7 >= id1 ) $                         | r20             | _ t3 _ id1     
-_ i _ i                        | 0 3 15 6                       | || id26 <= id5 && ! ( id7 >= id1 ) $                         | r16             | _ t3 _ id1     
-_ i _ i                        | 0 3 15 5                       | || id26 <= id5 && ! ( id7 >= id1 ) $                         | r13             | _ t3 _ id1     
-_ i _ i                        | 0 3 15 31                      | || id26 <= id5 && ! ( id7 >= id1 ) $                         | r7              | _ t3 _ id1     
-_ b                            | 0 3                            | || id26 <= id5 && ! ( id7 >= id1 ) $                         | r5              | _ t4           
-_ b                            | 0 2                            | || id26 <= id5 && ! ( id7 >= id1 ) $                         | r3              | _ t4           
-_ b                            | 0 1                            | || id26 <= id5 && ! ( id7 >= id1 ) $                         | s13             | _ t4           
-_ b _                          | 0 1 13                         | id26 <= id5 && ! ( id7 >= id1 ) $                            | s10             | _ t4 _         
-_ b _ i                        | 0 1 13 10                      | <= id5 && ! ( id7 >= id1 ) $                                 | r23             | _ t4 _ id26    
-_ b _ i                        | 0 1 13 7                       | <= id5 && ! ( id7 >= id1 ) $                                 | r20             | _ t4 _ id26    
-_ b _ i                        | 0 1 13 6                       | <= id5 && ! ( id7 >= id1 ) $                                 | r16             | _ t4 _ id26    
-_ b _ i                        | 0 1 13 5                       | <= id5 && ! ( id7 >= id1 ) $                                 | r13             | _ t4 _ id26    
-_ b _ i                        | 0 1 13 4                       | <= id5 && ! ( id7 >= id1 ) $                                 | r6              | _ t4 _ id26    
-_ b _ i                        | 0 1 13 3                       | <= id5 && ! ( id7 >= id1 ) $                                 | s20             | _ t4 _ id26    
-_ b _ i _                      | 0 1 13 3 20                    | id5 && ! ( id7 >= id1 ) $                                    | s10             | _ t4 _ id26 _  
-_ b _ i _ i                    | 0 1 13 3 20 10                 | && ! ( id7 >= id1 ) $                                        | r23             | _ t4 _ id26 _ id5
-_ b _ i _ i                    | 0 1 13 3 20 7                  | && ! ( id7 >= id1 ) $                                        | r20             | _ t4 _ id26 _ id5
-_ b _ i _ i                    | 0 1 13 3 20 6                  | && ! ( id7 >= id1 ) $                                        | r16             | _ t4 _ id26 _ id5
-_ b _ i _ i                    | 0 1 13 3 20 5                  | && ! ( id7 >= id1 ) $                                        | r13             | _ t4 _ id26 _ id5
-_ b _ i _ i                    | 0 1 13 3 20 36                 | && ! ( id7 >= id1 ) $                                        | r12             | _ t4 _ id26 _ id5
+_                              | 0                              | ( ( id1 + id26 ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $ | s9              | _              
+_ _                            | 0 9                            | ( id1 + id26 ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $ | s9              | _ _            
+_ _ _                          | 0 9 9                          | id1 + id26 ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $ | s10             | _ _ _          
+_ _ _ i                        | 0 9 9 10                       | + id26 ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $ | r23             | _ _ _ id1      
+_ _ _ i                        | 0 9 9 7                        | + id26 ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $ | r20             | _ _ _ id1      
+_ _ _ i                        | 0 9 9 6                        | + id26 ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $ | r16             | _ _ _ id1      
+_ _ _ i                        | 0 9 9 5                        | + id26 ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $ | r13             | _ _ _ id1      
+_ _ _ i                        | 0 9 9 4                        | + id26 ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $ | s21             | _ _ _ id1      
+_ _ _ i _                      | 0 9 9 4 21                     | id26 ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $ | s10             | _ _ _ id1 _    
+_ _ _ i _ i                    | 0 9 9 4 21 10                  | ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $  | r23             | _ _ _ id1 _ id26
+_ _ _ i _ i                    | 0 9 9 4 21 7                   | ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $  | r20             | _ _ _ id1 _ id26
+_ _ _ i _ i                    | 0 9 9 4 21 6                   | ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $  | r16             | _ _ _ id1 _ id26
+_ _ _ i _ i                    | 0 9 9 4 21 37                  | ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $  | r14             | _ _ _ id1 _ id26
+_ _ _ i                        | 0 9 9 4                        | ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $  | r6              | _ _ _ t1       
+_ _ _ i                        | 0 9 9 3                        | ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $  | r5              | _ _ _ t1       
+_ _ _ i                        | 0 9 9 2                        | ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $  | r3              | _ _ _ t1       
+_ _ _ i                        | 0 9 9 27                       | ) / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $  | s42             | _ _ _ t1       
+_ _ _ i _                      | 0 9 9 27 42                    | / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $    | r22             | _ _ _ t1 _     
+_ _ i                          | 0 9 7                          | / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $    | r20             | _ _ t1         
+_ _ i                          | 0 9 6                          | / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $    | r16             | _ _ t1         
+_ _ i                          | 0 9 5                          | / id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $    | s24             | _ _ t1         
+_ _ i _                        | 0 9 5 24                       | id5 - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $      | s10             | _ _ t1 _       
+_ _ i _ i                      | 0 9 5 24 10                    | - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $          | r23             | _ _ t1 _ id5   
+_ _ i _ i                      | 0 9 5 24 7                     | - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $          | r20             | _ _ t1 _ id5   
+_ _ i _ i                      | 0 9 5 24 40                    | - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $          | r18             | _ _ t1 _ id5   
+_ _ i                          | 0 9 5                          | - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $          | r13             | _ _ t2         
+_ _ i                          | 0 9 4                          | - id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $          | s22             | _ _ t2         
+_ _ i _                        | 0 9 4 22                       | id7 ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $            | s10             | _ _ t2 _       
+_ _ i _ i                      | 0 9 4 22 10                    | ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                | r23             | _ _ t2 _ id7   
+_ _ i _ i                      | 0 9 4 22 7                     | ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                | r20             | _ _ t2 _ id7   
+_ _ i _ i                      | 0 9 4 22 6                     | ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                | r16             | _ _ t2 _ id7   
+_ _ i _ i                      | 0 9 4 22 38                    | ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                | r15             | _ _ t2 _ id7   
+_ _ i                          | 0 9 4                          | ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                | r6              | _ _ t3         
+_ _ i                          | 0 9 3                          | ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                | r5              | _ _ t3         
+_ _ i                          | 0 9 2                          | ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                | r3              | _ _ t3         
+_ _ i                          | 0 9 27                         | ) == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                | s42             | _ _ t3         
+_ _ i _                        | 0 9 27 42                      | == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                  | r22             | _ _ t3 _       
+_ i                            | 0 7                            | == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                  | r20             | _ t3           
+_ i                            | 0 6                            | == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                  | r16             | _ t3           
+_ i                            | 0 5                            | == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                  | r13             | _ t3           
+_ i                            | 0 4                            | == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                  | r6              | _ t3           
+_ i                            | 0 3                            | == id1 || id27 <= id5 && ! ( id7 >= id1 ) $                  | s15             | _ t3           
+_ i _                          | 0 3 15                         | id1 || id27 <= id5 && ! ( id7 >= id1 ) $                     | s10             | _ t3 _         
+_ i _ i                        | 0 3 15 10                      | || id27 <= id5 && ! ( id7 >= id1 ) $                         | r23             | _ t3 _ id1     
+_ i _ i                        | 0 3 15 7                       | || id27 <= id5 && ! ( id7 >= id1 ) $                         | r20             | _ t3 _ id1     
+_ i _ i                        | 0 3 15 6                       | || id27 <= id5 && ! ( id7 >= id1 ) $                         | r16             | _ t3 _ id1     
+_ i _ i                        | 0 3 15 5                       | || id27 <= id5 && ! ( id7 >= id1 ) $                         | r13             | _ t3 _ id1     
+_ i _ i                        | 0 3 15 31                      | || id27 <= id5 && ! ( id7 >= id1 ) $                         | r7              | _ t3 _ id1     
+_ b                            | 0 3                            | || id27 <= id5 && ! ( id7 >= id1 ) $                         | r5              | _ t4           
+_ b                            | 0 2                            | || id27 <= id5 && ! ( id7 >= id1 ) $                         | r3              | _ t4           
+_ b                            | 0 1                            | || id27 <= id5 && ! ( id7 >= id1 ) $                         | s13             | _ t4           
+_ b _                          | 0 1 13                         | id27 <= id5 && ! ( id7 >= id1 ) $                            | s10             | _ t4 _         
+_ b _ i                        | 0 1 13 10                      | <= id5 && ! ( id7 >= id1 ) $                                 | r23             | _ t4 _ id27    
+_ b _ i                        | 0 1 13 7                       | <= id5 && ! ( id7 >= id1 ) $                                 | r20             | _ t4 _ id27    
+_ b _ i                        | 0 1 13 6                       | <= id5 && ! ( id7 >= id1 ) $                                 | r16             | _ t4 _ id27    
+_ b _ i                        | 0 1 13 5                       | <= id5 && ! ( id7 >= id1 ) $                                 | r13             | _ t4 _ id27    
+_ b _ i                        | 0 1 13 4                       | <= id5 && ! ( id7 >= id1 ) $                                 | r6              | _ t4 _ id27    
+_ b _ i                        | 0 1 13 3                       | <= id5 && ! ( id7 >= id1 ) $                                 | s20             | _ t4 _ id27    
+_ b _ i _                      | 0 1 13 3 20                    | id5 && ! ( id7 >= id1 ) $                                    | s10             | _ t4 _ id27 _  
+_ b _ i _ i                    | 0 1 13 3 20 10                 | && ! ( id7 >= id1 ) $                                        | r23             | _ t4 _ id27 _ id5
+_ b _ i _ i                    | 0 1 13 3 20 7                  | && ! ( id7 >= id1 ) $                                        | r20             | _ t4 _ id27 _ id5
+_ b _ i _ i                    | 0 1 13 3 20 6                  | && ! ( id7 >= id1 ) $                                        | r16             | _ t4 _ id27 _ id5
+_ b _ i _ i                    | 0 1 13 3 20 5                  | && ! ( id7 >= id1 ) $                                        | r13             | _ t4 _ id27 _ id5
+_ b _ i _ i                    | 0 1 13 3 20 36                 | && ! ( id7 >= id1 ) $                                        | r12             | _ t4 _ id27 _ id5
 _ b _ b                        | 0 1 13 3                       | && ! ( id7 >= id1 ) $                                        | r5              | _ t4 _ t5      
 _ b _ b                        | 0 1 13 28                      | && ! ( id7 >= id1 ) $                                        | s14             | _ t4 _ t5      
 _ b _ b _                      | 0 1 13 28 14                   | ! ( id7 >= id1 ) $                                           | s8              | _ t4 _ t5 _    
@@ -535,20 +470,20 @@ _ b _ b _ b                    | 0 1 13 28 14 30                | $             
 _ b _ b                        | 0 1 13 28                      | $                                                            | r2              | _ t4 _ t8      
 _ b                            | 0 1                            | $                                                            | acc             | _ t9           
 Entrada aceptada.
-Análisis Sintáctico del argumento del print: '"Se cumplió la condición 4"'
+Análisis Sintáctico (argumento de print): '"Se cumplió la condición 4"'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id27 $                                                       | s10             | _              
-_ s                            | 0 10                           | $                                                            | r23             | _ id27         
-_ s                            | 0 7                            | $                                                            | r20             | _ id27         
-_ s                            | 0 6                            | $                                                            | r16             | _ id27         
-_ s                            | 0 5                            | $                                                            | r13             | _ id27         
-_ s                            | 0 4                            | $                                                            | r6              | _ id27         
-_ s                            | 0 3                            | $                                                            | r5              | _ id27         
-_ s                            | 0 2                            | $                                                            | r3              | _ id27         
-_ s                            | 0 1                            | $                                                            | acc             | _ id27         
+_                              | 0                              | id28 $                                                       | s10             | _              
+_ s                            | 0 10                           | $                                                            | r23             | _ id28         
+_ s                            | 0 7                            | $                                                            | r20             | _ id28         
+_ s                            | 0 6                            | $                                                            | r16             | _ id28         
+_ s                            | 0 5                            | $                                                            | r13             | _ id28         
+_ s                            | 0 4                            | $                                                            | r6              | _ id28         
+_ s                            | 0 3                            | $                                                            | r5              | _ id28         
+_ s                            | 0 2                            | $                                                            | r3              | _ id28         
+_ s                            | 0 1                            | $                                                            | acc             | _ id28         
 Entrada aceptada.
-Análisis Sintáctico de la expresión de la condición: '(a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE'
+Análisis Sintáctico (condición IF_STMT): '(a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 _                              | 0                              | ( id1 + id3 - id9 ) * ( id1 / id4 ) <= id2 && id1 == id3 || id11 != FALSE $ | s9              | _              
@@ -570,39 +505,39 @@ _ _ i _ s                      | 0 9 4 22 7                     | ) * ( id1 / id
 _ _ i _ s                      | 0 9 4 22 6                     | ) * ( id1 / id4 ) <= id2 && id1 == id3 || id11 != FALSE $    | r16             | _ _ t1 _ id9   
 _ _ i _ s                      | 0 9 4 22 38                    | ) * ( id1 / id4 ) <= id2 && id1 == id3 || id11 != FALSE $    | r15             | _ _ t1 _ id9   
 Error Semántico: Incompatibilidad de tipos en la regla D -> D - E
-Análisis Sintáctico del argumento del print: '"Esta condición tiene un error semántico"'
+Análisis Sintáctico (argumento de print): '"Esta condición tiene un error semántico"'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id28 $                                                       | s10             | _              
-_ s                            | 0 10                           | $                                                            | r23             | _ id28         
-_ s                            | 0 7                            | $                                                            | r20             | _ id28         
-_ s                            | 0 6                            | $                                                            | r16             | _ id28         
-_ s                            | 0 5                            | $                                                            | r13             | _ id28         
-_ s                            | 0 4                            | $                                                            | r6              | _ id28         
-_ s                            | 0 3                            | $                                                            | r5              | _ id28         
-_ s                            | 0 2                            | $                                                            | r3              | _ id28         
-_ s                            | 0 1                            | $                                                            | acc             | _ id28         
+_                              | 0                              | id29 $                                                       | s10             | _              
+_ s                            | 0 10                           | $                                                            | r23             | _ id29         
+_ s                            | 0 7                            | $                                                            | r20             | _ id29         
+_ s                            | 0 6                            | $                                                            | r16             | _ id29         
+_ s                            | 0 5                            | $                                                            | r13             | _ id29         
+_ s                            | 0 4                            | $                                                            | r6              | _ id29         
+_ s                            | 0 3                            | $                                                            | r5              | _ id29         
+_ s                            | 0 2                            | $                                                            | r3              | _ id29         
+_ s                            | 0 1                            | $                                                            | acc             | _ id29         
 Entrada aceptada.
-Análisis Sintáctico de la expresión de la condición: '(a * b + 50 != 10 && (esValido) > b || a <= 20)'
+Análisis Sintáctico (condición IF_STMT): '(a * b + 50 != 10 && (esValido) > b || a <= 20)'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | ( id1 * id3 + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $ | s9              | _              
-_ _                            | 0 9                            | id1 * id3 + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $  | s10             | _ _            
-_ _ i                          | 0 9 10                         | * id3 + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $      | r23             | _ _ id1        
-_ _ i                          | 0 9 7                          | * id3 + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $      | r20             | _ _ id1        
-_ _ i                          | 0 9 6                          | * id3 + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $      | r16             | _ _ id1        
-_ _ i                          | 0 9 5                          | * id3 + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $      | s23             | _ _ id1        
-_ _ i _                        | 0 9 5 23                       | id3 + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $        | s10             | _ _ id1 _      
-_ _ i _ i                      | 0 9 5 23 10                    | + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | r23             | _ _ id1 _ id3  
-_ _ i _ i                      | 0 9 5 23 7                     | + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | r20             | _ _ id1 _ id3  
-_ _ i _ i                      | 0 9 5 23 39                    | + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | r17             | _ _ id1 _ id3  
-_ _ i                          | 0 9 5                          | + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | r13             | _ _ t1         
-_ _ i                          | 0 9 4                          | + id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | s21             | _ _ t1         
-_ _ i _                        | 0 9 4 21                       | id29 != id2 && ( id11 ) > id3 || id1 <= id6 ) $              | s10             | _ _ t1 _       
-_ _ i _ i                      | 0 9 4 21 10                    | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | r23             | _ _ t1 _ id29  
-_ _ i _ i                      | 0 9 4 21 7                     | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | r20             | _ _ t1 _ id29  
-_ _ i _ i                      | 0 9 4 21 6                     | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | r16             | _ _ t1 _ id29  
-_ _ i _ i                      | 0 9 4 21 37                    | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | r14             | _ _ t1 _ id29  
+_                              | 0                              | ( id1 * id3 + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $ | s9              | _              
+_ _                            | 0 9                            | id1 * id3 + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $  | s10             | _ _            
+_ _ i                          | 0 9 10                         | * id3 + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $      | r23             | _ _ id1        
+_ _ i                          | 0 9 7                          | * id3 + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $      | r20             | _ _ id1        
+_ _ i                          | 0 9 6                          | * id3 + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $      | r16             | _ _ id1        
+_ _ i                          | 0 9 5                          | * id3 + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $      | s23             | _ _ id1        
+_ _ i _                        | 0 9 5 23                       | id3 + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $        | s10             | _ _ id1 _      
+_ _ i _ i                      | 0 9 5 23 10                    | + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | r23             | _ _ id1 _ id3  
+_ _ i _ i                      | 0 9 5 23 7                     | + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | r20             | _ _ id1 _ id3  
+_ _ i _ i                      | 0 9 5 23 39                    | + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | r17             | _ _ id1 _ id3  
+_ _ i                          | 0 9 5                          | + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | r13             | _ _ t1         
+_ _ i                          | 0 9 4                          | + id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $            | s21             | _ _ t1         
+_ _ i _                        | 0 9 4 21                       | id30 != id2 && ( id11 ) > id3 || id1 <= id6 ) $              | s10             | _ _ t1 _       
+_ _ i _ i                      | 0 9 4 21 10                    | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | r23             | _ _ t1 _ id30  
+_ _ i _ i                      | 0 9 4 21 7                     | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | r20             | _ _ t1 _ id30  
+_ _ i _ i                      | 0 9 4 21 6                     | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | r16             | _ _ t1 _ id30  
+_ _ i _ i                      | 0 9 4 21 37                    | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | r14             | _ _ t1 _ id30  
 _ _ i                          | 0 9 4                          | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | r6              | _ _ t2         
 _ _ i                          | 0 9 3                          | != id2 && ( id11 ) > id3 || id1 <= id6 ) $                   | s16             | _ _ t2         
 _ _ i _                        | 0 9 3 16                       | id2 && ( id11 ) > id3 || id1 <= id6 ) $                      | s10             | _ _ t2 _       
@@ -636,50 +571,50 @@ _ _ b _ b _ i                  | 0 9 2 14 30 17 6               | || id1 <= id6 
 _ _ b _ b _ i                  | 0 9 2 14 30 17 5               | || id1 <= id6 ) $                                            | r13             | _ _ t3 _ id11 _ id3
 _ _ b _ b _ i                  | 0 9 2 14 30 17 33              | || id1 <= id6 ) $                                            | r9              | _ _ t3 _ id11 _ id3
 Error Semántico: Incompatibilidad de tipos en la regla C -> C > D
-Análisis Sintáctico del argumento del print: '"Esta condición tiene un error semántico"'
+Análisis Sintáctico (argumento de print): '"Esta condición tiene un error semántico"'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id28 $                                                       | s10             | _              
-_ s                            | 0 10                           | $                                                            | r23             | _ id28         
-_ s                            | 0 7                            | $                                                            | r20             | _ id28         
-_ s                            | 0 6                            | $                                                            | r16             | _ id28         
-_ s                            | 0 5                            | $                                                            | r13             | _ id28         
-_ s                            | 0 4                            | $                                                            | r6              | _ id28         
-_ s                            | 0 3                            | $                                                            | r5              | _ id28         
-_ s                            | 0 2                            | $                                                            | r3              | _ id28         
-_ s                            | 0 1                            | $                                                            | acc             | _ id28         
+_                              | 0                              | id29 $                                                       | s10             | _              
+_ s                            | 0 10                           | $                                                            | r23             | _ id29         
+_ s                            | 0 7                            | $                                                            | r20             | _ id29         
+_ s                            | 0 6                            | $                                                            | r16             | _ id29         
+_ s                            | 0 5                            | $                                                            | r13             | _ id29         
+_ s                            | 0 4                            | $                                                            | r6              | _ id29         
+_ s                            | 0 3                            | $                                                            | r5              | _ id29         
+_ s                            | 0 2                            | $                                                            | r3              | _ id29         
+_ s                            | 0 1                            | $                                                            | acc             | _ id29         
 Entrada aceptada.
-Análisis Sintáctico de la expresión de la condición: '(a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10'
+Análisis Sintáctico (condición IF_STMT): '(a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | ( id1 * id20 + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $ | s9              | _              
-_ _                            | 0 9                            | id1 * id20 + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $ | s10             | _ _            
-_ _ i                          | 0 9 10                         | * id20 + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $ | r23             | _ _ id1        
-_ _ i                          | 0 9 7                          | * id20 + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $ | r20             | _ _ id1        
-_ _ i                          | 0 9 6                          | * id20 + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $ | r16             | _ _ id1        
-_ _ i                          | 0 9 5                          | * id20 + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $ | s23             | _ _ id1        
-_ _ i _                        | 0 9 5 23                       | id20 + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $ | s10             | _ _ id1 _      
-_ _ i _ i                      | 0 9 5 23 10                    | + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $    | r23             | _ _ id1 _ id20 
-_ _ i _ i                      | 0 9 5 23 7                     | + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $    | r20             | _ _ id1 _ id20 
-_ _ i _ i                      | 0 9 5 23 39                    | + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $    | r17             | _ _ id1 _ id20 
-_ _ i                          | 0 9 5                          | + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $    | r13             | _ _ t1         
-_ _ i                          | 0 9 4                          | + id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $    | s21             | _ _ t1         
-_ _ i _                        | 0 9 4 21                       | id11 ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $      | s10             | _ _ t1 _       
-_ _ i _ b                      | 0 9 4 21 10                    | ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $           | r23             | _ _ t1 _ id11  
-_ _ i _ b                      | 0 9 4 21 7                     | ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $           | r20             | _ _ t1 _ id11  
-_ _ i _ b                      | 0 9 4 21 6                     | ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $           | r16             | _ _ t1 _ id11  
-_ _ i _ b                      | 0 9 4 21 37                    | ) != id23 && ( id3 - id30 ) > id21 || id1 <= id2 $           | r14             | _ _ t1 _ id11  
+_                              | 0                              | ( id1 * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | s9              | _              
+_ _                            | 0 9                            | id1 * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | s10             | _ _            
+_ _ i                          | 0 9 10                         | * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | r23             | _ _ id1        
+_ _ i                          | 0 9 7                          | * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | r20             | _ _ id1        
+_ _ i                          | 0 9 6                          | * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | r16             | _ _ id1        
+_ _ i                          | 0 9 5                          | * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | s23             | _ _ id1        
+_ _ i _                        | 0 9 5 23                       | id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | s10             | _ _ id1 _      
+_ _ i _ i                      | 0 9 5 23 10                    | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | r23             | _ _ id1 _ id20 
+_ _ i _ i                      | 0 9 5 23 7                     | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | r20             | _ _ id1 _ id20 
+_ _ i _ i                      | 0 9 5 23 39                    | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | r17             | _ _ id1 _ id20 
+_ _ i                          | 0 9 5                          | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | r13             | _ _ t1         
+_ _ i                          | 0 9 4                          | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | s21             | _ _ t1         
+_ _ i _                        | 0 9 4 21                       | id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $      | s10             | _ _ t1 _       
+_ _ i _ b                      | 0 9 4 21 10                    | ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $           | r23             | _ _ t1 _ id11  
+_ _ i _ b                      | 0 9 4 21 7                     | ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $           | r20             | _ _ t1 _ id11  
+_ _ i _ b                      | 0 9 4 21 6                     | ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $           | r16             | _ _ t1 _ id11  
+_ _ i _ b                      | 0 9 4 21 37                    | ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $           | r14             | _ _ t1 _ id11  
 Error Semántico: Incompatibilidad de tipos en la regla D -> D + E
-Análisis Sintáctico del argumento del print: '"Esta condición tiene un error semántico"'
+Análisis Sintáctico (argumento de print): '"Esta condición tiene un error semántico"'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id28 $                                                       | s10             | _              
-_ s                            | 0 10                           | $                                                            | r23             | _ id28         
-_ s                            | 0 7                            | $                                                            | r20             | _ id28         
-_ s                            | 0 6                            | $                                                            | r16             | _ id28         
-_ s                            | 0 5                            | $                                                            | r13             | _ id28         
-_ s                            | 0 4                            | $                                                            | r6              | _ id28         
-_ s                            | 0 3                            | $                                                            | r5              | _ id28         
-_ s                            | 0 2                            | $                                                            | r3              | _ id28         
-_ s                            | 0 1                            | $                                                            | acc             | _ id28         
+_                              | 0                              | id29 $                                                       | s10             | _              
+_ s                            | 0 10                           | $                                                            | r23             | _ id29         
+_ s                            | 0 7                            | $                                                            | r20             | _ id29         
+_ s                            | 0 6                            | $                                                            | r16             | _ id29         
+_ s                            | 0 5                            | $                                                            | r13             | _ id29         
+_ s                            | 0 4                            | $                                                            | r6              | _ id29         
+_ s                            | 0 3                            | $                                                            | r5              | _ id29         
+_ s                            | 0 2                            | $                                                            | r3              | _ id29         
+_ s                            | 0 1                            | $                                                            | acc             | _ id29         
 Entrada aceptada.
