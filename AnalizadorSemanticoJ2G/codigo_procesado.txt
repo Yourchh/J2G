@@ -14,9 +14,9 @@ FUNC J2G Main (){
   INT resultado;
   STR mensaje := "Hola";
   BOOL esValido := TRUE;
-  INT var1 := "23";
-  BOOL var2 := 23;
-  STR var62 := TRUE;
+  INT var1 := 45;
+  BOOL var2 := TRUE;
+  STR var62 := "mundo";
   if (b * c + d > a * d - c){
     Print ("hola mundo");
   }
@@ -57,8 +57,8 @@ FUNC J2G Main (){
   STR id9 := id10;
   BOOL id11 := TRUE;
   INT id12 := id13;
-  BOOL id14 := id15;
-  STR id16 := TRUE;
+  BOOL id14 := TRUE;
+  STR id15 := id16;
   if (id3 * id5 + id7 > id1 * id7 - id5){
     Print (id17);
   }
@@ -100,9 +100,10 @@ d                                        | id7        | int        | id2
 resultado                                | id8        | int        | resultado                               
 "Hola"                                   | id10       | string     | Hola                                    
 esValido                                 | id11       | bool       | TRUE                                    
-var1                                     | id12       | int        | var1                                    
-var2                                     | id14       | bool       | id14                                    
-var62                                    | id16       | string     | id16                                    
+var1                                     | id12       | int        | id13                                    
+45                                       | id13       | int        | 45                                      
+var2                                     | id14       | bool       | TRUE                                    
+"mundo"                                  | id16       | string     | mundo                                   
 "hola mundo"                             | id17       | string     | hola mundo                              
 100                                      | id18       | int        | 100                                     
 "Se cumplió la condición 1"              | id19       | string     | Se cumplió la condición 1               
@@ -118,4 +119,5 @@ var62                                    | id16       | string     | id16
 50                                       | id29       | int        | 50                                      
 1                                        | id30       | int        | 1                                       
 mensaje                                  | id9        | str        | id10                                    
+var62                                    | id15       | str        | id16                                    
 ----------

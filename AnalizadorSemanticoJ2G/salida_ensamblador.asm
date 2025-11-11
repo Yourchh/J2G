@@ -1,5 +1,5 @@
 Expresion o condicion:
-b * c + d > a * d
+b * c + d > a * d - c
 Variables:
 a (id1): 10
 b (id3): 5
@@ -21,6 +21,7 @@ datos segment para public 'data'
 	t2 dw ?
 	t3 dw ?
 	t4 dw ?
+	t5 dw ?
 
 datos ends
 codigo segment para public 'code'
@@ -55,19 +56,24 @@ compa proc far
 	mul bx
 	mov t3, ax
 
-	; t4 = t2 > t3
+	; t4 = t3 - id5
+	mov ax, t3
+	sub ax, id5
+	mov t4, ax
+
+	; t5 = t2 > t4
 	mov ax, t2
-	mov bx, t3
+	mov bx, t4
 	cmp ax, bx
-	jg t4_true
-	mov t4, 0
-	jmp t4_end
-t4_true:
-	mov t4, 1
-t4_end:
+	jg t5_true
+	mov t5, 0
+	jmp t5_end
+t5_true:
+	mov t5, 1
+t5_end:
 
 ;--- Fin del codigo de la expresion ---
-; El resultado booleano final esta en t4
+; El resultado booleano final esta en t5
 
         mov ah,7
         int 21

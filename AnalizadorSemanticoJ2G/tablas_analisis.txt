@@ -76,6 +76,45 @@ _ b                            | 0 3                            | $             
 _ b                            | 0 2                            | $                                                            | r3              | _ TRUE         
 _ b                            | 0 1                            | $                                                            | acc             | _ TRUE         
 Entrada aceptada.
+Análisis Sintáctico de la expresión de inicialización: '45'
+P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id13 $                                                       | s10             | _              
+_ i                            | 0 10                           | $                                                            | r23             | _ id13         
+_ i                            | 0 7                            | $                                                            | r20             | _ id13         
+_ i                            | 0 6                            | $                                                            | r16             | _ id13         
+_ i                            | 0 5                            | $                                                            | r13             | _ id13         
+_ i                            | 0 4                            | $                                                            | r6              | _ id13         
+_ i                            | 0 3                            | $                                                            | r5              | _ id13         
+_ i                            | 0 2                            | $                                                            | r3              | _ id13         
+_ i                            | 0 1                            | $                                                            | acc             | _ id13         
+Entrada aceptada.
+Análisis Sintáctico de la expresión de inicialización: 'TRUE'
+P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+_                              | 0                              | TRUE $                                                       | s11             | _              
+_ b                            | 0 11                           | $                                                            | r24             | _ TRUE         
+_ b                            | 0 7                            | $                                                            | r20             | _ TRUE         
+_ b                            | 0 6                            | $                                                            | r16             | _ TRUE         
+_ b                            | 0 5                            | $                                                            | r13             | _ TRUE         
+_ b                            | 0 4                            | $                                                            | r6              | _ TRUE         
+_ b                            | 0 3                            | $                                                            | r5              | _ TRUE         
+_ b                            | 0 2                            | $                                                            | r3              | _ TRUE         
+_ b                            | 0 1                            | $                                                            | acc             | _ TRUE         
+Entrada aceptada.
+Análisis Sintáctico de la expresión de inicialización: '"mundo"'
+P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+_                              | 0                              | id16 $                                                       | s10             | _              
+_ s                            | 0 10                           | $                                                            | r23             | _ id16         
+_ s                            | 0 7                            | $                                                            | r20             | _ id16         
+_ s                            | 0 6                            | $                                                            | r16             | _ id16         
+_ s                            | 0 5                            | $                                                            | r13             | _ id16         
+_ s                            | 0 4                            | $                                                            | r6              | _ id16         
+_ s                            | 0 3                            | $                                                            | r5              | _ id16         
+_ s                            | 0 2                            | $                                                            | r3              | _ id16         
+_ s                            | 0 1                            | $                                                            | acc             | _ id16         
+Entrada aceptada.
 Análisis Sintáctico de la expresión de la condición: 'b * c + d > a * d - c'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
