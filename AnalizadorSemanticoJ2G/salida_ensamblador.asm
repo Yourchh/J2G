@@ -10,7 +10,6 @@ datos segment para public 'data'
 	msg1 db "hola mundo", '$'
 	msg5 db "Se cumplió la condición 4", '$'
 	msg2 db "Se cumplió la condición 1", '$'
-	msg6 db "Esta condición tiene un error semántico", '$'
 
 	; --- Variables y Literales del Programa ---
 	id1 dw 10 	; a
@@ -37,7 +36,6 @@ datos segment para public 'data'
 	id27 dw 4 	; 4
 	id26 dw 15 	; 15
 	id28 db "Se cumplió la condición 4", '$' 	; "Se cumplió la condición 4"
-	id29 db "Esta condición tiene un error semántico", '$' 	; "Esta condición tiene un error semántico"
 
 	; --- Temporales ---
 	t4 dw ?
@@ -460,18 +458,6 @@ t7_end:
 	SALTO_LINEA
 
 if_end_5:
-
-	; PRINT: Print ("Esta condición tiene un error semántico");
-	IMPRIMIR_MSG msg6
-	SALTO_LINEA
-
-	; PRINT: Print ("Esta condición tiene un error semántico");
-	IMPRIMIR_MSG msg6
-	SALTO_LINEA
-
-	; PRINT: Print ("Esta condición tiene un error semántico");
-	IMPRIMIR_MSG msg6
-	SALTO_LINEA
 
 
 ;--- Fin del codigo principal ---

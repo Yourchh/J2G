@@ -492,19 +492,6 @@ _ _ i _ s                      | 0 9 4 22 7                     | ) * ( id1 / id
 _ _ i _ s                      | 0 9 4 22 6                     | ) * ( id1 / id4 ) <= id2 && id1 == id3 || id11 != FALSE $    | r16             | _ _ t1 _ id9   
 _ _ i _ s                      | 0 9 4 22 38                    | ) * ( id1 / id4 ) <= id2 && id1 == id3 || id11 != FALSE $    | r15             | _ _ t1 _ id9   
 Error Semántico: Incompatibilidad de tipos en la regla D -> D - E
-Análisis Sintáctico (argumento de print): '"Esta condición tiene un error semántico"'
-P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id29 $                                                       | s10             | _              
-_ s                            | 0 10                           | $                                                            | r23             | _ id29         
-_ s                            | 0 7                            | $                                                            | r20             | _ id29         
-_ s                            | 0 6                            | $                                                            | r16             | _ id29         
-_ s                            | 0 5                            | $                                                            | r13             | _ id29         
-_ s                            | 0 4                            | $                                                            | r6              | _ id29         
-_ s                            | 0 3                            | $                                                            | r5              | _ id29         
-_ s                            | 0 2                            | $                                                            | r3              | _ id29         
-_ s                            | 0 1                            | $                                                            | acc             | _ id29         
-Entrada aceptada.
 Análisis Sintáctico (condición IF_STMT): '(a * b + 50 != 10 && (esValido) > b || a <= 20)'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -558,50 +545,24 @@ _ _ b _ b _ i                  | 0 9 2 14 30 17 6               | || id1 <= id6 
 _ _ b _ b _ i                  | 0 9 2 14 30 17 5               | || id1 <= id6 ) $                                            | r13             | _ _ t3 _ id11 _ id3
 _ _ b _ b _ i                  | 0 9 2 14 30 17 33              | || id1 <= id6 ) $                                            | r9              | _ _ t3 _ id11 _ id3
 Error Semántico: Incompatibilidad de tipos en la regla C -> C > D
-Análisis Sintáctico (argumento de print): '"Esta condición tiene un error semántico"'
-P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id29 $                                                       | s10             | _              
-_ s                            | 0 10                           | $                                                            | r23             | _ id29         
-_ s                            | 0 7                            | $                                                            | r20             | _ id29         
-_ s                            | 0 6                            | $                                                            | r16             | _ id29         
-_ s                            | 0 5                            | $                                                            | r13             | _ id29         
-_ s                            | 0 4                            | $                                                            | r6              | _ id29         
-_ s                            | 0 3                            | $                                                            | r5              | _ id29         
-_ s                            | 0 2                            | $                                                            | r3              | _ id29         
-_ s                            | 0 1                            | $                                                            | acc             | _ id29         
-Entrada aceptada.
 Análisis Sintáctico (condición IF_STMT): '(a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10'
 P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | ( id1 * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | s9              | _              
-_ _                            | 0 9                            | id1 * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | s10             | _ _            
-_ _ i                          | 0 9 10                         | * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | r23             | _ _ id1        
-_ _ i                          | 0 9 7                          | * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | r20             | _ _ id1        
-_ _ i                          | 0 9 6                          | * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | r16             | _ _ id1        
-_ _ i                          | 0 9 5                          | * id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | s23             | _ _ id1        
-_ _ i _                        | 0 9 5 23                       | id20 + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $ | s10             | _ _ id1 _      
-_ _ i _ i                      | 0 9 5 23 10                    | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | r23             | _ _ id1 _ id20 
-_ _ i _ i                      | 0 9 5 23 7                     | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | r20             | _ _ id1 _ id20 
-_ _ i _ i                      | 0 9 5 23 39                    | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | r17             | _ _ id1 _ id20 
-_ _ i                          | 0 9 5                          | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | r13             | _ _ t1         
-_ _ i                          | 0 9 4                          | + id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $    | s21             | _ _ t1         
-_ _ i _                        | 0 9 4 21                       | id11 ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $      | s10             | _ _ t1 _       
-_ _ i _ b                      | 0 9 4 21 10                    | ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $           | r23             | _ _ t1 _ id11  
-_ _ i _ b                      | 0 9 4 21 7                     | ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $           | r20             | _ _ t1 _ id11  
-_ _ i _ b                      | 0 9 4 21 6                     | ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $           | r16             | _ _ t1 _ id11  
-_ _ i _ b                      | 0 9 4 21 37                    | ) != id24 && ( id3 - id31 ) > id21 || id1 <= id2 $           | r14             | _ _ t1 _ id11  
+_                              | 0                              | ( id1 * id20 + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $ | s9              | _              
+_ _                            | 0 9                            | id1 * id20 + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $ | s10             | _ _            
+_ _ i                          | 0 9 10                         | * id20 + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $ | r23             | _ _ id1        
+_ _ i                          | 0 9 7                          | * id20 + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $ | r20             | _ _ id1        
+_ _ i                          | 0 9 6                          | * id20 + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $ | r16             | _ _ id1        
+_ _ i                          | 0 9 5                          | * id20 + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $ | s23             | _ _ id1        
+_ _ i _                        | 0 9 5 23                       | id20 + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $ | s10             | _ _ id1 _      
+_ _ i _ i                      | 0 9 5 23 10                    | + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $    | r23             | _ _ id1 _ id20 
+_ _ i _ i                      | 0 9 5 23 7                     | + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $    | r20             | _ _ id1 _ id20 
+_ _ i _ i                      | 0 9 5 23 39                    | + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $    | r17             | _ _ id1 _ id20 
+_ _ i                          | 0 9 5                          | + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $    | r13             | _ _ t1         
+_ _ i                          | 0 9 4                          | + id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $    | s21             | _ _ t1         
+_ _ i _                        | 0 9 4 21                       | id11 ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $      | s10             | _ _ t1 _       
+_ _ i _ b                      | 0 9 4 21 10                    | ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $           | r23             | _ _ t1 _ id11  
+_ _ i _ b                      | 0 9 4 21 7                     | ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $           | r20             | _ _ t1 _ id11  
+_ _ i _ b                      | 0 9 4 21 6                     | ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $           | r16             | _ _ t1 _ id11  
+_ _ i _ b                      | 0 9 4 21 37                    | ) != id24 && ( id3 - id32 ) > id21 || id1 <= id2 $           | r14             | _ _ t1 _ id11  
 Error Semántico: Incompatibilidad de tipos en la regla D -> D + E
-Análisis Sintáctico (argumento de print): '"Esta condición tiene un error semántico"'
-P. SEMANTICA                   | PILA                           | ENTRADA                                                      | SALIDA          | TEMPORAL       
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-_                              | 0                              | id29 $                                                       | s10             | _              
-_ s                            | 0 10                           | $                                                            | r23             | _ id29         
-_ s                            | 0 7                            | $                                                            | r20             | _ id29         
-_ s                            | 0 6                            | $                                                            | r16             | _ id29         
-_ s                            | 0 5                            | $                                                            | r13             | _ id29         
-_ s                            | 0 4                            | $                                                            | r6              | _ id29         
-_ s                            | 0 3                            | $                                                            | r5              | _ id29         
-_ s                            | 0 2                            | $                                                            | r3              | _ id29         
-_ s                            | 0 1                            | $                                                            | acc             | _ id29         
-Entrada aceptada.

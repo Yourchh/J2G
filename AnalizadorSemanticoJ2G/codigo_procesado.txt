@@ -34,13 +34,13 @@ FUNC J2G Main (){
     Print ("Se cumplió la condición 4");
   }
   if ((a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE){
-    Print ("Esta condición tiene un error semántico");
+    Print ("Esta condición tiene un error semántico 5");
   }
   if ((a * b + 50 != 10 && (esValido) > b || a <= 20)){
-    Print ("Esta condición tiene un error semántico");
+    Print ("Esta condición tiene un error semántico 6");
   }
   if ((a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10){
-    Print ("Esta condición tiene un error semántico");
+    Print ("Esta condición tiene un error semántico 7");
   }
 }
 
@@ -80,10 +80,10 @@ FUNC J2G Main (){
     Print (id29);
   }
   if ((id1 * id3 + id30 != id2 && (id11) > id3 || id1 <= id6)){
-    Print (id29);
+    Print (id31);
   }
-  if ((id1 * id20 + id11) != id24 && (id3 - id31) > id21 || id1 <= id2){
-    Print (id29);
+  if ((id1 * id20 + id11) != id24 && (id3 - id32) > id21 || id1 <= id2){
+    Print (id33);
   }
 }
 
@@ -118,9 +118,11 @@ Input().Int()                            | id23       | int        | Input().Int
 15                                       | id26       | int        | 15                                      
 4                                        | id27       | int        | 4                                       
 "Se cumplió la condición 4"              | id28       | string     | Se cumplió la condición 4               
-"Esta condición tiene un error semántico" | id29       | string     | Esta condición tiene un error semántico 
+"Esta condición tiene un error semántico 5" | id29       | string     | Esta condición tiene un error semántico 5
 50                                       | id30       | int        | 50                                      
-1                                        | id31       | int        | 1                                       
+"Esta condición tiene un error semántico 6" | id31       | string     | Esta condición tiene un error semántico 6
+1                                        | id32       | int        | 1                                       
+"Esta condición tiene un error semántico 7" | id33       | string     | Esta condición tiene un error semántico 7
 mensaje                                  | id9        | str        | id10                                    
 var62                                    | id15       | str        | id16                                    
 ----------

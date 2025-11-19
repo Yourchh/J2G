@@ -40,15 +40,15 @@ FUNC J2G Main () {
     }
 
     if ((a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE) {
-        Print("Esta condición tiene un error semántico");
+        Print("Esta condición tiene un error semántico 5");
     }
 
     if ((a * b + 50 != 10 && (esValido) > b || a <= 20)) {
-        Print("Esta condición tiene un error semántico");
+        Print("Esta condición tiene un error semántico 6");
     }
 
     if ((a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10) {
-        Print("Esta condición tiene un error semántico");
+        Print("Esta condición tiene un error semántico 7");
     }
 
 }
