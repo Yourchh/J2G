@@ -5,15 +5,12 @@ pila ends
 datos segment para public 'data'
 	; --- Mensajes y Literales ---
 	saltoLinea_msg db 0Dh, 0Ah, '$'
-	msg_true db "TRUE$"
-	msg_false db "FALSE$"
-	msg_prompt_bool db "Ingrese 1 para TRUE, 0 para FALSE: $"
-	msg4 db "Se cumplió la condición 3$"
-	msg3 db "Se cumplió la condición 2$"
-	msg1 db "hola mundo$"
-	msg5 db "Se cumplió la condición 4$"
-	msg2 db "Se cumplió la condición 1$"
-	msg6 db "Esta condición tiene un error semántico$"
+	msg4 db "Se cumplió la condición 3", '$'
+	msg3 db "Se cumplió la condición 2", '$'
+	msg1 db "hola mundo", '$'
+	msg5 db "Se cumplió la condición 4", '$'
+	msg2 db "Se cumplió la condición 1", '$'
+	msg6 db "Esta condición tiene un error semántico", '$'
 
 	; --- Variables y Literales del Programa ---
 	id1 dw 10 	; a
@@ -23,14 +20,24 @@ datos segment para public 'data'
 	id5 dw 20 	; c
 	id6 dw 20 	; 20
 	id7 dw 10 	; d
+	id9 dw ? 	; mensaje
+	id10 db "Hola", '$' 	; "Hola"
 	id12 dw 23 	; var1
 	id13 dw 23 	; 23
+	id15 dw ? 	; var62
+	id16 db "HOLA", '$' 	; "HOLA"
+	id17 db "hola mundo", '$' 	; "hola mundo"
 	id18 dw 100 	; 100
+	id19 db "Se cumplió la condición 1", '$' 	; "Se cumplió la condición 1"
 	id20 dw 2 	; 2
 	id21 dw 0 	; 0
+	id22 db "Se cumplió la condición 2", '$' 	; "Se cumplió la condición 2"
 	id24 dw 30 	; 30
+	id25 db "Se cumplió la condición 3", '$' 	; "Se cumplió la condición 3"
 	id27 dw 4 	; 4
 	id26 dw 15 	; 15
+	id28 db "Se cumplió la condición 4", '$' 	; "Se cumplió la condición 4"
+	id29 db "Esta condición tiene un error semántico", '$' 	; "Esta condición tiene un error semántico"
 
 	; --- Temporales ---
 	t4 dw ?
@@ -74,7 +81,7 @@ compa proc far
 	mov id7, ax
 
 	; ASIGNACION INICIAL: STR mensaje := "Hola";
-	mov ax, id10
+	lea ax, id10
 	mov id9, ax
 
 	; ASIGNACION INICIAL: INT var1 := 23;
@@ -82,7 +89,7 @@ compa proc far
 	mov id12, ax
 
 	; ASIGNACION INICIAL: STR var62 := "HOLA";
-	mov ax, id16
+	lea ax, id16
 	mov id15, ax
 
 	; t1 = id3 * id5
@@ -280,8 +287,9 @@ t7_end:
 if_end_3:
 
 	; ASIGNACION: var1 := Input (). Int ();
-	mov ax, id23
+	call PROC_CapturarNumeroDecimal
 	mov id12, ax
+	SALTO_LINEA
 
 	; t1 = id1 * id20
 	mov dx, 0
@@ -503,50 +511,6 @@ PROC_ImprimirCadenaDX PROC FAR
     pop ax
 	retf
 PROC_ImprimirCadenaDX ENDP
-
-PROC_MostrarNumeroDecimal PROC FAR
-	push bp
-	mov bp, sp
-	push ax
-	push bx
-	push cx
-	push dx
-
-	mov ax, [bp+6]
-	mov bx, 10
-	xor cx, cx
-
-	cmp ax, 0
-	jne convertir_digitos_num_local_pmnd_procs
-	mov dl, '0'
-	mov ah, 02h
-	int 21h
-	jmp fin_imprimir_num_local_pmnd_procs
-
-convertir_digitos_num_local_pmnd_procs:
-convertir_loop_num_local_pmnd_procs:
-	xor dx, dx
-	div bx
-	push dx
-	inc cx
-	cmp ax, 0
-	jne convertir_loop_num_local_pmnd_procs
-
-imprimir_loop_num_local_pmnd_procs:
-	pop dx
-	add dl, '0'
-	mov ah, 02h
-	int 21h
-	loop imprimir_loop_num_local_pmnd_procs
-
-fin_imprimir_num_local_pmnd_procs:
-	pop dx
-	pop cx
-	pop bx
-	pop ax
-	pop bp
-	retf 2
-PROC_MostrarNumeroDecimal ENDP
 
 PROC_CapturarNumeroDecimal PROC FAR
     push bp
