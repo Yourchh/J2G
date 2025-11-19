@@ -17,15 +17,17 @@ datos segment para public 'data'
 
 	; --- Variables y Literales del Programa ---
 	id1 dw 10 	; a
-	id3 dw 5 	; b
-	id5 dw 20 	; c
-	id7 dw 10 	; d
-	id18 dw 100 	; 100
 	id2 dw 10 	; 10
+	id3 dw 5 	; b
 	id4 dw 5 	; 5
+	id5 dw 20 	; c
+	id6 dw 20 	; 20
+	id7 dw 10 	; d
+	id12 dw 23 	; var1
+	id13 dw 23 	; 23
+	id18 dw 100 	; 100
 	id20 dw 2 	; 2
 	id21 dw 0 	; 0
-	id12 dw 23 	; var1
 	id24 dw 30 	; 30
 	id27 dw 4 	; 4
 	id26 dw 15 	; 15
@@ -54,6 +56,34 @@ compa proc far
         mov ds,ax
 
 ;--- Inicio del codigo principal ---
+
+	; ASIGNACION INICIAL: INT a := 10;
+	mov ax, id2
+	mov id1, ax
+
+	; ASIGNACION INICIAL: INT b := 5;
+	mov ax, id4
+	mov id3, ax
+
+	; ASIGNACION INICIAL: INT c := 20;
+	mov ax, id6
+	mov id5, ax
+
+	; ASIGNACION INICIAL: INT d := 10;
+	mov ax, id2
+	mov id7, ax
+
+	; ASIGNACION INICIAL: STR mensaje := "Hola";
+	mov ax, id10
+	mov id9, ax
+
+	; ASIGNACION INICIAL: INT var1 := 23;
+	mov ax, id13
+	mov id12, ax
+
+	; ASIGNACION INICIAL: STR var62 := "HOLA";
+	mov ax, id16
+	mov id15, ax
 
 	; t1 = id3 * id5
 	mov dx, 0
@@ -423,35 +453,17 @@ t7_end:
 
 if_end_5:
 
-	; INICIO IF_STMT: (a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE
-	mov ax, null
-	cmp ax, 0
-	je if_end_6
 	; PRINT: Print ("Esta condición tiene un error semántico");
 	IMPRIMIR_MSG msg6
 	SALTO_LINEA
 
-if_end_6:
-
-	; INICIO IF_STMT: (a * b + 50 != 10 && (esValido) > b || a <= 20)
-	mov ax, null
-	cmp ax, 0
-	je if_end_7
 	; PRINT: Print ("Esta condición tiene un error semántico");
 	IMPRIMIR_MSG msg6
 	SALTO_LINEA
 
-if_end_7:
-
-	; INICIO IF_STMT: (a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10
-	mov ax, null
-	cmp ax, 0
-	je if_end_8
 	; PRINT: Print ("Esta condición tiene un error semántico");
 	IMPRIMIR_MSG msg6
 	SALTO_LINEA
-
-if_end_8:
 
 
 ;--- Fin del codigo principal ---

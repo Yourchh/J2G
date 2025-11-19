@@ -1,14 +1,15 @@
 package AnalizadorLexicoJ2G;
 
 import AnalizadorSintacticoJ2G.LRParser;
-import java.io.FileWriter; // --- NUEVO ---
-import java.io.IOException; // --- NUEVO ---
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter; // --- NUEVO ---
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashSet; // --- NUEVO ---
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +23,7 @@ public class ValidadorEstructural {
     private AnalizadorLexicoCore analizadorLexico;
     private PrintStream outputTables;
 
-    // --- INICIO DE NUEVOS ATRIBUTOS PARA GENERACIÓN ASM GLOBAL ---
+    // --- INICIO DE ATRIBUTOS PARA GENERACIÓN ASM GLOBAL ---
     private String archivoAsmPath; // Ruta para el archivo de salida final
     private StringBuilder asmDatosGlobal; // Acumula todas las definiciones .data
     private StringBuilder asmCodigoGlobal; // Acumula todo el código .code
@@ -35,8 +36,9 @@ public class ValidadorEstructural {
     private Stack<String> controlFlowStack; // Pila para etiquetas de fin (ej: "if_end_1")
     private String baseAsmTemplate;
     private Map<String, String> reglasRegexCache;
-    // --- FIN DE NUEVOS ATRIBUTOS ---
+    // --- FIN DE ATRIBUTOS ASM ---
 
+    // --- INICIO ATRIBUTOS PARA VALIDACIÓN (DE TU VERSIÓN) ---
     private boolean currentlyInSwitchBlock = false;
     private int switchBlockEntryDepth = 0;
     private boolean currentSwitchClauseActiveAndNeedsDetener = false;
@@ -45,14 +47,14 @@ public class ValidadorEstructural {
     private String contentOfCurrentSwitchClauseStart = "";
     private int switchActualOpeningLine = 0;
     private String currentSwitchExpressionType = null;
+    // --- FIN ATRIBUTOS VALIDACIÓN ---
 
-    // --- MODIFICACIÓN: Constructor actualizado para ASM ---
     public ValidadorEstructural(TablaSimbolos tablaSimbolosGlobal, AnalizadorLexicoCore analizadorLexico, PrintStream outputTables, String archivoAsmPath) {
         this.tablaSimbolosGlobal = tablaSimbolosGlobal;
         this.analizadorLexico = analizadorLexico;
         this.outputTables = outputTables;
         
-        // --- Inicializar nuevos atributos ---
+        // --- Inicializar atributos ASM ---
         this.archivoAsmPath = archivoAsmPath;
         this.asmDatosGlobal = new StringBuilder();
         this.asmCodigoGlobal = new StringBuilder();
@@ -78,7 +80,8 @@ public class ValidadorEstructural {
     }
     
     
-    // --- INICIO DE NUEVO MÉTODO ---
+    // --- INICIO MÉTODOS DE GENERACIÓN ASM ---
+
     /**
      * Carga el texto de los procedimientos y macros proporcionados en el
      * StringBuilder asmProcedimientos.
@@ -110,7 +113,6 @@ public class ValidadorEstructural {
             "    IMPRIMIR_MSG saltoLinea_msg\n" + // Usará saltoLinea_msg que definiremos en .data
             "ENDM\n\n"
         );
-        // (Omití LIMPIAR_PANTALLA y PAUSA_TECLA por simplicidad, pero se pueden agregar igual)
         asmProcedimientos.append("; --- FIN MACROS ---\n\n");
         
         // --- INICIO PROCEDIMIENTOS ---
@@ -217,7 +219,7 @@ public class ValidadorEstructural {
             "    retf\n" +
             "PROC_CapturarNumeroDecimal ENDP\n\n"
         );
-        // (Omití los otros procedimientos por brevedad, pero se agregarían aquí)
+        // (Aquí se agregarían los otros procedimientos como PROC_SolicitarNombreValidado)
         asmProcedimientos.append("; --- FIN PROCEDIMIENTOS ---\n");
     }
 
@@ -274,8 +276,6 @@ public class ValidadorEstructural {
                          datosSegmento.append(String.format("\t%s dw %s \t; %s\n", entry.id, valorAsm, comentario));
                     }
                 }
-                // (Los STR se manejan diferente, con los labels de mensaje)
-                // (Los buffers para Input.Str() también irían aquí si se implementan)
             }
         }
 
@@ -321,15 +321,17 @@ public class ValidadorEstructural {
     }
     
     /**
-     * Procesa una expresión con el parser y agrega el código y los IDs
-     * a los acumuladores globales.
+     * Procesa una expresión con el parser, agrega el código y los IDs
+     * a los acumuladores globales, y reporta si fue exitoso.
+     * @return true si la sintaxis y semántica del parser son correctas, false si no.
      */
-    private void procesarYAcumularExpresion(String expresion, String context, LRParser parser) {
+    private boolean procesarYAcumularExpresion(String expresion, String context, LRParser parser) {
         List<String> expressionTokens = getExpressionTokens(expresion);
         outputTables.println("Análisis Sintáctico (" + context + "): '" + expresion + "'");
         
-        boolean sintaxisValida = parser.parse(expressionTokens);
-        if (sintaxisValida) {
+        boolean sintaxisYSemanticaValida = parser.parse(expressionTokens);
+        
+        if (sintaxisYSemanticaValida) {
             // Acumular el código de la expresión (ej: t1 = a + b)
             asmCodigoGlobal.append(parser.getAsmCodigo());
             
@@ -337,31 +339,13 @@ public class ValidadorEstructural {
             allIdsUsadosGlobal.addAll(parser.getIdsEncontrados());
             allTemporalesUsadosGlobal.addAll(parser.getTemporalesDeclarados());
         }
-        // Los errores de sintaxis ya se reportan en errores.txt por el parser
+        return sintaxisYSemanticaValida;
     }
 
-    // --- MÉTODO MODIFICADO ---
-    /**
-     * Genera un bloque de código ensamblador completo para una expresión específica
-     * y lo AÑADE a los acumuladores globales.
-     */
-    private void generarAsmParaExpresion(String expresionOriginal, LRParser parser) {
-        // Este método solía escribir un archivo completo.
-        // Ahora, la llamada al parser se hace en 'procesarYAcumularExpresion'
-        // y el código se añade a 'asmCodigoGlobal'.
-        
-        // Esta función es llamada por 'validarEstructuraConRegex' para if, while, etc.
-        // Solo necesitamos acumular el código.
-        
-        // Acumular el código de la expresión (ej: t1 = a + b)
-        asmCodigoGlobal.append(parser.getAsmCodigo());
-        
-        // Registrar los IDs y temporales usados
-        allIdsUsadosGlobal.addAll(parser.getIdsEncontrados());
-        allTemporalesUsadosGlobal.addAll(parser.getTemporalesDeclarados());
-    }
-    // --- FIN DE MÉTODO MODIFICADO ---
+    // --- FIN MÉTODOS DE GENERACIÓN ASM ---
 
+
+    // --- INICIO MÉTODOS DE VALIDACIÓN (DE TU VERSIÓN) ---
 
     private Map<String, String> cargarReglasRegexEnMemoria() {
         // Carga las regex para validación estructural
@@ -402,7 +386,7 @@ public class ValidadorEstructural {
         reglas.put("CASE_STMT", "^caso\\s+" + anyLiteralOrVarRegex + "\\s*:");
         reglas.put("DEFAULT_STMT", "^por_defecto\\s*:");
         reglas.put("DETENER_STMT", "^detener\\s*;");
-        reglas.put("FOR_STMT", "^for\\s*\\((.*?)\\s*(?<!=):(?!=)\\s*(.*?)\\s*(?<!=):(?!=)\\s*(.*?)\\)\\s*\\{");
+        reglas.put("FOR_STMT", "^for\\s*\\((.*?)\\s*;\\s*(.*?)\\s*;\\s*(.*?)\\)\\s*\\{");
         reglas.put("WHILE_STMT", "^while\\s*\\((.+)\\)\\s*\\{");
         reglas.put("DO_WHILE_DO_STMT", "^do\\s*\\{");
         reglas.put("DO_WHILE_CLOSURE_LINE_STMT", "^\\}\\s*while\\s*\\((.+)\\)\\s*;");
@@ -651,9 +635,10 @@ public class ValidadorEstructural {
             }
         }
     }
+    // --- FIN MÉTODOS DE VALIDACIÓN ---
 
 
-    // --- MÉTODO PRINCIPAL MODIFICADO ---
+    // --- MÉTODO PRINCIPAL (FUSIÓN DE AMBAS VERSIONES) ---
     public void validarEstructuraConRegex(String codigoLimpioFormateado, LRParser parser) {
         Map<String, String> reglas = this.reglasRegexCache; 
         Map<String, String> declaredVariablesTypeMap = new HashMap<>();
@@ -664,7 +649,7 @@ public class ValidadorEstructural {
         boolean currentlyInMainFunctionBlock = false;
         int mainFunctionBlockBraceDepth = 0;
 
-        // ... (Reseteo de variables de switch) ...
+        // Reseteo de variables de switch
         this.currentlyInSwitchBlock = false;
         this.switchBlockEntryDepth = 0;
         this.currentSwitchClauseActiveAndNeedsDetener = false;
@@ -673,7 +658,6 @@ public class ValidadorEstructural {
         this.contentOfCurrentSwitchClauseStart = "";
         this.switchActualOpeningLine = 0;
         this.currentSwitchExpressionType = null;
-
 
         String varOrIdCorePattern = reglas.get("VAR_OR_ID_CORE");
 
@@ -691,7 +675,7 @@ public class ValidadorEstructural {
             List<String> errorsEnLinea = new ArrayList<>();
             Matcher matcher;
 
-            // ... (Lógica de balance de llaves no cambia) ...
+            // Lógica de balance de llaves
             int lineBraceBalance = 0;
             for (char ch : originalLineForBraceCheck.toCharArray()) {
                 if (ch == '{') {
@@ -711,7 +695,6 @@ public class ValidadorEstructural {
 
 
             if (lineaActual.matches(reglas.getOrDefault("MAIN_FUNC_START", "^$"))) {
-                // ... (Lógica de MAIN_FUNC_START no cambia) ...
                 if (mainFunctionDeclared)
                     errorsEnLinea.add("Error ESTRUCTURAL: Múltiples definiciones de 'FUNC J2G Main()'.");
                 if (currentlyInMainFunctionBlock)
@@ -723,7 +706,7 @@ public class ValidadorEstructural {
 
             } else if (currentlyInMainFunctionBlock) {
                 
-                // --- Lógica de SWITCH ---
+                // --- Lógica de SWITCH (Validación) ---
                 if (lineaActual.matches(reglas.getOrDefault("SWITCH_STMT", "^$"))) {
                     reglaCoincidioEstaLinea = true;
                     this.currentlyInSwitchBlock = true;
@@ -736,17 +719,24 @@ public class ValidadorEstructural {
                     Matcher switchMatcher = Pattern.compile(reglas.get("SWITCH_STMT")).matcher(lineaActual);
                     if (switchMatcher.matches()) {
                         String switchExpressionText = switchMatcher.group(1).trim();
-                        // --- MODIFICACIÓN ASM ---
-                        procesarYAcumularExpresion(switchExpressionText, "expresión de switch", parser);
-                        // --- FIN MODIFICACIÓN ---
                         
-                        // ... (resto de validación de switch) ...
+                        // Validar variables usadas en la expresión
+                        errorsEnLinea.addAll(checkExpressionVariables(switchExpressionText, "en expresión de switch", reglas, declaredVariablesTypeMap, currentLineNumber));
+
+                        // Si las variables están bien, parsear para ASM y semántica de tipos
+                        if(errorsEnLinea.isEmpty()) {
+                            boolean sintaxisValida = procesarYAcumularExpresion(switchExpressionText, "expresión de switch", parser);
+                            if (!sintaxisValida) {
+                                errorsEnLinea.add("Error de sintaxis o semántica en la expresión del switch: '" + switchExpressionText + "'.");
+                            }
+                        }
+                        
                         this.currentSwitchExpressionType = getExpressionType(switchExpressionText, reglas, declaredVariablesTypeMap);
                         if (this.currentSwitchExpressionType.equals("UNKNOWN")
                                 && switchExpressionText.matches(varOrIdCorePattern)
                                 && !declaredVariablesTypeMap.containsKey(switchExpressionText)) {
-                            // Es una variable no declarada, el error ya se reportó
-                        } else if (this.currentSwitchExpressionType.equals("UNKNOWN")) {
+                            // Error de variable no declarada ya fue reportado por checkExpressionVariables
+                        } else if (this.currentSwitchExpressionType.equals("UNKNOWN") && errorsEnLinea.isEmpty()) {
                             errorsEnLinea.add("Error semántico: La expresión del switch '" + switchExpressionText
                                     + "' no es una variable declarada ni un literal simple (STR, INT, BOOL) cuyo tipo se pueda determinar para la comparación de casos.");
                         }
@@ -755,7 +745,8 @@ public class ValidadorEstructural {
                                 checkBalancedSymbols(lineaActual, currentLineNumber, "en declaración de switch"));
                     }
                 } else if (this.currentlyInSwitchBlock) {
-                    if (lineaActual.matches(reglas.getOrDefault("CASE_STMT", "^$"))
+                    // (Toda la lógica de case, default, detener... validación sin ASM por ahora)
+                     if (lineaActual.matches(reglas.getOrDefault("CASE_STMT", "^$"))
                             || lineaActual.matches(reglas.getOrDefault("DEFAULT_STMT", "^$"))) {
                         reglaCoincidioEstaLinea = true;
                         if (this.currentSwitchClauseActiveAndNeedsDetener) {
@@ -829,11 +820,11 @@ public class ValidadorEstructural {
                 // --- FIN Lógica de SWITCH ---
 
                 if (!reglaCoincidioEstaLinea) {
-                    // --- Lógica de FOR ---
+                    // --- Lógica de FOR (Validación) ---
                     matcher = Pattern.compile(reglas.getOrDefault("FOR_STMT", "^$")).matcher(lineaActual);
                     if (matcher.matches()) {
                         reglaCoincidioEstaLinea = true;
-                        // ...
+
                         String initPart = matcher.group(1).trim();
                         String conditionPart = matcher.group(2).trim();
                         String updatePart = matcher.group(3).trim();
@@ -856,9 +847,12 @@ public class ValidadorEstructural {
                                 errorsEnLinea.addAll(checkVariableUsage(varName, contextFor + " (declaración)", reglas,
                                         declaredVariablesTypeMap));
                                 
-                                // --- MODIFICACIÓN ASM ---
-                                procesarYAcumularExpresion(rhsAssigned, "inicialización de for", parser);
-                                // --- FIN MODIFICACIÓN ---
+                                errorsEnLinea.addAll(checkExpressionVariables(rhsAssigned, contextFor, reglas, declaredVariablesTypeMap, currentLineNumber));
+                                if(errorsEnLinea.isEmpty()) {
+                                    if (!procesarYAcumularExpresion(rhsAssigned, "inicialización de for", parser)) {
+                                        errorsEnLinea.add("Error de sintaxis o semántica en la expresión de inicialización del for: '" + rhsAssigned + "'.");
+                                    }
+                                }
 
                                 performAssignmentTypeChecks(varName, ":=", rhsAssigned, contextFor, reglas,
                                         declaredVariablesTypeMap, errorsEnLinea);
@@ -869,9 +863,12 @@ public class ValidadorEstructural {
                                 errorsEnLinea.addAll(checkVariableUsage(lhsVar, contextFor + " (LHS asignación)",
                                         reglas, declaredVariablesTypeMap));
                                 
-                                // --- MODIFICACIÓN ASM ---
-                                procesarYAcumularExpresion(rhsEx, "asignación de for", parser);
-                                // --- FIN MODIFICACIÓN ---
+                                errorsEnLinea.addAll(checkExpressionVariables(rhsEx, contextFor, reglas, declaredVariablesTypeMap, currentLineNumber));
+                                if(errorsEnLinea.isEmpty()) {
+                                    if (!procesarYAcumularExpresion(rhsEx, "asignación de for", parser)) {
+                                        errorsEnLinea.add("Error de sintaxis o semántica en la expresión de asignación del for: '" + rhsEx + "'.");
+                                    }
+                                }
                                 
                                 performAssignmentTypeChecks(lhsVar, op, rhsEx, contextFor, reglas,
                                         declaredVariablesTypeMap, errorsEnLinea);
@@ -883,9 +880,12 @@ public class ValidadorEstructural {
 
                         contextFor = "en condición de for";
                         if (!conditionPart.isEmpty()) {
-                            // --- MODIFICACIÓN ASM ---
-                            procesarYAcumularExpresion(conditionPart, "condición de for", parser);
-                            // --- FIN MODIFICACIÓN ---
+                            errorsEnLinea.addAll(checkExpressionVariables(conditionPart, contextFor, reglas, declaredVariablesTypeMap, currentLineNumber));
+                            if(errorsEnLinea.isEmpty()) {
+                                if (!procesarYAcumularExpresion(conditionPart, "condición de for", parser)) {
+                                    errorsEnLinea.add("Error de sintaxis o semántica en la expresión de condición del for: '" + conditionPart + "'.");
+                                }
+                            }
                         } else {
                             errorsEnLinea.add("Error de sintaxis: Falta la parte de condición en la sentencia for.");
                         }
@@ -902,9 +902,12 @@ public class ValidadorEstructural {
                                 errorsEnLinea.addAll(checkVariableUsage(lhsVar, contextFor + " (LHS actualización)",
                                         reglas, declaredVariablesTypeMap));
                                 
-                                // --- MODIFICACIÓN ASM ---
-                                procesarYAcumularExpresion(rhsEx, "actualización de for", parser);
-                                // --- FIN MODIFICACIÓN ---
+                                errorsEnLinea.addAll(checkExpressionVariables(rhsEx, contextFor, reglas, declaredVariablesTypeMap, currentLineNumber));
+                                if(errorsEnLinea.isEmpty()) {
+                                    if (!procesarYAcumularExpresion(rhsEx, "actualización de for", parser)) {
+                                        errorsEnLinea.add("Error de sintaxis o semántica en la expresión de actualización del for: '" + rhsEx + "'.");
+                                    }
+                                }
                                 
                                 performAssignmentTypeChecks(lhsVar, op, rhsEx, contextFor, reglas,
                                         declaredVariablesTypeMap, errorsEnLinea);
@@ -928,18 +931,17 @@ public class ValidadorEstructural {
                                     .add("Error Semántico: Variable '" + varName + "' ya declarada (redefinición).");
                         else
                             declaredVariablesTypeMap.put(varName, varDeclaredType);
+                        
                         errorsEnLinea.addAll(checkVariableUsage(varName, "en declaración (nombre)", reglas,
                                 declaredVariablesTypeMap));
                         
-                        // --- MODIFICACIÓN ASM ---
-                        // Registrar la variable para la declaración en .data
-                        if (!declaredVariablesTypeMap.containsKey(varName)) {
-                             SymbolTableEntry entry = this.tablaSimbolosGlobal.findVariableEntry(varName);
+                        // Generar ASM solo si no hay errores
+                        if (errorsEnLinea.isEmpty()) {
+                            SymbolTableEntry entry = this.tablaSimbolosGlobal.findVariableEntry(varName);
                              if(entry != null) {
                                  allIdsUsadosGlobal.add(entry.id);
                              }
                         }
-                        // --- FIN MODIFICACIÓN ASM ---
                     }
                 }
 
@@ -955,76 +957,80 @@ public class ValidadorEstructural {
                         if (declaredVariablesTypeMap.containsKey(varName)) {
                             errorsEnLinea.add("Error Semántico: Variable '" + varName + "' ya declarada (redefinición).");
                         } else {
+                            // Validar variables en RHS (si es una variable)
+                            errorsEnLinea.addAll(checkExpressionVariables(rhsAssigned, "en inicialización de variable", reglas, declaredVariablesTypeMap, currentLineNumber));
+                            
                             String rhsType = getExpressionType(rhsAssigned, reglas, declaredVariablesTypeMap);
                             String varDeclaredTypeLower = varDeclaredType.toLowerCase();
                             if(varDeclaredTypeLower.equals("str")) varDeclaredTypeLower = "string";
 
                             if (!rhsType.equals("UNKNOWN") && !varDeclaredTypeLower.equals(rhsType)) {
+                                // Error de tipo, reportar ADVERTENCIA y no asignar
                                 System.err.println("ADVERTENCIA: Se ignoró la asignación para la variable '" + varName +
                                                   "' por incompatibilidad de tipos. Se esperaba " + varDeclaredType +
                                                   " pero se encontró " + rhsType + ". La variable quedará solo declarada.");
 
+                                // Corregir tabla de símbolos
                                 SymbolTableEntry varEntry = this.tablaSimbolosGlobal.findVariableEntry(varName);
                                 if (varEntry != null) {
                                     String incorrectLiteralId = varEntry.valor;
                                     SymbolTableEntry literalEntry = this.tablaSimbolosGlobal.findEntryById(incorrectLiteralId);
                                     
-                                    varEntry.valor = varEntry.variable;
-                                    varEntry.tipo = varDeclaredTypeLower;
+                                    varEntry.valor = varEntry.variable; // Asignar 'var1' a sí mismo
+                                    varEntry.tipo = varDeclaredTypeLower; // Corregir tipo
                                     
+                                    // Eliminar el literal incorrecto ("23") de la tabla si existe
                                     if (literalEntry != null) {
                                         this.tablaSimbolosGlobal.removeNewVariableEntry(literalEntry);
                                     }
                                 }
                                 declaredVariablesTypeMap.put(varName, varDeclaredType);
-                                
-                                // --- MODIFICACIÓN ASM (Solo declarar variable) ---
-                                SymbolTableEntry lhsEntry = this.tablaSimbolosGlobal.findVariableEntry(varName);
-                                if (lhsEntry != null) {
-                                    allIdsUsadosGlobal.add(lhsEntry.id); 
-                                }
-                                // --- FIN MODIFICACIÓN ASM ---
 
+                                // Generar ASM solo para la declaración (sin asignación)
+                                if (errorsEnLinea.isEmpty()) { // Aún puede haber error de re-declaración
+                                    SymbolTableEntry lhsEntry = this.tablaSimbolosGlobal.findVariableEntry(varName);
+                                    if (lhsEntry != null) {
+                                        allIdsUsadosGlobal.add(lhsEntry.id); 
+                                    }
+                                }
                             } else {
+                                // Tipos coinciden o RHS es una expresión compleja (UNKNOWN)
                                 declaredVariablesTypeMap.put(varName, varDeclaredType);
                                 errorsEnLinea.addAll(checkVariableUsage(varName, "en declaración (nombre)", reglas, declaredVariablesTypeMap));
                                 
-                                // --- MODIFICACIÓN ASM ---
-                                if (!declaredVariablesTypeMap.containsKey(varName)) { // Si no es redefinición
+                                // Realizar chequeo de asignación (para el caso de expresiones complejas)
+                                performAssignmentTypeChecks(varName, ":=", rhsAssigned, "en inicialización de variable", reglas, declaredVariablesTypeMap, errorsEnLinea);
+                                
+                                // Generar ASM solo si no hay errores de ningún tipo
+                                if (errorsEnLinea.isEmpty()) {
                                     SymbolTableEntry lhsEntry = this.tablaSimbolosGlobal.findVariableEntry(varName);
                                     SymbolTableEntry rhsEntry = this.tablaSimbolosGlobal.findVariableEntry(rhsAssigned);
                                     
                                     if (lhsEntry != null) {
-                                        allIdsUsadosGlobal.add(lhsEntry.id); // Asegura que 'a' (id1) se declare
+                                        allIdsUsadosGlobal.add(lhsEntry.id); 
                                         
                                         String rhsId = null;
                                         if (rhsEntry != null) {
-                                            rhsId = rhsEntry.id; // Asignando desde 'b'
+                                            rhsId = rhsEntry.id;
                                             allIdsUsadosGlobal.add(rhsId);
                                         } else {
-                                            rhsId = this.tablaSimbolosGlobal.obtenerIdParaLiteral(rhsAssigned); // Asignando desde '10'
-                                            if(rhsId != null) {
-                                                 allIdsUsadosGlobal.add(rhsId);
-                                            }
+                                            rhsId = this.tablaSimbolosGlobal.obtenerIdParaLiteral(rhsAssigned);
+                                            if(rhsId != null) allIdsUsadosGlobal.add(rhsId);
                                         }
 
-                                        // Solo generar ASM si la asignación fue válida
-                                        if (rhsId != null && !errorsEnLinea.stream().anyMatch(e -> e.contains("Error de Tipo"))) {
+                                        if (rhsId != null) {
                                              asmCodigoGlobal.append("\t; ASIGNACION INICIAL: " + lineaActual + "\n");
                                              asmCodigoGlobal.append("\tmov ax, " + rhsId + "\n");
                                              asmCodigoGlobal.append("\tmov " + lhsEntry.id + ", ax\n\n");
                                         }
                                     }
                                 }
-                                // --- FIN MODIFICACIÓN ASM ---
-                                
-                                performAssignmentTypeChecks(varName, ":=", rhsAssigned, "en inicialización de variable", reglas, declaredVariablesTypeMap, errorsEnLinea);
                             }
                         }
                     }
                 }
-                
-                // --- Lógica de INPUT (MODIFICADA) ---
+
+                // --- Lógica de INPUT ---
                 String[] inputTypes = { "STR", "INT", "BOOL" };
                 String[] inputMethodNames = { "Str", "Int", "Bool" };
                 for (int k = 0; k < inputTypes.length && !reglaCoincidioEstaLinea; k++) {
@@ -1048,14 +1054,13 @@ public class ValidadorEstructural {
                             }
                         }
                         
-                        // --- MODIFICACIÓN ASM ---
-                        if (lhsVar != null && !lhsVar.isEmpty() && !errorsEnLinea.stream().anyMatch(e -> e.contains("Error de Tipo"))) {
+                        // Generar ASM solo si no hay errores
+                        if (errorsEnLinea.isEmpty() && lhsVar != null && !lhsVar.isEmpty()) {
                             SymbolTableEntry lhsEntry = this.tablaSimbolosGlobal.findVariableEntry(lhsVar);
                             if (lhsEntry != null) {
                                 asmCodigoGlobal.append("\t; INPUT: " + lineaActual + "\n");
                                 allIdsUsadosGlobal.add(lhsEntry.id);
 
-                                // Manejar prompt opcional
                                 String promptLiteral = matcher.group(2);
                                 if (promptLiteral != null && !promptLiteral.isEmpty()) {
                                     String promptLabel = getStringLiteralLabel(promptLiteral);
@@ -1069,24 +1074,22 @@ public class ValidadorEstructural {
                                         break;
                                     case "BOOL":
                                         asmCodigoGlobal.append("\tIMPRIMIR_MSG msg_prompt_bool\n");
-                                        asmCodigoGlobal.append("\tcall PROC_CapturarNumeroDecimal\n"); // Captura 0 o 1
+                                        asmCodigoGlobal.append("\tcall PROC_CapturarNumeroDecimal\n");
                                         asmCodigoGlobal.append("\tmov " + lhsEntry.id + ", ax\n");
                                         break;
                                     case "STR":
-                                        // Esto requiere un buffer de datos, que es más complejo.
-                                        // Usando PROC_SolicitarNombreValidado (asume que existe)
                                         String bufferLabel = lhsEntry.id + "_buffer";
                                         asmDatosGlobal.append(String.format("\t%s db 255, 0, 255 dup(0)\n", bufferLabel));
                                         asmCodigoGlobal.append("\tlea ax, " + bufferLabel + "\n");
                                         asmCodigoGlobal.append("\tpush ax\n");
-                                        asmCodigoGlobal.append("\tcall PROC_SolicitarNombreValidado\n");
-                                        // (Nota: Esto no mueve el string al 'id' de la variable, solo lo lee en el buffer)
+                                        // Asumir que existe PROC_SolicitarNombreValidado
+                                        // asmCodigoGlobal.append("\tcall PROC_SolicitarNombreValidado\n"); 
+                                        asmCodigoGlobal.append("\t; (Llamada a PROC_SolicitarNombreValidado omitida)\n");
                                         break;
                                 }
                                 asmCodigoGlobal.append("\tSALTO_LINEA\n\n");
                             }
                         }
-                        // --- FIN MODIFICACIÓN ASM ---
                     }
                 }
 
@@ -1098,44 +1101,48 @@ public class ValidadorEstructural {
                         String lhsVar = matcher.group(1);
                         String op = matcher.group(2);
                         String rhsExpression = matcher.group(3).trim();
+                        
+                        // 1. Validar LHS
                         errorsEnLinea.addAll(
                                 checkVariableUsage(lhsVar, "en LHS de asignación", reglas, declaredVariablesTypeMap));
-                        
-                        // --- MODIFICACIÓN ASM ---
-                        // Solo generar ASM si no hay errores de tipo
-                        if (!errorsEnLinea.stream().anyMatch(e -> e.contains("Error"))) {
-                            // 1. Procesar la RHS
-                            procesarYAcumularExpresion(rhsExpression, "asignación RHS", parser);
-                            
-                            SymbolTableEntry lhsEntry = this.tablaSimbolosGlobal.findVariableEntry(lhsVar);
-                            if (lhsEntry != null) {
-                                allIdsUsadosGlobal.add(lhsEntry.id);
-                                String temporalResultado = parser.getFinalTemporalResult();
-                                
-                                asmCodigoGlobal.append("\t; ASIGNACION: " + lineaActual + "\n");
-                                
-                                if (op.equals(":=")) {
-                                    asmCodigoGlobal.append("\tmov ax, " + temporalResultado + "\n");
-                                    asmCodigoGlobal.append("\tmov " + lhsEntry.id + ", ax\n\n");
-                                } else {
-                                    // Asignación compuesta (ej: +=)
-                                    String asmOp = "";
-                                    if(op.equals("+=")) asmOp = "add";
-                                    if(op.equals("-=")) asmOp = "sub";
-                                    // (mul y div son más complejos, se omiten por ahora)
-                                    
-                                    if (!asmOp.isEmpty()) {
-                                        asmCodigoGlobal.append("\tmov ax, " + lhsEntry.id + "\n");
-                                        asmCodigoGlobal.append("\t" + asmOp + " ax, " + temporalResultado + "\n");
-                                        asmCodigoGlobal.append("\tmov " + lhsEntry.id + ", ax\n\n");
-                                    }
-                                }
-                            }
-                        }
-                        // --- FIN MODIFICACIÓN ASM ---
-                        
+                        // 2. Validar variables en RHS
+                        errorsEnLinea.addAll(checkExpressionVariables(rhsExpression, "en RHS de asignación", reglas, declaredVariablesTypeMap, currentLineNumber));
+                        // 3. Validar tipos de asignación
                         performAssignmentTypeChecks(lhsVar, op, rhsExpression, "en asignación", reglas,
                                 declaredVariablesTypeMap, errorsEnLinea);
+                        
+                        // 4. Generar ASM solo si todo es válido
+                        if (errorsEnLinea.isEmpty()) {
+                            boolean asmGenerado = procesarYAcumularExpresion(rhsExpression, "asignación RHS", parser);
+                            
+                            if (asmGenerado) {
+                                SymbolTableEntry lhsEntry = this.tablaSimbolosGlobal.findVariableEntry(lhsVar);
+                                if (lhsEntry != null) {
+                                    allIdsUsadosGlobal.add(lhsEntry.id);
+                                    String temporalResultado = parser.getFinalTemporalResult();
+                                    
+                                    asmCodigoGlobal.append("\t; ASIGNACION: " + lineaActual + "\n");
+                                    
+                                    if (op.equals(":=")) {
+                                        asmCodigoGlobal.append("\tmov ax, " + temporalResultado + "\n");
+                                        asmCodigoGlobal.append("\tmov " + lhsEntry.id + ", ax\n\n");
+                                    } else {
+                                        String asmOp = "";
+                                        if(op.equals("+=")) asmOp = "add";
+                                        if(op.equals("-=")) asmOp = "sub";
+                                        
+                                        if (!asmOp.isEmpty()) {
+                                            asmCodigoGlobal.append("\tmov ax, " + lhsEntry.id + "\n");
+                                            asmCodigoGlobal.append("\t" + asmOp + " ax, " + temporalResultado + "\n");
+                                            asmCodigoGlobal.append("\tmov " + lhsEntry.id + ", ax\n\n");
+                                        }
+                                        // (mul y div compuestas son más complejas)
+                                    }
+                                }
+                            } else {
+                                 errorsEnLinea.add("Error de sintaxis o semántica en la expresión de asignación: '" + rhsExpression + "'.");
+                            }
+                        }
                     }
                 }
 
@@ -1150,84 +1157,104 @@ public class ValidadorEstructural {
                             reglaCoincidioEstaLinea = true;
                             String contextMsg = "en " + key.replace("_STMT", "").toLowerCase();
 
-                            // --- MODIFICACIÓN ASM ---
                             if (key.equals("IF_STMT") || key.equals("WHILE_STMT")) {
                                 String expression = matcher.group(1);
-                                procesarYAcumularExpresion(expression, "condición " + key, parser);
                                 
-                                String endLabel = key.replace("_STMT", "").toLowerCase() + "_end_" + (labelCounter++);
-                                asmCodigoGlobal.append("\t; INICIO " + key + ": " + expression + "\n");
-                                asmCodigoGlobal.append("\tmov ax, " + parser.getFinalTemporalResult() + "\n");
-                                asmCodigoGlobal.append("\tcmp ax, 0\n"); // Compara si es FALSE
-                                asmCodigoGlobal.append("\tje " + endLabel + "\n"); // Salta si es FALSE
-                                controlFlowStack.push(endLabel);
+                                // 1. Validar variables
+                                errorsEnLinea.addAll(checkExpressionVariables(expression, contextMsg, reglas, declaredVariablesTypeMap, currentLineNumber));
+                                
+                                // 2. Generar ASM si es válido
+                                if (errorsEnLinea.isEmpty()) {
+                                    boolean asmGenerado = procesarYAcumularExpresion(expression, "condición " + key, parser);
+                                    
+                                    if (asmGenerado) {
+                                        String endLabel = key.replace("_STMT", "").toLowerCase() + "_end_" + (labelCounter++);
+                                        asmCodigoGlobal.append("\t; INICIO " + key + ": " + expression + "\n");
+                                        asmCodigoGlobal.append("\tmov ax, " + parser.getFinalTemporalResult() + "\n");
+                                        asmCodigoGlobal.append("\tcmp ax, 0\n"); // Compara si es FALSE
+                                        asmCodigoGlobal.append("\tje " + endLabel + "\n"); // Salta si es FALSE
+                                        controlFlowStack.push(endLabel);
+                                    } else {
+                                        errorsEnLinea.add("Error de sintaxis o semántica en la expresión de la condición: '" + expression + "'.");
+                                    }
+                                }
                                 
                             } else if (key.equals("PRINT_STMT")) {
                                 String expression = matcher.group(1);
+                                
+                                // 1. Validar variables
                                 if (!expression.trim().isEmpty()) {
-                                    procesarYAcumularExpresion(expression, "argumento de print", parser);
-                                    
-                                    String argId = parser.getFinalTemporalResult();
-                                    String argType = getExpressionType(argId, reglas, declaredVariablesTypeMap);
-                                    
-                                    asmCodigoGlobal.append("\t; PRINT: " + lineaActual + "\n");
-                                    
-                                    if (argType.equals("string")) {
-                                        SymbolTableEntry entry = tablaSimbolosGlobal.findEntryById(argId);
-                                        String label = getStringLiteralLabel(entry.variable);
-                                        asmCodigoGlobal.append("\tIMPRIMIR_MSG " + label + "\n");
-                                    } else if (argType.equals("int")) {
-                                        asmCodigoGlobal.append("\tpush " + argId + "\n");
-                                        asmCodigoGlobal.append("\tcall PROC_MostrarNumeroDecimal\n");
-                                    } else if (argType.equals("bool")) {
-                                        String falseLabel = "bool_pr_false_" + (labelCounter++);
-                                        String endLabel = "bool_pr_end_" + (labelCounter++);
-                                        asmCodigoGlobal.append("\tmov ax, " + argId + "\n");
-                                        asmCodigoGlobal.append("\tcmp ax, 0\n");
-                                        asmCodigoGlobal.append("\tje " + falseLabel + "\n");
-                                        asmCodigoGlobal.append("\tIMPRIMIR_MSG msg_true\n");
-                                        asmCodigoGlobal.append("\tjmp " + endLabel + "\n");
-                                        asmCodigoGlobal.append(falseLabel + ":\n");
-                                        asmCodigoGlobal.append("\tIMPRIMIR_MSG msg_false\n");
-                                        asmCodigoGlobal.append(endLabel + ":\n");
-                                    }
-                                    asmCodigoGlobal.append("\tSALTO_LINEA\n\n");
+                                    errorsEnLinea.addAll(checkExpressionVariables(expression, contextMsg, reglas, declaredVariablesTypeMap, currentLineNumber));
                                 }
                                 
-                            } else if (key.equals("ELSE_STMT")) {
-                                // No hacer nada, se maneja en BLOCK_END_ELSE_STMT
-                            
+                                // 2. Generar ASM si es válido
+                                if (errorsEnLinea.isEmpty() && !expression.trim().isEmpty()) {
+                                    boolean asmGenerado = procesarYAcumularExpresion(expression, "argumento de print", parser);
+                                    
+                                    if (asmGenerado) {
+                                        String argId = parser.getFinalTemporalResult();
+                                        String argType = getExpressionType(argId, reglas, declaredVariablesTypeMap);
+                                        
+                                        asmCodigoGlobal.append("\t; PRINT: " + lineaActual + "\n");
+                                        
+                                        if (argType.equals("string")) {
+                                            SymbolTableEntry entry = tablaSimbolosGlobal.findEntryById(argId);
+                                            if (entry != null) {
+                                                String label = getStringLiteralLabel(entry.variable);
+                                                asmCodigoGlobal.append("\tIMPRIMIR_MSG " + label + "\n");
+                                            }
+                                        } else if (argType.equals("int")) {
+                                            asmCodigoGlobal.append("\tpush " + argId + "\n");
+                                            asmCodigoGlobal.append("\tcall PROC_MostrarNumeroDecimal\n");
+                                        } else if (argType.equals("bool")) {
+                                            String falseLabel = "bool_pr_false_" + (labelCounter++);
+                                            String endLabel = "bool_pr_end_" + (labelCounter++);
+                                            asmCodigoGlobal.append("\tmov ax, " + argId + "\n");
+                                            asmCodigoGlobal.append("\tcmp ax, 0\n");
+                                            asmCodigoGlobal.append("\tje " + falseLabel + "\n");
+                                            asmCodigoGlobal.append("\tIMPRIMIR_MSG msg_true\n");
+                                            asmCodigoGlobal.append("\tjmp " + endLabel + "\n");
+                                            asmCodigoGlobal.append(falseLabel + ":\n");
+                                            asmCodigoGlobal.append("\tIMPRIMIR_MSG msg_false\n");
+                                            asmCodigoGlobal.append(endLabel + ":\n");
+                                        }
+                                        asmCodigoGlobal.append("\tSALTO_LINEA\n\n");
+                                    } else {
+                                        errorsEnLinea.add("Error de sintaxis o semántica en el argumento del print: '" + expression + "'.");
+                                    }
+                                }
+                                
                             } else if (key.equals("BLOCK_END_ELSE_STMT")) {
-                                String endIfLabel = controlFlowStack.pop(); // Sacar el "if_end_1"
-                                String endElseLabel = "else_end_" + (labelCounter++);
-                                asmCodigoGlobal.append("\tjmp " + endElseLabel + "\n"); // Saltar el bloque else
-                                asmCodigoGlobal.append(endIfLabel + ":\n"); // Aquí es donde aterriza el 'if'
-                                controlFlowStack.push(endElseLabel); // Apilar la nueva etiqueta final
+                                // ASM para manejar el salto del if
+                                if (!controlFlowStack.isEmpty()) {
+                                    String endIfLabel = controlFlowStack.pop();
+                                    String endElseLabel = "else_end_" + (labelCounter++);
+                                    asmCodigoGlobal.append("\tjmp " + endElseLabel + "\n");
+                                    asmCodigoGlobal.append(endIfLabel + ":\n");
+                                    controlFlowStack.push(endElseLabel);
+                                } else {
+                                    errorsEnLinea.add("Error de sintaxis: 'else' sin un 'if' correspondiente.");
+                                }
 
                             } else if (key.equals("BLOCK_END")) {
                                 if (globalBraceBalance == this.switchBlockEntryDepth - 1) {
-                                    // ... (lógica de switch no cambia) ...
-                                    if (this.currentSwitchClauseActiveAndNeedsDetener) {
-                                        globalStructuralErrors
-                                                .add("Error en bloque final (" + this.contentOfCurrentSwitchClauseStart
-                                                        + " en línea " + this.lineOfCurrentSwitchClauseStart
-                                                        + ") del switch no cerrado: Se esperaba 'detener;' antes del final del archivo o cierre del switch.");
-                                    }
-                                    this.currentlyInSwitchBlock = false;
-                                    this.currentSwitchClauseActiveAndNeedsDetener = false;
-                                    this.currentSwitchClauseHasHadDetener = false;
-                                    this.currentSwitchExpressionType = null;
+                                    // (Cierre de switch, ya manejado en la lógica de switch)
                                 } else if (!controlFlowStack.isEmpty()) {
-                                    // Es el fin de un if, else, o while
+                                    // Cierre de if, else, o while
                                     String endLabel = controlFlowStack.pop();
                                     asmCodigoGlobal.append(endLabel + ":\n\n");
                                 }
                             }
-                            // --- FIN MODIFICACIÓN ASM ---
                             
-                            // ... (Validaciones de DO_WHILE) ...
-                            else if (key.equals("DO_WHILE_CLOSURE_LINE_STMT") || key.equals("DO_WHILE_TAIL_ONLY_STMT")) {
-                                // (Validación existente)
+                            // (Validaciones de DO_WHILE)
+                            if (key.equals("DO_WHILE_CLOSURE_LINE_STMT") || key.equals("DO_WHILE_TAIL_ONLY_STMT")) {
+                                String expression = matcher.group(1);
+                                errorsEnLinea.addAll(checkExpressionVariables(expression, contextMsg, reglas, declaredVariablesTypeMap, currentLineNumber));
+                                if(errorsEnLinea.isEmpty()) {
+                                    if (!procesarYAcumularExpresion(expression, "condición " + key, parser)) {
+                                        errorsEnLinea.add("Error de sintaxis o semántica en la expresión de la condición: '" + expression + "'.");
+                                    }
+                                }
                             }
                             
                             break; // Salir del bucle cStructs
@@ -1235,14 +1262,14 @@ public class ValidadorEstructural {
                     }
                 }
                 
-                // ... (Lógica de fin de main) ...
+                // --- Lógica de fin de main ---
                 mainFunctionBlockBraceDepth = globalBraceBalance;
                 if (mainFunctionBlockBraceDepth == 0 && currentlyInMainFunctionBlock) {
                     currentlyInMainFunctionBlock = false;
                 }
 
             } else {
-                 // ... (Lógica de error por código fuera de Main) ...
+                 // --- Lógica de error por código fuera de Main ---
                 if (!lineaActual.isEmpty()) {
                     if (!mainFunctionDeclared) {
                         errorsEnLinea.add("Error ESTRUCTURAL: Código '" + lineaActual
@@ -1255,7 +1282,7 @@ public class ValidadorEstructural {
                 }
             }
 
-            // ... (Lógica de error por línea no reconocida) ...
+            // --- Lógica de error por línea no reconocida ---
             if (!reglaCoincidioEstaLinea && currentlyInMainFunctionBlock && !lineaActual.isEmpty()) {
                 if (lineaActual.equals("detener")) {
                     errorsEnLinea.add(
@@ -1303,6 +1330,7 @@ public class ValidadorEstructural {
                 }
             }
 
+            // --- Reportar errores de la línea ---
             if (!errorsEnLinea.isEmpty()) {
                 System.err.println("Error(es) en línea " + currentLineNumber + ": " + lineasCodigo[i]);
                 for (String error : errorsEnLinea)
@@ -1311,7 +1339,7 @@ public class ValidadorEstructural {
             }
         }
 
-        // ... (Lógica de errores estructurales globales) ...
+        // --- Lógica de errores estructurales globales ---
         if (!mainFunctionDeclared) {
             globalStructuralErrors
                     .add("Error ESTRUCTURAL GLOBAL: No se encontró la función principal 'FUNC J2G Main() {}'.");

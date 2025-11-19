@@ -1,2 +1,7 @@
-No se encontraron errores de estructura.
+Error(es) en línea 28:   if ((a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE){
+  - Error de sintaxis o semántica en la expresión de la condición: '(a + b - mensaje) * (a / 5) <= 10 && a == b || esValido != FALSE'.
+Error(es) en línea 31:   if ((a * b + 50 != 10 && (esValido) > b || a <= 20)){
+  - Error de sintaxis o semántica en la expresión de la condición: '(a * b + 50 != 10 && (esValido) > b || a <= 20)'.
+Error(es) en línea 34:   if ((a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10){
+  - Error de sintaxis o semántica en la expresión de la condición: '(a * 2 + esValido) != 30 && (b - 1) > 0 || a <= 10'.
 ---------------------------------------
