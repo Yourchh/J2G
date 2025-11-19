@@ -5,11 +5,6 @@ pila ends
 datos segment para public 'data'
 	; --- Mensajes y Literales ---
 	saltoLinea_msg db 0Dh, 0Ah, '$'
-	msg4 db "Se cumplió la condición 3", '$'
-	msg3 db "Se cumplió la condición 2", '$'
-	msg1 db "hola mundo", '$'
-	msg5 db "Se cumplió la condición 4", '$'
-	msg2 db "Se cumplió la condición 1", '$'
 
 	; --- Variables y Literales del Programa ---
 	id1 dw 10 	; a
@@ -125,7 +120,7 @@ t4_end:
 	cmp ax, 0
 	je if_end_1
 	; PRINT: Print ("hola mundo");
-	IMPRIMIR_MSG msg1
+	IMPRIMIR_MSG id17
 	SALTO_LINEA
 
 if_end_1:
@@ -194,7 +189,7 @@ t6_end:
 	cmp ax, 0
 	je if_end_2
 	; PRINT: Print ("Se cumplió la condición 1");
-	IMPRIMIR_MSG msg2
+	IMPRIMIR_MSG id19
 	SALTO_LINEA
 
 if_end_2:
@@ -279,7 +274,7 @@ t7_end:
 	cmp ax, 0
 	je if_end_3
 	; PRINT: Print ("Se cumplió la condición 2");
-	IMPRIMIR_MSG msg3
+	IMPRIMIR_MSG id22
 	SALTO_LINEA
 
 if_end_3:
@@ -369,7 +364,7 @@ t7_end:
 	cmp ax, 0
 	je if_end_4
 	; PRINT: Print ("Se cumplió la condición 3");
-	IMPRIMIR_MSG msg4
+	IMPRIMIR_MSG id25
 	SALTO_LINEA
 
 if_end_4:
@@ -454,7 +449,7 @@ t7_end:
 	cmp ax, 0
 	je if_end_5
 	; PRINT: Print ("Se cumplió la condición 4");
-	IMPRIMIR_MSG msg5
+	IMPRIMIR_MSG id28
 	SALTO_LINEA
 
 if_end_5:

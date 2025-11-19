@@ -30,15 +30,15 @@ public class ValidadorEstructural {
     private StringBuilder asmProcedimientos;
     private Set<String> allIdsUsadosGlobal;
     private Set<String> allTemporalesUsadosGlobal;
-    private Map<String, String> stringLiteralToAsmLabel;
-    private int stringLabelCounter = 1;
+    // ELIMINADO: private Map<String, String> stringLiteralToAsmLabel; 
+    // ELIMINADO: private int stringLabelCounter = 1;
     private int labelCounter = 1;
     private Stack<String> controlFlowStack;
     private String baseAsmTemplate;
     private Map<String, String> reglasRegexCache;
     
-    // --- NUEVO: Control de supresión de código por errores ---
-    private int suppressAsmDepth = -1; // -1 significa que NO se está suprimiendo código
+    // Control de supresión de código por errores
+    private int suppressAsmDepth = -1; 
 
     // --- ATRIBUTOS VALIDACIÓN ---
     private boolean currentlyInSwitchBlock = false;
@@ -61,7 +61,6 @@ public class ValidadorEstructural {
         this.asmProcedimientos = new StringBuilder();
         this.allIdsUsadosGlobal = new LinkedHashSet<>();
         this.allTemporalesUsadosGlobal = new LinkedHashSet<>();
-        this.stringLiteralToAsmLabel = new HashMap<>();
         this.controlFlowStack = new Stack<>();
         
         this.baseAsmTemplate = J2GAnalizadorApp.leerArchivo("J2G/base.asm");
@@ -167,6 +166,7 @@ public class ValidadorEstructural {
             "    retf\n" +
             "PROC_CapturarNumeroDecimal ENDP\n\n"
         );
+        // PROC_MostrarNumeroDecimal eliminado por ser código muerto en tu ejemplo
         asmProcedimientos.append("; --- FIN PROCEDIMIENTOS ---\n");
     }
 
@@ -179,12 +179,8 @@ public class ValidadorEstructural {
         
         datosSegmento.append("\t; --- Mensajes y Literales ---\n");
         datosSegmento.append("\tsaltoLinea_msg db 0Dh, 0Ah, '$'\n");
-        
-        for (Map.Entry<String, String> entry : stringLiteralToAsmLabel.entrySet()) {
-            String literal = entry.getKey(); 
-            String label = entry.getValue();
-            datosSegmento.append(String.format("\t%s db \"%s\", '$'\n", label, literal));
-        }
+        // ELIMINADO: Bucle que escribía msg1, msg2 duplicados.
+        // Ahora los mensajes se escriben abajo como parte de los IDs del programa.
 
         datosSegmento.append("\n\t; --- Variables y Literales del Programa ---\n");
         for (String id : allIdsUsadosGlobal) {
@@ -213,9 +209,12 @@ public class ValidadorEstructural {
                     }
                 } else if (entry.tipo.equalsIgnoreCase("string") || entry.tipo.equalsIgnoreCase("str")) {
                     if (entry.variable.startsWith("\"")) {
+                         // Es un literal de string (ej: "hola mundo") -> Definir bytes
                          String cleanVal = entry.variable.substring(1, entry.variable.length()-1);
+                         // Usamos el ID del literal directamente
                          datosSegmento.append(String.format("\t%s db \"%s\", '$' \t; %s\n", entry.id, cleanVal, comentario));
                     } else {
+                         // Es una variable de string (ej: mensaje) -> Definir palabra (puntero)
                          datosSegmento.append(String.format("\t%s dw ? \t; %s\n", entry.id, comentario));
                     }
                 }
@@ -240,16 +239,6 @@ public class ValidadorEstructural {
         try (PrintWriter out = new PrintWriter(new FileWriter(this.archivoAsmPath))) {
             out.print(asmFinal);
         }
-    }
-    
-    private String getStringLiteralLabel(String literal) {
-        String unquotedLiteral = literal.substring(1, literal.length() - 1);
-        if (stringLiteralToAsmLabel.containsKey(unquotedLiteral)) {
-            return stringLiteralToAsmLabel.get(unquotedLiteral);
-        }
-        String newLabel = "msg" + (stringLabelCounter++);
-        stringLiteralToAsmLabel.put(unquotedLiteral, newLabel);
-        return newLabel;
     }
     
     private boolean procesarYAcumularExpresion(String expresion, String context, LRParser parser) {
@@ -290,7 +279,6 @@ public class ValidadorEstructural {
         reglas.put("VAR_DECL_CON_INIT",
                 "^(INT|STR|BOOL)\\s+" + varOrIdPatternCore + "\\s*:=\\s*" + anyLiteralOrVarRegex + "\\s*;");
         reglas.put("ASSIGNMENT", "^" + varOrIdPatternCore + "\\s*(:=|\\+=|-=|\\*=|\\/=)\\s*(.+)\\s*;");
-        // Regex ajustada para Input con espacios
         reglas.put("INPUT_STR_STMT", "^(?:" + varOrIdPatternCore + "\\s*:=\\s*)?Input\\s*\\(\\s*\\)\\s*" + optionalPromptRegex + "\\s*\\.\\s*Str\\s*\\(\\s*\\)\\s*;");
         reglas.put("INPUT_INT_STMT", "^(?:" + varOrIdPatternCore + "\\s*:=\\s*)?Input\\s*\\(\\s*\\)\\s*" + optionalPromptRegex + "\\s*\\.\\s*Int\\s*\\(\\s*\\)\\s*;");
         reglas.put("INPUT_BOOL_STMT", "^(?:" + varOrIdPatternCore + "\\s*:=\\s*)?Input\\s*\\(\\s*\\)\\s*" + optionalPromptRegex + "\\s*\\.\\s*Bool\\s*\\(\\s*\\)\\s*;");
@@ -311,7 +299,8 @@ public class ValidadorEstructural {
         return reglas;
     }
 
-    // ... (Métodos auxiliares no cambiaron) ...
+    // ... (Métodos auxiliares getMatchingClosingSymbol, checkBalancedSymbols etc., sin cambios) ...
+    
     private char getMatchingClosingSymbol(char openSymbol) {
         if (openSymbol == '(') return ')';
         if (openSymbol == '{') return '}';
@@ -442,8 +431,8 @@ public class ValidadorEstructural {
         }
         return errors;
     }
-
-     private String getExpressionType(String expression, Map<String, String> reglas, Map<String, String> declaredVariablesTypeMap) {
+    
+    private String getExpressionType(String expression, Map<String, String> reglas, Map<String, String> declaredVariablesTypeMap) {
         if (expression == null) return "UNKNOWN";
         String trimmedExpression = expression.trim();
 
@@ -554,9 +543,9 @@ public class ValidadorEstructural {
 
             if (this.suppressAsmDepth != -1) {
                 if (globalBraceBalance < this.suppressAsmDepth) {
-                    this.suppressAsmDepth = -1; // Fin de supresión (saliendo del bloque malo)
+                    this.suppressAsmDepth = -1; // Fin de supresión
                 } else {
-                    // Seguimos dentro de un bloque inválido, saltamos análisis y generación
+                    // Estamos dentro de un bloque inválido, seguimos
                     continue;
                 }
             }
@@ -576,13 +565,18 @@ public class ValidadorEstructural {
             } else if (currentlyInMainFunctionBlock) {
                 
                 if (lineaActual.matches(reglas.getOrDefault("SWITCH_STMT", "^$"))) {
-                    // Lógica de switch simplificada...
+                    // ... Lógica de switch existente ...
                     reglaCoincidioEstaLinea = true;
                 } else if (this.currentlyInSwitchBlock) {
-                     if (lineaActual.matches(reglas.getOrDefault("CASE_STMT", "^$")) || lineaActual.matches(reglas.getOrDefault("DEFAULT_STMT", "^$"))) {
+                    // ... Lógica de bloques de switch existente ...
+                    if (lineaActual.matches(reglas.getOrDefault("CASE_STMT", "^$")) || lineaActual.matches(reglas.getOrDefault("DEFAULT_STMT", "^$"))) {
                         reglaCoincidioEstaLinea = true;
+                        this.currentSwitchClauseActiveAndNeedsDetener = true;
+                        this.currentSwitchClauseHasHadDetener = false;
                     } else if (lineaActual.matches(reglas.getOrDefault("DETENER_STMT", "^$"))) {
                         reglaCoincidioEstaLinea = true;
+                        this.currentSwitchClauseActiveAndNeedsDetener = false;
+                        this.currentSwitchClauseHasHadDetener = true;
                     } else if (lineaActual.matches(reglas.getOrDefault("BLOCK_END", "^$"))) {
                         reglaCoincidioEstaLinea = true;
                         if (globalBraceBalance == this.switchBlockEntryDepth - 1) {
@@ -696,8 +690,11 @@ public class ValidadorEstructural {
                                 allIdsUsadosGlobal.add(lhsEntry.id);
                                 String promptLiteral = matcher.group(2);
                                 if (promptLiteral != null && !promptLiteral.isEmpty()) {
-                                    String promptLabel = getStringLiteralLabel(promptLiteral);
-                                    asmCodigoGlobal.append("\tIMPRIMIR_MSG " + promptLabel + "\n");
+                                    String promptId = this.tablaSimbolosGlobal.obtenerIdParaLiteral(promptLiteral);
+                                    if(promptId != null) {
+                                        allIdsUsadosGlobal.add(promptId);
+                                        asmCodigoGlobal.append("\tIMPRIMIR_MSG " + promptId + "\n");
+                                    }
                                 }
 
                                 switch(inputTypes[k]) {
@@ -781,11 +778,9 @@ public class ValidadorEstructural {
                                         controlFlowStack.push(endLabel);
                                     } else {
                                         errorsEnLinea.add("Error de sintaxis o semántica en la expresión de la condición.");
-                                        // ACTIVAR SUPRESIÓN DE ASM
-                                        this.suppressAsmDepth = globalBraceBalance; // Supresión hasta que balance < N
+                                        this.suppressAsmDepth = globalBraceBalance;
                                     }
                                 } else {
-                                    // ACTIVAR SUPRESIÓN DE ASM
                                     this.suppressAsmDepth = globalBraceBalance;
                                 }
                             } else if (key.equals("PRINT_STMT")) {
@@ -800,10 +795,11 @@ public class ValidadorEstructural {
                                         asmCodigoGlobal.append("\t; PRINT: " + lineaActual + "\n");
                                         
                                         if (argType.equals("string")) {
+                                            // Ahora PRINT usa el ID directo de la tabla de símbolos
                                             SymbolTableEntry entry = tablaSimbolosGlobal.findEntryById(argId);
                                             if (entry != null) {
-                                                String label = getStringLiteralLabel(entry.variable);
-                                                asmCodigoGlobal.append("\tIMPRIMIR_MSG " + label + "\n");
+                                                // Usamos el ID como etiqueta directamente
+                                                asmCodigoGlobal.append("\tIMPRIMIR_MSG " + entry.id + "\n");
                                             }
                                         } 
                                         asmCodigoGlobal.append("\tSALTO_LINEA\n\n");
@@ -819,8 +815,7 @@ public class ValidadorEstructural {
                                     asmCodigoGlobal.append(endIfLabel + ":\n");
                                     controlFlowStack.push(endElseLabel);
                                 } else {
-                                    // Error estructural: else sin if. 
-                                    // Suprimir el bloque else.
+                                    errorsEnLinea.add("Error de sintaxis: 'else' sin un 'if' correspondiente.");
                                     this.suppressAsmDepth = globalBraceBalance;
                                 }
                             } else if (key.equals("BLOCK_END")) {
